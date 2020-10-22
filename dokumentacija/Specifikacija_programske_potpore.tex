@@ -25,31 +25,38 @@
 	
 	\begin{packed_enum}
 		
-		\item poprimiti ulogu autora zahtjeva 
+		\item biti javni korisnik 
 		\begin{packed_enum}
 			
-			\item   može zadati zahtjev za pomoć
-			\item  može obrisati ili blokirati unešeni zahtjev
+			\item   može se registrirati
 			
 		\end{packed_enum}
-		\item poprimiti ulogu izvršitelja zahtjeva 
+		\item biti registrirani korisnik 
 		\begin{packed_enum}
 			
-			\item  može odabrati zahtjev s liste aktivnih zahtjeva
-			
-		\end{packed_enum}
+			\item  prijavljuje se u sustav
+			\item pregled liste korisnika
+			\item pregled vlastitog profila
+			\item zadavanje zahtjeva za pomoć
+			\item prikaz liste aktivnih zahtjeva
+		    \item razmjenjivati notifikacije kada izvršitelj odabere zahtjev
+		    \item dohvatiti profil drugog korisnika u trenutku pregleda zahtjeva
+		    \item dohvatiti profile ostalih korisnika iz liste korisnika
+		    \item ocjenjivati i komentirati druge korisnike
+		    \item vidjeti "lanac povjerenja"
+		    \item pregledati listu svojih izvršenih i ponuđenih zahtjeva
 		
-		\item razmjenjivati notifikacije kada izvršitelj odabere zahtjev
-		\item dohvatiti profil drugog korisnika u trenutku pregleda zahtjeva
-		\item ocjenjivati i komentirati druge korisnike
-		\item vidjeti "lanac povjerenja"
-		\item pregledati listu svojih izvršenih i ponuđenih zahtjeva 
+		\end{packed_enum}
 	\end{packed_enum}
+	
+	\eject
 	
 	\item  \underbar{Administrator (inicijator) može:}
 	
 	\begin{packed_enum}
 		
+		\item pregled liste korisnika
+		\item prikaz liste aktivnih zahtjeva
 		\item kontrolirati sadržaj koji se objavljuje
 		\item brisanje zahtjeva
 		\item blokiranje korisnika pristupu aplikaciji 
@@ -82,40 +89,179 @@
 \textit{Funkcionalne zahtjeve razraditi u obliku obrazaca uporabe. Svaki obrazac je potrebno razraditi prema donjem predlošku. Ukoliko u nekom koraku može doći do odstupanja, potrebno je to odstupanje opisati i po mogućnosti ponuditi rješenje kojim bi se tijek obrasca vratio na osnovni tijek.}\\
 
 
-\noindent \underbar{\textbf{UC$<$broj obrasca$>$ -$<$ime obrasca$>$}}
+\noindent \underbar{\textbf{UC1 -Prijava}}
 \begin{packed_item}
-	
-	\item \textbf{Glavni sudionik: }$<$sudionik$>$
-	\item  \textbf{Cilj:} $<$cilj$>$
-	\item  \textbf{Sudionici:} $<$sudionici$>$
-	\item  \textbf{Preduvjet:} $<$preduvjet$>$
+	\item \textbf{Glavni sudionik: }korisnik
+	\item  \textbf{Cilj:} dobiti pristup korisničkom sučelju
+	\item  \textbf{Sudionici:} baza podataka, administrator
+	\item  \textbf{Preduvjet:} registracija
 	\item  \textbf{Opis osnovnog tijeka:}
 	
 	\item[] \begin{packed_enum}
 		
-		\item $<$opis korak jedan$>$
-		\item $<$opis korak dva$>$
-		\item $<$opis korak tri$>$
-		\item $<$opis korak četiri$>$
-		\item $<$opis korak pet$>$
+		\item unos korisničkog imena i lozinke
+		\item potvrda o ispravnosti unesenih podataka
+		\item pristup korisničkim funkcijama
 	\end{packed_enum}
 	
 	\item  \textbf{Opis mogućih odstupanja:}
 	
 	\item[] \begin{packed_item}
 		
-		\item[2.a] $<$opis mogućeg scenarija odstupanja u koraku 2$>$
+		\item[1.a] neispravan unos korisničkog imena ili lozinke
 		\item[] \begin{packed_enum}
 			
-			\item $<$opis rješenja mogućeg scenarija korak 1$>$
-			\item $<$opis rješenja mogućeg scenarija korak 2$>$
+			\item sustav obaviještava korisnika o neispravnom unosu i ponovno ga vraća na stranicu za prijavu
 			
 		\end{packed_enum}
-		\item[2.b] $<$opis mogućeg scenarija odstupanja u koraku 2$>$
-		\item[3.a] $<$opis mogućeg scenarija odstupanja  u koraku 3$>$
+	\end{packed_item}
+\end{packed_item}
+
+\noindent \underbar{\textbf{UC2 -Pregled zahtjeva}}
+\begin{packed_item}
+	\item \textbf{Glavni sudionik: }korisnik
+	\item  \textbf{Cilj:} pregledati aktualne i izvršene zahtjeve
+	\item  \textbf{Sudionici:} baza podataka, administrator
+	\item  \textbf{Preduvjet:} korisnik je prijavljen
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item korisnik šalje zahtjev za čitanjem liste zahtjeva
+		\item na njegovom ekranu se prikazuju svi aktivni zahtjevi koji se nalaze unutar određene geografske udaljenosti
+		\item omogućeno sortiranje liste zahtjeva prema kategorijama
+		\item korisniku je i omogućen pregled svih vlastitih zadanih i izvršenih zahtjeva
+	\end{packed_enum}
+	
+	\item  \textbf{Opis mogućih odstupanja:}
+	
+	\item[] \begin{packed_item}
+		
+		\item[2.a] nema aktivnih zahtjeva
+	\end{packed_item}
+\end{packed_item}
+
+\noindent \underbar{\textbf{UC3 -Upravljanje zahtjevima}}
+\begin{packed_item}
+	
+	\item \textbf{Glavni sudionik: } autor (korisnik)
+	\item  \textbf{Cilj:} stvaranje i uređivanje zahtjeva
+	\item  \textbf{Sudionici:} baza podataka, administrator
+	\item  \textbf{Preduvjet:} registracija
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item korisnik odabire opciju za stvaranje novog zahtjeva ili njegovo uređivanje
+		\item unos novih ili izmjenjenih informacija koje se zatim spremaju u bazu podataka nakon pritiska tipke "Spremi"
+		\item baza podataka se ažurira
+		\item mogućnost brisanja ili blokiranja vlastitog zahtjeva
+	\end{packed_enum}
+	
+	\item  \textbf{Opis mogućih odstupanja:}
+	
+	\item[] \begin{packed_item}
+		
+		\item[2.a] korisnik unese podatke o zahtjevu, ali ne pritisne tipku "Spremi"
+		\item[] \begin{packed_enum}
+			
+			\item sustav obaviještava korisnika da nije spremio podatke prije izlaska iz prozora
+			
+		\end{packed_enum}
+		\item[5] administrator ima mogućnost brisanja neprimjerenih zahtjeva 
+		
+		
 		
 	\end{packed_item}
 \end{packed_item}
+\noindent \underbar{\textbf{UC4 - Dohvaćanje profila}}
+\begin{packed_item}
+	
+	\item \textbf{Glavni sudionik: }korisnik
+	\item  \textbf{Cilj:} dobiti pristup tuđim korisničkim profilima
+	\item  \textbf{Sudionici:} baza podataka, administrator
+	\item  \textbf{Preduvjet:} registracija
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item dok korisnik donosi odluku o pomoći, otvara se opcija pregleda profila autora zahtjeva
+		\item iz baze se dohvaća profil o autoru zahtjeva kao i "lanac povjerenja"
+	\end{packed_enum}
+\end{packed_item}
+\noindent \underbar{\textbf{UC5 - Izvršavanje zahtjeva}}
+\begin{packed_item}
+	
+	\item \textbf{Glavni sudionik: }izvršitelj zahtjeva (korisnik)
+	\item  \textbf{Cilj:} izvršiti potvrđeni zahtjev
+	\item  \textbf{Sudionici:} -
+	\item  \textbf{Preduvjet:} registracija
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item izvršitelj zahtjeva odabire zahtjev koji želi izvršiti
+		\item omogućuje se razmjena notifikacija između izvršitelja i autora zahtjeva te se iz baze dohvaćaju sve potrebne informacije
+		\item po izvršenju zahtjeva, izvršitelj označava u aplikaciji da je zahtjev izvršen
+		\item omogućuje se međusobno ocjenjivanje korisnika ocjenama od 1 do 5, uz opcionalne komentare
+		\item ocjene i osvrti se pohranjuju u bazu podataka i ažuriraju se prosječne ocjene korisnika
+	\end{packed_enum}
+	
+	\item  \textbf{Opis mogućih odstupanja:}
+	
+	\item[] \begin{packed_item}
+		
+		\item[4.a] klijent ne želi napisati komentar
+		\item[] \begin{packed_enum}
+			
+			\item sustav zatvara prozor za ocjenjivanje i pohranjuje se samo ocjena
+			
+		\end{packed_enum}
+		
+	\end{packed_item}
+\end{packed_item}
+\noindent \underbar{\textbf{UC6 - Dodjela administrativnog područja}}
+\begin{packed_item}
+	\item \textbf{Glavni sudionik: }administrator
+	\item  \textbf{Cilj:} dodjela administrativnog područja prema geografskoj lokaciji
+	\item  \textbf{Sudionici:} sustav
+	\item  \textbf{Preduvjet:} korisnik je registriran i prijavljen kao administrator
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item administratoru preko vlastite lokacije sustav dodjeljuje administrativno područje
+	\end{packed_enum}
+\end{packed_item}
+\noindent \underbar{\textbf{UC7 - Registracija}}
+\begin{packed_item}
+	\item \textbf{Glavni sudionik: }korisnik
+	\item  \textbf{Cilj:} stvoriti korisnički račun za pristup sustavu
+	\item  \textbf{Sudionici:} baza podataka
+	\item  \textbf{Preduvjet:} -
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item korisnik odabire opciju za registraciju
+		\item korisnik unosi potrebne korisničke podatke
+		\item korsinik prima obavijest o uspješnoj registraciji
+	\end{packed_enum}
+	
+	\item  \textbf{Opis mogućih odstupanja:}
+	
+	\item[] \begin{packed_item}
+		
+		\item[2.a] Odabir vec zauzetog korisničkog imena i/ili e-maila, unos korisničkog podatka u nedozvoljenom formatu ili unos neispravnoga e-maila 
+		\item[] \begin{packed_enum}
+			
+			\item sustav obaviještava korisnika o neispravnom unosu i ponovno ga vraća na stranicu za registraciju
+			\item korisnik mijenja potrebne podatke i završava unos ili odustaje od registracije
+			
+		\end{packed_enum}
+	\end{packed_item}
+\end{packed_item}
+
 
 
 \subsubsection{Dijagrami obrazaca uporabe}
