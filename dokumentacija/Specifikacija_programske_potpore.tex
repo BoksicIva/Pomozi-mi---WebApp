@@ -82,153 +82,9 @@
 \textit{Funkcionalne zahtjeve razraditi u obliku obrazaca uporabe. Svaki obrazac je potrebno razraditi prema donjem predlošku. Ukoliko u nekom koraku može doći do odstupanja, potrebno je to odstupanje opisati i po mogućnosti ponuditi rješenje kojim bi se tijek obrasca vratio na osnovni tijek.}\\
 
 
-\noindent \underbar{\textbf{UC1 -Prijava}}
+\noindent \underbar{\textbf{UC1 - Registracija}}
 \begin{packed_item}
-	\item \textbf{Glavni sudionik: }korisnik
-	\item  \textbf{Cilj:} dobiti pristup korisničkom sučelju
-	\item  \textbf{Sudionici:} baza podataka, administrator
-	\item  \textbf{Preduvjet:} registracija
-	\item  \textbf{Opis osnovnog tijeka:}
-	
-	\item[] \begin{packed_enum}
-		
-		\item unos korisničkog imena i lozinke
-		\item potvrda o ispravnosti unesenih podataka
-		\item pristup korisničkim funkcijama
-	\end{packed_enum}
-	
-	\item  \textbf{Opis mogućih odstupanja:}
-	
-	\item[] \begin{packed_item}
-		
-		\item[1.a] neispravan unos korisničkog imena ili lozinke
-		\item[] \begin{packed_enum}
-			
-			\item sustav obaviještava korisnika o neispravnom unosu i ponovno ga vraća na stranicu za prijavu
-			
-		\end{packed_enum}
-	\end{packed_item}
-\end{packed_item}
-
-\noindent \underbar{\textbf{UC2 -Pregled zahtjeva}}
-\begin{packed_item}
-	\item \textbf{Glavni sudionik: }korisnik
-	\item  \textbf{Cilj:} pregledati aktualne i izvršene zahtjeve
-	\item  \textbf{Sudionici:} baza podataka, administrator
-	\item  \textbf{Preduvjet:} korisnik je prijavljen
-	\item  \textbf{Opis osnovnog tijeka:}
-	
-	\item[] \begin{packed_enum}
-		
-		\item korisnik šalje zahtjev za čitanjem liste zahtjeva
-		\item na njegovom ekranu se prikazuju svi aktivni zahtjevi koji se nalaze unutar određene geografske udaljenosti
-		\item omogućeno sortiranje liste zahtjeva prema kategorijama
-		\item korisniku je i omogućen pregled svih vlastitih zadanih i izvršenih zahtjeva
-	\end{packed_enum}
-	
-	\item  \textbf{Opis mogućih odstupanja:}
-	
-	\item[] \begin{packed_item}
-		
-		\item[2.a] nema aktivnih zahtjeva
-	\end{packed_item}
-\end{packed_item}
-
-\noindent \underbar{\textbf{UC3 -Upravljanje zahtjevima}}
-\begin{packed_item}
-	
-	\item \textbf{Glavni sudionik: } autor (korisnik)
-	\item  \textbf{Cilj:} stvaranje i uređivanje zahtjeva
-	\item  \textbf{Sudionici:} baza podataka, administrator
-	\item  \textbf{Preduvjet:} registracija
-	\item  \textbf{Opis osnovnog tijeka:}
-	
-	\item[] \begin{packed_enum}
-		
-		\item korisnik odabire opciju za stvaranje novog zahtjeva ili njegovo uređivanje
-		\item unos novih ili izmjenjenih informacija koje se zatim spremaju u bazu podataka nakon pritiska tipke "Spremi"
-		\item baza podataka se ažurira
-		\item mogućnost brisanja ili blokiranja vlastitog zahtjeva
-	\end{packed_enum}
-	
-	\item  \textbf{Opis mogućih odstupanja:}
-	
-	\item[] \begin{packed_item}
-		
-		\item[2.a] korisnik unese podatke o zahtjevu, ali ne pritisne tipku "Spremi"
-		\item[] \begin{packed_enum}
-			
-			\item sustav obaviještava korisnika da nije spremio podatke prije izlaska iz prozora
-			
-		\end{packed_enum}
-		\item[5] administrator ima mogućnost brisanja neprimjerenih zahtjeva 
-		
-		
-		
-	\end{packed_item}
-\end{packed_item}
-\noindent \underbar{\textbf{UC4 - Dohvaćanje profila}}
-\begin{packed_item}
-	
-	\item \textbf{Glavni sudionik: }korisnik
-	\item  \textbf{Cilj:} dobiti pristup tuđim korisničkim profilima
-	\item  \textbf{Sudionici:} baza podataka, administrator
-	\item  \textbf{Preduvjet:} registracija
-	\item  \textbf{Opis osnovnog tijeka:}
-	
-	\item[] \begin{packed_enum}
-		
-		\item dok korisnik donosi odluku o pomoći, otvara se opcija pregleda profila autora zahtjeva
-		\item iz baze se dohvaća profil o autoru zahtjeva kao i "lanac povjerenja"
-	\end{packed_enum}
-\end{packed_item}
-\noindent \underbar{\textbf{UC5 - Izvršavanje zahtjeva}}
-\begin{packed_item}
-	
-	\item \textbf{Glavni sudionik: }izvršitelj zahtjeva (korisnik)
-	\item  \textbf{Cilj:} izvršiti potvrđeni zahtjev
-	\item  \textbf{Sudionici:} -
-	\item  \textbf{Preduvjet:} registracija
-	\item  \textbf{Opis osnovnog tijeka:}
-	
-	\item[] \begin{packed_enum}
-		
-		\item izvršitelj zahtjeva odabire zahtjev koji želi izvršiti
-		\item omogućuje se razmjena notifikacija između izvršitelja i autora zahtjeva te se iz baze dohvaćaju sve potrebne informacije
-		\item po izvršenju zahtjeva, izvršitelj označava u aplikaciji da je zahtjev izvršen
-		\item omogućuje se međusobno ocjenjivanje korisnika ocjenama od 1 do 5, uz opcionalne komentare
-		\item ocjene i osvrti se pohranjuju u bazu podataka i ažuriraju se prosječne ocjene korisnika
-	\end{packed_enum}
-	
-	\item  \textbf{Opis mogućih odstupanja:}
-	
-	\item[] \begin{packed_item}
-		
-		\item[4.a] klijent ne želi napisati komentar
-		\item[] \begin{packed_enum}
-			
-			\item sustav zatvara prozor za ocjenjivanje i pohranjuje se samo ocjena
-			
-		\end{packed_enum}
-		
-	\end{packed_item}
-\end{packed_item}
-\noindent \underbar{\textbf{UC6 - Dodjela administrativnog područja}}
-\begin{packed_item}
-	\item \textbf{Glavni sudionik: }administrator
-	\item  \textbf{Cilj:} dodjela administrativnog područja prema geografskoj lokaciji
-	\item  \textbf{Sudionici:} sustav
-	\item  \textbf{Preduvjet:} korisnik je registriran i prijavljen kao administrator
-	\item  \textbf{Opis osnovnog tijeka:}
-	
-	\item[] \begin{packed_enum}
-		
-		\item administratoru preko vlastite lokacije sustav dodjeljuje administrativno područje
-	\end{packed_enum}
-\end{packed_item}
-\noindent \underbar{\textbf{UC7 - Registracija}}
-\begin{packed_item}
-	\item \textbf{Glavni sudionik: }korisnik
+	\item \textbf{Glavni sudionik: } Javni korisnik
 	\item  \textbf{Cilj:} stvoriti korisnički račun za pristup sustavu
 	\item  \textbf{Sudionici:} baza podataka
 	\item  \textbf{Preduvjet:} -
@@ -255,6 +111,306 @@
 	\end{packed_item}
 \end{packed_item}
 
+\noindent \underbar{\textbf{UC2 -Prijava}}
+\begin{packed_item}
+	\item \textbf{Glavni sudionik: }Registrirani korisnik
+	\item  \textbf{Cilj:} dobiti pristup korisničkom sučelju
+	\item  \textbf{Sudionici:} baza podataka
+	\item  \textbf{Preduvjet:} registracija
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item unos korisničkog imena i lozinke
+		\item potvrda o ispravnosti unesenih podataka
+		\item pristup korisničkim funkcijama
+	\end{packed_enum}
+	
+	\item  \textbf{Opis mogućih odstupanja:}
+	
+	\item[] \begin{packed_item}
+		
+		\item[1.a] neispravan unos korisničkog imena ili lozinke
+		\item[] \begin{packed_enum}
+			
+			\item sustav obaviještava korisnika o neispravnom unosu i ponovno ga vraća na stranicu za prijavu
+			
+		\end{packed_enum}
+	\end{packed_item}
+\end{packed_item}
+
+\noindent \underbar{\textbf{UC3 -Zadavanje zahtjeva za pomoć}}
+\begin{packed_item}
+	\item \textbf{Glavni sudionik: } Registrirani korisnik
+	\item  \textbf{Cilj:} kreirati novi zahtjev za pomoć
+	\item  \textbf{Sudionici:} baza podataka
+	\item  \textbf{Preduvjet:} korisnik je prijavljen
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item korisnik odabire opciju da traži pomoć
+		\item pojavljuje se obrazac za kreiranje zahtjeva za pomoći
+		\item korisnik odabire opciju "Objavi zahtjev"
+	\end{packed_enum}
+\end{packed_item}
+\noindent \underbar{\textbf{UC3.1 - Određivanje lokacije uređaja}}
+\begin{packed_item}
+	\item \textbf{Glavni sudionik: } Servis za lociranje uređaja
+	\item  \textbf{Cilj:} dohvatiti trenutnu lokaciju korisnika
+	\item  \textbf{Sudionici:} korisnik
+	\item  \textbf{Preduvjet:} korisnik je prijavljen, zadaje se zahtjev za pomoć
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item korisnik omogućava aplikaciji pristup vlastitoj lokaciji
+		\item korisnik potvrđuje očitanu lokaciju
+		\item očitana lokacija se sprema u bazu
+	\end{packed_enum}
+	\item  \textbf{Opis mogućih odstupanja:}
+	
+	\item[] \begin{packed_item}
+		
+		\item[1.a] korsnik ne odobrava pristup njegovoj lokaciji, ona nije dostupna ili je krivo očitana
+		\item[] \begin{packed_enum}
+			
+			\item aplikacija nudi opciju postavljanja lokacije pomoću karte
+			
+		\end{packed_enum}
+	\end{packed_item}
+\end{packed_item}
+\noindent \underbar{\textbf{UC3.2 - Zadavanje lokacije pomoću karte}}
+\begin{packed_item}
+	
+	\item \textbf{Glavni sudionik: } Servis karte
+	\item  \textbf{Cilj:} postaviti željenu lokaciju pomoću karte
+	\item  \textbf{Sudionici:} registrirani korisnik
+	\item  \textbf{Preduvjet:} korisnik je prijavljen, zadaje se zahtjev za pomoć
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item korisnik odabire opciju postavljanja lokacije pomoću karte
+		\item servis karte dohvaća kartu te korisnik precizno odabire željeno područje
+		\item odabrana lokacija se sprema u bazu
+	\end{packed_enum}
+\end{packed_item}
+\noindent \underbar{\textbf{UC4 - Pregled liste korisnika}}
+\begin{packed_item}
+	
+	\item \textbf{Glavni sudionik: }Registrirani korisnik, administrator
+	\item  \textbf{Cilj:} Pregledati listu registriranih korisnika
+	\item  \textbf{Sudionici:} Baza podataka
+	\item  \textbf{Preduvjet:} Korisnik je prijavljen
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item Korisnik/administrator u bilo kojem trenutku, pritiskom na gumb može pretražiti registrirane korisnike
+		\item Iz baze se dohvaća lista profila korisnika
+	\end{packed_enum}
+\end{packed_item}
+\noindent \underbar{\textbf{UC4.1 - Administratorski pregled liste korisnika}}
+\begin{packed_item}
+	
+	\item \textbf{Glavni sudionik: }Administrator
+	\item  \textbf{Cilj:} Pregledati listu registriranih korisnika
+	\item  \textbf{Sudionici:} Baza podataka, registrirani korisnik
+	\item  \textbf{Preduvjet:} Korisnik je prijavljen kao administrator
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item Administrator u bilo kojem trenutku, pritiskom na gumb može pretražiti registrirane korisnike
+		\item Iz baze se dohvaća lista profila korisnika
+	\end{packed_enum}
+\end{packed_item}
+
+\noindent \underbar{\textbf{UC4.2 - Korisnički pregled liste korisnika}}
+\begin{packed_item}
+	
+	\item \textbf{Glavni sudionik: }Registrirani korisnik
+	\item  \textbf{Cilj:} Pregledati listu registriranih korisnika
+	\item  \textbf{Sudionici:} Baza podataka, administrator
+	\item  \textbf{Preduvjet:} Korisnik je prijavljen
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item Korisnik u bilo kojem trenutku, pritiskom na gumb može pretražiti registrirane korisnike
+		\item Iz baze se dohvaća lista profila korisnika
+	\end{packed_enum}
+\end{packed_item}
+
+\noindent \underbar{\textbf{UC5 - Prikaz liste aktivnih zahtjeva}}
+\begin{packed_item}
+	
+	\item \textbf{Glavni sudionik: }Registrirani korisnik, administrator
+	\item  \textbf{Cilj:} pregledati aktivne zahtjeve i ponuditi pomoć
+	\item  \textbf{Sudionici:} Baza podataka
+	\item  \textbf{Preduvjet:} Korisnik je prijavljen
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item Korisnik odabire ulogu izvršitelja zahtjeva
+		\item Iz baze se dohvaća lista aktivnih zahtjeva autora koji trebaju pomoć te se nalaze unutar jednog kilometra od lokacije izvršitelja
+	\end{packed_enum}
+	
+	\item  \textbf{Opis mogućih odstupanja:}
+	
+	\item[] \begin{packed_item}
+		
+		\item[2.a] Ne postoje aktivni zahtjevi u označenom području
+		\item[] \begin{packed_enum}
+			
+			\item Otvara se mogućnost proširenja liste na veće geografsko područje
+			
+		\end{packed_enum}
+	\end{packed_item}
+\end{packed_item}
+\noindent \underbar{\textbf{UC5.1 - Administratorski prikaz liste aktivnih zahtjeva}}
+\begin{packed_item}
+	
+	\item \textbf{Glavni sudionik: }Administrator
+	\item  \textbf{Cilj:} Pregledati aktivne zahtjeve
+	\item  \textbf{Sudionici:} Baza podataka
+	\item  \textbf{Preduvjet:} Korisnik je prijavljen kao administrator
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item Administrator odabire opciju pregleda liste aktivnih zahtjeva
+		\item Iz baze se dohvaća lista aktivnih zahtjeva autora koji trebaju pomoć te se nalaze unutar jednog kilometra od lokacije administratora
+	\end{packed_enum}
+	
+	\item  \textbf{Opis mogućih odstupanja:}
+	
+	\item[] \begin{packed_item}
+		
+		\item[2.a] Ne postoje aktivni zahtjevi u označenom području
+		\item[] \begin{packed_enum}
+			
+			\item Otvara se mogućnost proširenja liste na veće geografsko područje
+			
+		\end{packed_enum}
+	\end{packed_item}
+\end{packed_item}
+\noindent \underbar{\textbf{UC5.2 - Korisnički prikaz liste aktivnih zahtjeva}}
+\begin{packed_item}
+	
+	\item \textbf{Glavni sudionik: }Registrirani korisnik
+	\item  \textbf{Cilj:} Pregledati aktivne zahtjeve i ponuditi pomoć
+	\item  \textbf{Sudionici:} Baza podataka
+	\item  \textbf{Preduvjet:} Korisnik je prijavljen
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item Korisnik odabire ulogu izvršitelja zahtjeva
+		\item Korisnik odabire opciju pregleda aktivnih zahtjeva
+		\item Iz baze se dohvaća lista aktivnih zahtjeva autora koji trebaju pomoć te se nalaze unutar jednog kilometra od lokacije izvršitelja
+	\end{packed_enum}
+	
+	\item  \textbf{Opis mogućih odstupanja:}
+	
+	\item[] \begin{packed_item}
+		
+		\item[2.a] Ne postoje aktivni zahtjevi u označenom području
+		\item[] \begin{packed_enum}
+			
+			\item Otvara se mogućnost proširenja liste na veće geografsko područje
+			
+		\end{packed_enum}
+	\end{packed_item}
+\end{packed_item}
+
+\noindent \underbar{\textbf{UC6 - Dodjela administrativnog područja}}
+\begin{packed_item}
+	\item \textbf{Glavni sudionik: }Administrator
+	\item  \textbf{Cilj:} dodjela administrativnog područja prema geografskoj lokaciji
+	\item  \textbf{Sudionici:} Sustav
+	\item  \textbf{Preduvjet:} Korisnik je registriran i prijavljen kao administrator
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item Administratoru preko vlastite lokacije sustav dodjeljuje administrativno područje
+	\end{packed_enum}
+\end{packed_item}
+
+\noindent \underbar{\textbf{UC9 - Pregled profila}}
+\begin{packed_item}
+	
+	\item \textbf{Glavni sudionik: } Registrirani korisnik
+	\item  \textbf{Cilj:} Dobiti pristup korisničkom profilu
+	\item  \textbf{Sudionici:} Baza podataka
+	\item  \textbf{Preduvjet:} Korisnik je prijavljen, prikaz liste aktivnih zahtjeva, pregled liste korisnika
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item korisnik odabire opciju pregleda profila
+		\item Iz baze se dohvaća profil i prikazuje se korisniku
+	\end{packed_enum}
+\end{packed_item}
+\noindent \underbar{\textbf{UC9.1 - Pregled vlastitog profila i administratorski pregled}}
+\begin{packed_item}
+	
+	\item \textbf{Glavni sudionik: } Registrirani korisnik
+	\item  \textbf{Cilj:} Pregledati vlastiti profil
+	\item  \textbf{Sudionici:} Baza podataka, administrator
+	\item  \textbf{Preduvjet:} Korisnik je prijavljen
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item Korisnik odabire opciju pregleda vlastitog profila
+		\item Iz baze se dohvaća korisnikov profil i vlastiti podaci
+	\end{packed_enum}
+\end{packed_item}
+\noindent \underbar{\textbf{UC9.2 - Pregled profila drugog korisnika}}
+\begin{packed_item}
+	
+	\item \textbf{Glavni sudionik: } Registrirani korisnik
+	\item  \textbf{Cilj:} Dobiti pristup tuđim korisničkim profilima
+	\item  \textbf{Sudionici:} Baza podataka
+	\item  \textbf{Preduvjet:} Korisnik je prijavljen, prikaz liste aktivnih zahtjeva, pregled liste korisnika
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item Otvara se opcija pregleda profila autora zahtjeva
+		\item iz baze se dohvaća profil o autoru zahtjeva kao i prikaz "lanca povjerenja"
+	\end{packed_enum}
+	\item  \textbf{Opis mogućih odstupanja:}
+	
+	\item[] \begin{packed_item}
+		
+		\item[1.a] Korisnik čiji profil želimo pregledati je blokiran od strane administratora
+		\item[] \begin{packed_enum}
+			
+			\item Sustav vraća korisnika na početnu stranicu
+			
+		\end{packed_enum}
+		
+	\end{packed_item}
+\end{packed_item}
+
+\noindent \underbar{\textbf{UC11 - Blokiranje korisnika}}
+\begin{packed_item}
+	\item \textbf{Glavni sudionik: }Administrator
+	\item  \textbf{Cilj:} Mogućnost blokiranja korisnika
+	\item  \textbf{Sudionici:} -
+	\item  \textbf{Preduvjet:} Korisnik je registriran i prijavljen kao administrator, administratorski pregled liste korisnika
+	\item  \textbf{Opis osnovnog tijeka:}
+	
+	\item[] \begin{packed_enum}
+		
+		\item Pri pregledu liste korisnika, administratoru se omogućuje blokiranje korisničkih računa
+	\end{packed_enum}
+\end{packed_item}
 
 
 \subsubsection{Dijagrami obrazaca uporabe}
