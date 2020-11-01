@@ -1,0 +1,112 @@
+* {
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+      sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 14px;
+    line-height: 1.5;
+    color: #24292e;
+    background-color: #f0b4b7d5;
+  }
+  .crd{
+      text-align: center;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      margin-left: 223px;
+  }
+  
+  .app {
+    margin: 2rem;
+  }
+
+  .title{
+    margin: 20px;
+    padding-top: 20px;
+  }
+  .res-btn{
+    margin-right: 40px;
+  }
+  
+  .empthy{
+    height: 250px;
+  }
+
+  a {
+    color: #08c;
+  }
+
+  .inp-line{
+    margin-top: 40px;
+
+  }
+  
+  code {
+    background: #eee;
+    padding: .1rem;
+    font-family: 'Menlo';
+    font-size: 13px;
+    color: #ff00aa;
+  }
+  
+  input {
+    padding: .5rem;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
+  input:focus {
+    border-color: #007eff;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+      0 0 0 3px rgba(0, 126, 255, 0.1);
+    outline: none;
+  }
+  
+  input.error {
+    border-color: red;
+  }
+  
+  label {
+    font-weight: bold;
+    margin-bottom: .5rem;
+    margin-right: 3rem;
+  }
+  
+  .input-feedback {
+    color: red;
+    margin-top: .25rem;
+  }
+  
+  button {
+    max-width: 150px;
+    margin: 20px 0;
+    padding: 12px 20px;
+    border-style: none;
+    border-radius: 10px;
+    background-color: #08c;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.15);
+    font-size: 17px;
+    font-weight: 500;
+    color: #fff;
+    cursor: pointer;
+    outline: none;
+    -webkit-appearance: none;
+    width: 140px;
+  }
+  
+  button:disabled {
+    opacity: .5;
+    cursor: not-allowed !important;
+  }
+  
+  button + button {
+    margin-left: .5rem;
+  }
+  
+  button.outline {
+    background-color: #eee;
+    border: 1px solid #aaa;
+    color: #555;
+  }
+  
