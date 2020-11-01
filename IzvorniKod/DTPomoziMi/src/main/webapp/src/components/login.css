@@ -75,6 +75,10 @@
     margin-right: 15px;
     width: 80px;
   }
+
+  .pomozi{
+    font-family: Courgette;
+  }
   
   .input-feedback {
     color: red;
@@ -83,8 +87,8 @@
     padding-left: 250px;
   }
 
-  .emt-err{
-    width: 60px;
+  .sign{
+    text-align: right !important;
   }
   
   button {

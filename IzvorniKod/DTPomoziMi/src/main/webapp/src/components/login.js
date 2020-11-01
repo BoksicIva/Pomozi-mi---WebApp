@@ -1,5 +1,6 @@
 import React from "react";
 import './login.css';
+import '../index.css';
 import { Formik } from "formik";
 import * as Yup from "yup";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -11,7 +12,7 @@ export const Login = () => (
         <div className="empthy"></div>
         <div className="container">
             <Card className="crd col-lg-7">
-                <Card.Title className="title">Dobrodošli u aplikaciju <strong>Pomozi mi</strong></Card.Title>
+                <Card.Title className="title">Dobrodošli u aplikaciju <span className="pomozi">Pomozi mi</span></Card.Title>
                 <Formik
                     initialValues={{
                         email: "",
@@ -84,7 +85,6 @@ export const Login = () => (
                                         />
                                         {errors.password && touched.password && (
                                             <div className="input-feedback">
-                                                <span className="emt-err">    </span>
                                                 {errors.password}
                                             </div>
                                         )}
@@ -111,6 +111,7 @@ export const Login = () => (
                         );
                     }}
                 </Formik>
+                <div className="inp-line">not signed in yet? <a href="">Sign in</a></div>
             </Card>
         </div>
     </div>
