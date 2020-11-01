@@ -83,7 +83,10 @@ export const Login = () => (
                                             }
                                         />
                                         {errors.password && touched.password && (
-                                            <div className="input-feedback">{errors.password}</div>
+                                            <div className="input-feedback">
+                                                <span className="emt-err">    </span>
+                                                {errors.password}
+                                            </div>
                                         )}
 
                                     </div>
