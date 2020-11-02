@@ -66,7 +66,7 @@ export const Login = () => (
                                             <div className="input-feedback">{errors.email}</div>
                                         )}
                                     </div>
-                                    <br />
+                                    
                                     <div className="inp-line">
                                         <label htmlFor="password">
                                             Password:
