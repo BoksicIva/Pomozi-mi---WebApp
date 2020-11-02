@@ -8,16 +8,17 @@ import { Card } from 'react-bootstrap';
 import {Link} from 'react-router-dom';
 
 
-export const Login = () => (
+export const Registration = () => (
     <div className="app">
         <div className="empthy"></div>
         <div className="container">
             <Card className="crd col-lg-7 mx-auto">
-                <Card.Title className="title">Prijavi se u aplikaciju <span className="pomozi">Pomozi mi</span></Card.Title>
+                <Card.Title className="title">Dobrodošli u aplikaciju <span className="pomozi">Pomozi mi</span></Card.Title>
                 <Formik
                     initialValues={{
                         email: "",
-                        password: ""
+                        password: "",
+                        username: "",
                     }}
                     onSubmit={async values => {
                         await new Promise(resolve => setTimeout(resolve, 500));
@@ -27,7 +28,8 @@ export const Login = () => (
                         email: Yup.string()
                             .email()
                             .required("Required"),
-                        password: Yup.string().required("password required")
+                        password: Yup.string().required("password required"),
+                        username: Yup.string().min(5).max(10).required("username required"),
                     })}
                 >
                     {props => {
@@ -66,7 +68,32 @@ export const Login = () => (
                                             <div className="input-feedback">{errors.email}</div>
                                         )}
                                     </div>
-                                    <br />
+
+                                    <div className="inp-line">
+                                        <label htmlFor="username">
+                                            Username:
+                                    </label>
+                                        <input
+                                            id="username"
+                                            placeholder="Enter your username"
+                                            type="text"
+                                            value={values.username}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            className={
+                                                errors.username && touched.username
+                                                    ? "text-input error"
+                                                    : "text-input"
+                                            }
+                                        />
+                                        {errors.username && touched.username && (
+                                            <div className="input-feedback">
+                                                {errors.username}
+                                            </div>
+                                        )}
+
+                                    </div>
+                                    
                                     <div className="inp-line">
                                         <label htmlFor="password">
                                             Password:
@@ -91,6 +118,7 @@ export const Login = () => (
                                         )}
 
                                     </div>
+
                                 </div>
                                 <div className="inp-line">
                                 <span className="res-btn">
@@ -112,10 +140,10 @@ export const Login = () => (
                         );
                     }}
                 </Formik>
-                <div className="inp-line">not signed in yet? <Link to='/register'>Sign in</Link></div>
+                <div className="inp-line">Already signed in? <Link to='/login'>Log in</Link></div>
             </Card>
         </div>
     </div>
 );
 
-export default Login;    
+export default Registration;    
