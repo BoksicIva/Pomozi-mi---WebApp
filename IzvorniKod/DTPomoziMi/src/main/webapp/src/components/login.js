@@ -11,7 +11,7 @@ export const Login = () => (
     <div className="app">
         <div className="empthy"></div>
         <div className="container">
-            <Card className="crd col-lg-7">
+            <Card className="crd col-lg-7 mx-auto">
                 <Card.Title className="title">Dobrodošli u aplikaciju <span className="pomozi">Pomozi mi</span></Card.Title>
                 <Formik
                     initialValues={{
