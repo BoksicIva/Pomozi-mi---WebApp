@@ -6,6 +6,8 @@ import * as Yup from "yup";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card } from 'react-bootstrap';
 import {Link} from 'react-router-dom';
+import LoginService from "../service/login-service";
+
 
 
 export const Login = () => (
@@ -20,8 +22,18 @@ export const Login = () => (
                         password: ""
                     }}
                     onSubmit={async values => {
-                        await new Promise(resolve => setTimeout(resolve, 500));
+                          await new Promise(resolve => setTimeout(resolve, 500));
                         alert(JSON.stringify(values, null, 2));
+                     /*  let formData = new FormData();
+  
+                       formData.append("email", values.email);
+                       formData.append("password", values.password);
+
+                       LoginService.login(formData).then((response) => {
+                        //   const token = response.headers[];
+                        });
+                        */
+
                     }}
                     validationSchema={Yup.object().shape({
                         email: Yup.string()
