@@ -23,32 +23,140 @@
 		
 			\subsection{Opis tablica}
 			
-
-				\textit{Svaku tablicu je potrebno opisati po zadanom predlošku. Lijevo se nalazi točno ime varijable u bazi podataka, u sredini se nalazi tip podataka, a desno se nalazi opis varijable. Svjetlozelenom bojom označite primarni ključ. Svjetlo plavom označite strani ključ}
 				
 				\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
 					
-					\hline \multicolumn{3}{|c|}{\textbf{korisnik - ime tablice}}	 \\[3pt] \hline
+					\hline \multicolumn{3}{|c|}{\textbf{Korisnik}}	 \\[3pt] \hline
 					\endfirsthead
 					
-					\hline \multicolumn{3}{|c|}{\textbf{korisnik - ime tablice}}	 \\[3pt] \hline
+					\hline \multicolumn{3}{|c|}{\textbf{Korisnik }}	 \\[3pt] \hline
 					\endhead
 					
 					\hline 
 					\endlastfoot
 					
-					\cellcolor{LightGreen}IDKorisnik & INT	&  	Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam 	\\ \hline
-					korisnickoIme	& VARCHAR &   	\\ \hline 
-					email & VARCHAR &   \\ \hline 
-					ime & VARCHAR	&  		\\ \hline 
-					\cellcolor{LightBlue} primjer	& VARCHAR &   	\\ \hline 
+					\cellcolor{LightGreen}ID${\_}$Korisnik & SERIAL	& jedinstveni identifikator korisnika 	 	\\ \hline
+					ime & VARCHAR	&  ime korisnika	\\ \hline 
+					prezime & VARCHAR	& prezime korisnika 		\\ \hline
+					email & VARCHAR & e-mail adresa korisnika  \\ \hline 
+					lozinka	& VARCHAR & hash lozinke 	\\ \hline 
+					uloga	& VARCHAR & uloga korisnika (administrator ili registrirani korisnik)  	\\ \hline 
+					\cellcolor{LightBlue} geolokacija	& VARCHAR & geografska dužina i širina  	\\ \hline 
 					
 					
 				\end{longtabu}
 			
 			
+				\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
+					
+					\hline \multicolumn{3}{|c|}{\textbf{Zahtjev}}	 \\[3pt] \hline
+					\endfirsthead
+					
+					\hline \multicolumn{3}{|c|}{\textbf{Zahtjev }}	 \\[3pt] \hline
+					\endhead
+					
+					\hline 
+					\endlastfoot
+					
+					\cellcolor{LightGreen}ID${\_}$Zahtjev & SERIAL	&  jedinstveni identifikator korisnika	 	\\ \hline
+					opis & VARCHAR	& opis zahtjeva 		\\ \hline 
+					date & DATE	& datum do kada se treba izvršiti zahtjev  		\\ \hline
+					vrijeme & TIME & vrijeme do kada se treba izvršiti zahtjev \\ \hline 
+					status	& VARCHAR & status zahtjeva  	\\ \hline 
+					\cellcolor{LightBlue} geolokacija	& VARCHAR &geografska dužina i širina    	\\ \hline 
+					
+					
+				\end{longtabu}
+			
+			
+				\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
+					
+					\hline \multicolumn{3}{|c|}{\textbf{Lokacija}}	 \\[3pt] \hline
+					\endfirsthead
+					
+					\hline \multicolumn{3}{|c|}{\textbf{Lokacija }}	 \\[3pt] \hline
+					\endhead
+					
+					\hline 
+					\endlastfoot
+					
+					\cellcolor{LightGreen}geolokacija & SERIAL	& geografska dužina i širina  	\\ \hline
+					p${\_}$kod & INT	&  post kod		\\ \hline 
+					drzava & VARCHAR	& naziv države 		\\ \hline
+					naselje & VARCHAR & naziv naselja  \\ \hline 
+					adresa	& VARCHAR & adresa na kojoj treba odraditi zahtjev	\\ \hline 	
+					
+				\end{longtabu}
+			
+			
+			
+				\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
+					
+					\hline \multicolumn{3}{|c|}{\textbf{Aut${\_}$Zahtj${\_}$Izvr}}	 \\[3pt] \hline
+					\endfirsthead
+					
+					\hline \multicolumn{3}{|c|}{\textbf{Aut${\_}$Zahtj${\_}$Izvr}}	 \\[3pt] \hline
+					\endhead
+					
+					\hline 
+					\endlastfoot
+					
+					\cellcolor{LightGreen}ID${\_}$Zahtjev & INT	& jedinstveni identifikator zahtjeva 	\\ \hline
+					\cellcolor{LightBlue}ID${\_}$Autor & INT	& jedinstveni identifikator autora zahtjeva 	\\ \hline
+					\cellcolor{LightBlue}ID${\_}$Izvrsitelj & SERIAL	& jedinstveni identifikator izvršitelja zahtjeva  	\\ \hline
+				
+					
+					
+				\end{longtabu}
+			
+				\begin{longtabu} to \textwidth {|X[7, l]|X[6, l]|X[20, l]|}
+					
+					\hline \multicolumn{3}{|c|}{\textbf{Kandidatura}}	 \\[3pt] \hline
+					\endfirsthead
+					
+					\hline \multicolumn{3}{|c|}{\textbf{Kandidatura}}	 \\[3pt] \hline
+					\endhead
+					
+					\hline 
+					\endlastfoot
+					
+					\cellcolor{LightGreen}ID${\_}$Kandidatura & SERIAL	& jedinstveni identifikator kandidature 	\\ \hline
+					godina & INT & godina kandidature  \\ \hline 
+					\cellcolor{LightBlue}ID${\_}$Korisnik & INT	& jedinstveni identifikator korisnika 	\\ \hline
+					
+				\end{longtabu}
+				
+				
+				\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
+					
+					\hline \multicolumn{3}{|c|}{\textbf{Ocjena}}	 \\[3pt] \hline
+					\endfirsthead
+					
+					\hline \multicolumn{3}{|c|}{\textbf{Ocjena }}	 \\[3pt] \hline
+					\endhead
+					
+					\hline 
+					\endlastfoot
+					
+					\cellcolor{LightGreen}ID${\_}$Ocjenitelj & INT	& jedinstveni identifikator ocjenitelja 	\\ \hline
+					\cellcolor{LightGreen}ID${\_}$Ocjenjeni & INT	& jedinstveni identifikator ocjenjenog 	\\ \hline
+					ocjena & INT	&  ocjena usluge		\\ \hline 
+					komentar & VARCHAR	& komentar ocjenitelja 		\\ \hline
+					
+					
+					
+				\end{longtabu}
+		
+		
 			\subsection{Dijagram baze podataka}
-				\textit{ U ovom potpoglavlju potrebno je umetnuti dijagram baze podataka. Primarni i strani ključevi moraju biti označeni, a tablice povezane. Bazu podataka je potrebno normalizirati. Podsjetite se kolegija "Baze podataka".}
+			
+			%unos slike
+			\begin{figure}[H]
+				\includegraphics[scale=0.65]{slike/dijagram2.jpeg} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+				\centering
+				\caption \newline E-R dijagram baze podataka
+				\label{fig:promjene}
+			\end{figure}
 			
 			\eject
 			

@@ -86,8 +86,6 @@
 \textbf{\textit{dio 1. revizije}}
 
 \subsubsection{Opis obrazaca uporabe}
-\textit{Funkcionalne zahtjeve razraditi u obliku obrazaca uporabe. Svaki obrazac je potrebno razraditi prema donjem predlošku. Ukoliko u nekom koraku može doći do odstupanja, potrebno je to odstupanje opisati i po mogućnosti ponuditi rješenje kojim bi se tijek obrasca vratio na osnovni tijek.}\\
-
 
 \noindent \underbar{\textbf{UC1 - Registracija}}
 \begin{packed_item}
@@ -233,13 +231,13 @@
 \noindent \underbar{\textbf{UC6.1.1 - Dodatni izvještaji }}
 \begin{packed_item}
 	\item \textbf{Glavni sudionik: }Registrirani korisnik, administrator
-	\item  \textbf{Cilj:}
+	\item  \textbf{Cilj:} Pregled dodatnih informacija o korisniku : ocjena, broj izvršenih i broj zadanih zahtjeva, rang na listi za najboljeg pomagača godine
 	\item  \textbf{Sudionici:} Baza podataka
 	\item  \textbf{Preduvjet:} Korisnik je prijavljen u sustav
 	\item  \textbf{Opis osnovnog tijeka:}
 	\item[] \begin{packed_enum}
-		\item 	
-		\item 	
+		\item Korisnik odabire opciju na profilu za pregled dodatnih informacija  
+		\item Otvara mu se prozor na kojem su vidljive dodatne informacije korisnika
 	\end{packed_enum}
 \end{packed_item}
 
@@ -344,7 +342,7 @@
 		\item Iz baze se dohvaća lista svih ispravno registriranih korisnika s osobnim podacima
 	\end{packed_enum}
 \end{packed_item}
-
+\newpage
 \noindent \underbar{\textbf{UC8.1 - Blokiranje korisnika}}
 \begin{packed_item}
 	\item \textbf{Glavni sudionik: }Administrator
@@ -478,7 +476,7 @@
 		\item 	Klikom na gumb „Blokiraj“ korisnik blokira zahtjev i on nestaje s liste aktivnik i nije ga moguće odabrati za izvršavanje. 
 	\end{packed_enum}
 \end{packed_item}
-
+\newpage
 \noindent \underbar{\textbf{UC12.3 - Označi izvršen}}
 \begin{packed_item}
 	\item \textbf{Glavni sudionik: }Registrirani korisnik
@@ -516,7 +514,7 @@
 		\item Nakon odabira zahtjeva kojeg korisnik želi izvršiti omogućuje se razmjena notifikacija radi dogovora oko izvršenja zahtjeva 
 	\end{packed_enum}
 \end{packed_item}
-
+\newpage
 \noindent \underbar{\textbf{UC15 - Sortiranje }}
 \begin{packed_item}
 	\item \textbf{Glavni sudionik: }Registrirani korisnik, administrator
@@ -533,19 +531,137 @@
 \end{packed_item}
 
 
-
+\newpage
 \subsubsection{Dijagrami obrazaca uporabe}
 
-\textit{Prikazati odnos aktora i obrazaca uporabe odgovarajućim UML dijagramom. Nije nužno nacrtati sve na jednom dijagramu. Modelirati po razinama apstrakcije i skupovima srodnih funkcionalnosti.}
-\eject		
+%unos slike
+\begin{figure}[H]
+	\includegraphics[scale=0.7]{slike/uc_funkcionalnosti_korisnika.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+	\centering
+	\caption \newline Dijagram obrasca uporabe, funkcionalnosti korisnika
+	\label{fig:promjene}
+\end{figure}
+
+%unos slike
+\begin{figure}[H]
+	\includegraphics[scale=0.6]{slike/uc_funkcionalnosti_administratora.jpg} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+	\centering
+	\caption \newline Dijagram obrasca uporabe, funkcionalnosti administratora
+	\label{fig:promjene}
+\end{figure}
+
+%unos slike
+\begin{figure}[H]
+	\includegraphics[scale=0.65]{slike/uc_profil.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+	\centering
+	\caption \newline Dijagram obrasca uporabe, razrada funkcionalnosti profila
+	\label{fig:promjene}
+\end{figure}		
+
+%unos slike
+\begin{figure}[H]
+	\includegraphics[scale=0.65]{slike/uc_odabir_zahtjeva.jpg} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+	\centering
+	\caption \newline Dijagram obrasca uporabe, prikaz aktivnosti vezanih za upravljanje zahtjeva
+	\label{fig:promjene}
+\end{figure}
+
+%unos slike
+\begin{figure}[H]
+	\includegraphics[scale=0.65]{slike/uc_upravljanje_zahtjevima.jpg} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+	\centering
+	\caption \newline Dijagram obrasca uporabe, prikaz aktivnosti vezanih za odabir zahtjeva
+	\label{fig:promjene}
+\end{figure}
+
+%unos slike
+\begin{figure}[H]
+	\includegraphics[scale=0.65]{slike/uc_filtriranje.jpg} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+	\centering
+	\caption \newline Dijagram obrasca uporabe, razrada funkcionalnosti filtriranja
+	\label{fig:promjene}
+\end{figure}
+
+\newpage
 
 \subsection{Sekvencijski dijagrami}
 
 \textbf{\textit{dio 1. revizije}}\\
 
-\textit{Nacrtati sekvencijske dijagrame koji modeliraju najvažnije dijelove sustava (max. 4 dijagrama). Ukoliko postoji nedoumica oko odabira, razjasniti s asistentom. Uz svaki dijagram napisati detaljni opis dijagrama.}
-\eject
+\noindent {\textbf{Obrazac uporabe UC1 - Registracija }}
+\newline\newline\textit {Korisnik šalje zahtjev za registracijom na sustav za primanje ili pružanje pomoći.
+	Upisom registracijskih podataka,poslužitelj validira primljene podatke od strane
+	korisnika.Ako je došlo do neuspješne validacije,poslužitelj o tome obavještava 
+	korisnika ispisom poruke pogreške.Ukoliko su podaci ispravno validirani na
+	strani poslužitelja,on prosljeđuje podatke prema bazi podataka.Baza podataka
+	provjerava postajanje korisnika s identičnim ključnim podacim(email,lozinka).
+	U slučaju postojanja korisnika s identičnim ključim podacima,baza podataka
+	dojavljuje pogrešku sustavu,koji ona poruku proslijeđuje korisniku.Ako je provjera
+	na strani baze uspješna,baza dojavljuje sustavu da je korisnik uspješno registriran,
+	dok sustav korisniku ispisuje poruku uspješnosti.}\\
 
+
+%unos slike
+\begin{figure}[H]
+	\includegraphics[scale=0.65]{slike/sekvencijski_dijagram_registracija.jpeg} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+	\centering
+	\caption \newline Sekvencijski dijagram za UC1
+	\label{fig:promjene}
+\end{figure}
+
+\newpage
+\noindent {\textbf{Obrazac uporabe UC6 - Profil }}
+\newline \newline {Korisnik prema poslužitelju šalje zahtjev za prikazom korisničkog profila.Poslužitelj
+	iz baze dohvaća osnovne informacije o korisniku,komentare korisnika te dohvaća 
+	visoko ocijenje korisnike korisnika koji je zatražio prikaz profila.Poslužitelj na temelju
+	visoko ocijenjenih korisnika pretražuje eventualne njihove ocijene prema korisniku
+	čiji se profil želi dohvatit i tako izgrađuje lanac povjerenja.Poslužitelj vraća
+	osnovne informacije,komentare te lanac povjerenja korisniku koji je zatražio
+	dohvat profila.}\\
+\newline
+%unos slike
+\begin{figure}[H]
+	\includegraphics[scale=0.48]{slike/sekvencijski_dijagram_pregled_profila.jpeg} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+	\centering
+	\caption \newline Sekvencijski dijagram za UC6
+	\label{fig:promjene}
+\end{figure}
+
+\newpage
+\noindent {\textbf{Obrazac uporabe UC3 - Zadavanje zahtjev za pomoć }}
+\newline \newline  {Korisnik(autor) želi zadati novi zahtjev za pomoć.Unosi osnovne informacije koje su 
+	potrebne za zahtjev te opcionalno unosi lokaciju ako ju smatra bitnom za zahtjev.
+	Korisiku željenu lokaciju predaje poslužitlju u obliku geografaskih kordinata ili poslužitelj može
+	automatski pomoću servisa za određivanje lokacije odrediti geografsku lokaciju uređaja s kojeg je zahtjev 
+	zadan.Poslužitelj validira unesene informacije,ukoliko su unesene informacije neuspješno validiran poslužitelj
+	dojavljuje pogrešku korisniku.Na kraju korisnik potvrđuje svoj zahtjev za pomoći.Poslužitelj prima zadani zahtjev 
+	te prosljeđuje pohranu zahtjeva prema bazi podataka.Baza podataka potvrđuje uspješnu pohranu zahtjeva
+	dok poslužitlej korisniku ispisuje poruku uspješnosti.}\\
+%unos slike
+\begin{figure}[H]
+	\includegraphics[scale=0.45]{slike/sekvencijski_dijagram_zadavanje_zahtjeva.jpeg} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+	\centering
+	\caption \newline Sekvencijski dijagram za UC3
+	\label{fig:promjene}
+\end{figure}
+
+\newpage
+\noindent {\textbf{Obrazac uporabe UC13 - Odabir zahtjeva za pomoć }}
+\newline \newline  {Korisnik šalje poslužitelju zahtjev za dohvat liste aktivnih zahtjeva.Poslužitelj
+	dohvaća listu aktivnih zahtjeva iz baze podataka.Korisinik pregledava listu
+	aktivnih zahtjeva uz mogućnost pregleda profila korisnika koji je zadao zahtjev.
+	Korisnik odabire zahtjev s liste i prihvaća ga.Poslužitelj prima prihvaćanje zahtjeva
+	te prosljeđuje promjenu u bazu podataka.Poslužitelj obavještava korisnika o uspješnoj pohrani 
+	prihvaćanja zahtjeva.}\\
+%unos slike
+\begin{figure}[H]
+	\includegraphics[scale=0.48]{slike/sekvencijski_dijagram_prihavcanje_zahtjeva.jpeg} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+	\centering
+	\caption \newline Sekvencijski dijagram za UC13
+	\label{fig:promjene}
+\end{figure}
+
+\newpage
 \section{Ostali zahtjevi}
 
 \textbf{\textit{dio 1. revizije}}\\
