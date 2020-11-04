@@ -89,10 +89,12 @@
 				\end{longtabu}
 			
 			
-			
+		    \textbf{ Izvršavanje}
+		    \item Ovaj entitet sadržava sve važne informacije o izvršiteljima zahtjeva i podacima koji im omogućavaju samo izvršavanje. Sadrži atribute: ID zahtjeva koji izvršavaju, ID izvršitelja, primljena obavijest sa nužnim podacima o autoru, ocjena i komentar. Ovaj entitet je u vezi \emph{Many-to-One} sa korisnikom preko atributa ID Izvršitelja i u vezi \emph{One-to-One} sa entitetom Zahtjev preko atributa ID Zahtjev.
+
 				\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
 					
-					\hline \multicolumn{3}{|c|}{\textbf{Aut${\_}$Zahtj${\_}$Izvr}}	 \\[3pt] \hline
+					\hline \multicolumn{3}{|c|}{\textbf{Izvršavanje}}	 \\[3pt] \hline
 					\endfirsthead
 					
 					\hline \multicolumn{3}{|c|}{\textbf{Aut${\_}$Zahtj${\_}$Izvr}}	 \\[3pt] \hline
@@ -108,7 +110,9 @@
 					
 					
 				\end{longtabu}
-			
+			\textbf{ Kandidatura}
+		    \item Ovaj entitet sadržava sve važne informacije o kandidaturi za korisnika godine. Sadrži atribute: godina kandidature, geografska duljina i širina. Ovaj entitet je u vezi \emph{Many-to-One} sa entitetom Kandidiranje preko atributa godina kandidature, geografska duljina i širina i u vezi \emph{Many-to-One} sa Lokacijom preko atributa geografska duljina i širina.
+
 				\begin{longtabu} to \textwidth {|X[7, l]|X[6, l]|X[20, l]|}
 					
 					\hline \multicolumn{3}{|c|}{\textbf{Kandidatura}}	 \\[3pt] \hline
@@ -126,7 +130,11 @@
 					
 				\end{longtabu}
 				
-				
+				\textbf{Kandidiranje}
+		    \item Ovaj entitet sadržava sve važne informacije o korisniku koji se kandidira za korisnika godine. Sadrži atribute: ID korisnika, godina kandidature, geografska duljina i širina. Ovaj entitet je u vezi \emph{One-to-Many} sa entitetom Kandidatura preko atributa godina kandidature, geografska duljina i širina te u vezi \emph{One-to-One} sa entitetom Korisnik preko atributa ID Korisnika.
+		    \newline
+		        \textbf{Ocjenjivanje}
+		    \item Ovaj entitet sadržava sve važne informacije o međusobnom ocjenjivanju korisnika. Sadrži atribute: ID ocjenjenog korisnika te ID ocjenjivača, ocjena i komentar. Ovaj entitet je u vezi \emph{Many-to-One} sa entitetom Korisnik preko atributa ID ocjenjenog korisnika i ID ocjenjivača.
 				\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
 					
 					\hline \multicolumn{3}{|c|}{\textbf{Ocjena}}	 \\[3pt] \hline
