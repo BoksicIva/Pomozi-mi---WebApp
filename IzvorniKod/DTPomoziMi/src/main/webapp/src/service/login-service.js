@@ -7,7 +7,7 @@ class LoginService {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-        onUploadProgress,
+        
       });
     }
   

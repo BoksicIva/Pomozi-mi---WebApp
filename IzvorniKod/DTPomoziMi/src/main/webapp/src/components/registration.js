@@ -1,5 +1,5 @@
 import React from "react";
-import "./login.css";
+import "./log-reg.css";
 import "../index.css";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 
 export const Registration = () => (
   <div className="app">
-    <div className="empthy"></div>
+    <div className="empthy1"></div>
     <div className="container">
       <Card className="crd col-lg-7 mx-auto">
         <Card.Title className="title">
@@ -135,7 +135,7 @@ export const Registration = () => (
                     <input
                       id="password"
                       placeholder="Enter your password"
-                      type="text"
+                      type="password"
                       value={values.password}
                       onChange={handleChange}
                       onBlur={handleBlur}

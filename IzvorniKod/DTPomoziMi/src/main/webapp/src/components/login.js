@@ -1,5 +1,5 @@
 import React from "react";
-import './login.css';
+import './log-reg.css';
 import '../index.css';
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -86,7 +86,7 @@ export const Login = () => (
                                         <input
                                             id="password"
                                             placeholder="Enter your password"
-                                            type="text"
+                                            type="password"
                                             value={values.password}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
