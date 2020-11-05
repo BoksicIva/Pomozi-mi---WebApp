@@ -1,5 +1,6 @@
 package NULL.DTPomoziMi.model;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 
 public class User {
@@ -9,9 +10,37 @@ public class User {
     private String lastName;
     private String password; // TODO length password encoder u bazi...
     private String email;
-    private boolean enabled;
-
     private Role role;
+    private boolean enabled;
+    private String token;
+
+    private BigDecimal longitude; //dužina
+    private BigDecimal latitude; //širina
+
+    public User(Long id, String firstName, String lastName, String password, String email, Role role, boolean enabled, String token, BigDecimal longitude, BigDecimal latitude) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.enabled = enabled;
+        this.token = token;
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
+
+    public User(String firstName, String lastName, String password, String email, Role role, boolean enabled, String token, BigDecimal longitude, BigDecimal latitude) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.enabled = enabled;
+        this.token = token;
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
 
     public Long getId() {
         return id;
@@ -53,14 +82,6 @@ public class User {
         this.email = email;
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
     public Role getRole() {
         return role;
     }
@@ -69,15 +90,35 @@ public class User {
         this.role = role;
     }
 
-    @Override
-    public String toString() {
-        return "User{" + "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                ", enabled=" + enabled +
-                ", role=" + role +
-                '}';
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public BigDecimal getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
+
+    public BigDecimal getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
     }
 }

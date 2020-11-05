@@ -18,10 +18,10 @@ public class CsrfTokenRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         MutableHttpServletRequest mutableRequest = new MutableHttpServletRequest(request);
 
-            String token = CookieUtil.getValue(request,"X-CSRF-COOKIE");// TODO Constants
+            String token = CookieUtil.getValue(request,"X-CSRF-COOKIE");// TODO JwtConstants
 
             if(token != null && !token.isBlank()){
-                // TODO Constants
+                // TODO JwtConstants
                 mutableRequest.putHeader("X-CSRF-TOKEN", token);
             }
 

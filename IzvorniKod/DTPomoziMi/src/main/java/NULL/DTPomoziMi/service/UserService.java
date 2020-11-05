@@ -9,8 +9,4 @@ public interface UserService {
 
     User getUserByEmail(String email);
 
-    void switchToken(String email, String token);
-
-    void deleteTokenByUsername(String email);
-
 }

@@ -1,13 +1,13 @@
-package NULL.DTPomoziMi.config;
+package NULL.DTPomoziMi.security.config;
 
-import NULL.DTPomoziMi.DAO.UserDAO;
 import NULL.DTPomoziMi.model.Role;
+import NULL.DTPomoziMi.properties.JwtConstants;
 import NULL.DTPomoziMi.web.filters.CsrfTokenRequestFilter;
 import NULL.DTPomoziMi.web.filters.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,12 +18,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
 
 
 @Configuration
-@Order(2)
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -31,13 +31,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService myUserDetailsService;
 
     @Autowired
-    private UserDAO userDAO;
-
-    @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
     @Autowired
     private CsrfTokenRequestFilter csrfTokenRequestFilter;
+
+    @Autowired
+    private LogoutSuccessHandler myLogoutHandler;
 
     @Bean
     @Override
@@ -56,18 +56,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .csrf().csrfTokenRepository(cookieCsrfTokenRepository())
+                .csrf().csrfTokenRepository(cookieCsrfTokenRepository()).ignoringAntMatchers("/h2/**") // TODO makni h2
                 .and()
                 .authorizeRequests()
+                .antMatchers("/h2/**").permitAll() // TODO makni h2
                 .antMatchers("/auth/*").permitAll()
+                .antMatchers("/getCsrf").permitAll()
                 .anyRequest().hasAnyRole(Role.ROLE_USER.toString().substring(5), Role.ROLE_ADMIN.toString().substring(5))
                 .and()
-                .formLogin().disable();
-                // .logout().addLogoutHandler().deleteCookies().
+                .formLogin().disable()
+                .logout().logoutUrl("/logout")
+                    .logoutSuccessHandler(myLogoutHandler);
 
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(csrfTokenRequestFilter, CsrfFilter.class);
+        http.headers().frameOptions().disable(); // TODO h2 makni
 
     }
 

@@ -1,7 +1,8 @@
 package NULL.DTPomoziMi.web.controller;
 
 import NULL.DTPomoziMi.jwt.JwtUtil;
-import NULL.DTPomoziMi.properties.Constants;
+import NULL.DTPomoziMi.properties.JwtConstants;
+import NULL.DTPomoziMi.service.TokenService;
 import NULL.DTPomoziMi.service.UserService;
 import NULL.DTPomoziMi.util.CookieUtil;
 import NULL.DTPomoziMi.web.DTO.UserDTO;
@@ -30,22 +31,24 @@ import java.util.List;
 @RequestMapping("/auth")
 public class AuthController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
     @Autowired
-    UserService userService;
+    private UserService userService;
+
+    @Autowired
+    private TokenService tokenService;
+
     @Autowired
     private AuthenticationManager authenticationManager;
+
     @Autowired
     private MessageSource messageSource;
+
     @Autowired
     private JwtUtil jwtUtil;
 
     @Resource(name = "myUserDetailsService")
     private UserDetailsService userDetailsService;
-
-    @GetMapping("/getCsrf") // TODO makni
-    public ResponseEntity<?> get(){
-        return ResponseEntity.ok("evo");
-    }
 
     @PostMapping("/registration")
     public ResponseEntity<?> register(@Valid UserDTO user, BindingResult bindingResult, HttpServletRequest request) {
@@ -61,43 +64,34 @@ public class AuthController {
 
         userService.registerUser(user);
 
-        //TODO registraton
         return ResponseEntity.ok(messageSource.getMessage("auth.registration.success", null,"Registration successful", request.getLocale()));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam("email") String email, @RequestParam("password") String password,
 								   HttpServletResponse response) throws Exception {
-
         logger.debug("Login with username: {}", email);
+
+        email = email == null ? null : email.trim();
 
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         } catch (BadCredentialsException e) {
+            logger.debug("Incorect username: {} or password", email);
             return new ResponseEntity<String>("Incorect username or password", HttpStatus.UNAUTHORIZED); // TODO promjeni
         }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
         String token = jwtUtil.generateToken(userDetails);
+        String refreshToken = jwtUtil.generateRefreshToken(userDetails);
 
-        userService.switchToken(userDetails.getUsername(), token);
+        tokenService.updateToken(userDetails.getUsername(), refreshToken);
 
-        CookieUtil.create(response, Constants.JWT_COOKIE_NAME, token, false,-1);
+        CookieUtil.create(response, JwtConstants.JWT_COOKIE_NAME, token, false, -1);
+        CookieUtil.create(response, JwtConstants.JWT_REFRESH_COOKIE_NAME, refreshToken, false, -1);
 
         return ResponseEntity.ok("User login successful!");
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response){
-        CookieUtil.clear(response, Constants.JWT_COOKIE_NAME);
-
-        String token = CookieUtil.getValue(request, Constants.JWT_COOKIE_NAME);
-        String username = jwtUtil.extractUsername(token);
-
-        userService.deleteTokenByUsername(username);
-
-        return ResponseEntity.ok().build();
     }
 
 }

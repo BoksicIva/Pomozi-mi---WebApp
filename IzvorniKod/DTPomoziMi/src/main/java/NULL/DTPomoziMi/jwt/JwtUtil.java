@@ -1,7 +1,9 @@
 package NULL.DTPomoziMi.jwt;
 
-import NULL.DTPomoziMi.MongoRepo.JwtMongoRepository;
-import NULL.DTPomoziMi.properties.Constants;
+import NULL.DTPomoziMi.DAO.UserDAO;
+import NULL.DTPomoziMi.properties.JwtConstants;
+import NULL.DTPomoziMi.service.TokenService;
+import NULL.DTPomoziMi.util.MyCollectors;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -12,15 +14,16 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 @Component
 public class JwtUtil {
-    private static final int EXPIRATION = 1000 * 60 * 60 * 2; // 2h
 
     @Autowired
-    private JwtMongoRepository jwtMongoRepository;
+    private UserDAO userDAO;
+
+    @Autowired
+    private TokenService tokenService;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -30,13 +33,15 @@ public class JwtUtil {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    public String extractRole(String token) { return extractClaim(token, claims -> claims.get("role", String.class));}
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(Constants.SECRET_KEY).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(JwtConstants.SECRET_KEY).parseClaimsJws(token).getBody();
     }
 
     private boolean isTokenExpired(String token) {
@@ -44,28 +49,43 @@ public class JwtUtil {
     }
 
     public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role",
+                    userDetails.getAuthorities()
+                    .stream()
+                    .map(grantedAuthority -> grantedAuthority.getAuthority())
+                    .collect(MyCollectors.toSingleton()
+                ));
+        return createToken(claims, userDetails.getUsername(), JwtConstants.JWT_EXPIRATION);
+    }
+
+    public String generateToken(Map<String, Object> claims, String username) {
+        return createToken(claims, username, JwtConstants.JWT_EXPIRATION);
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>(); // payload ... za sada prazno... moze ic sta god hoces spremit
-        return createToken(claims, userDetails.getUsername());
+        return createToken(claims, userDetails.getUsername(), JwtConstants.JWT_REFRESH_EXPIRATION);
     }
 
-    private String createToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(SignatureAlgorithm.HS384, Constants.SECRET_KEY).compact();
+    private String createToken(Map<String, Object> claims, String subject, Long expiration) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(SignatureAlgorithm.HS384, JwtConstants.SECRET_KEY)
+                .compact();
     }
 
-    public boolean validateToken(String token, UserDetails userDetails) {
-        String savedToken = null;
-        try{
-           savedToken = jwtMongoRepository.findById(userDetails.getUsername()).get().getToken();
-        }catch (NoSuchElementException e){}
-
-        if(!token.equals(savedToken))
-            return false;
-
+    public boolean validateToken(String token) {
         String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return !isTokenExpired(token);
     }
 
+    public boolean validateRefreshToken(String token) {
+        String username = extractUsername(token);
+        return (!isTokenExpired(token) && token.equals(tokenService.getTokenByEmail(username)));
+    }
 
 }

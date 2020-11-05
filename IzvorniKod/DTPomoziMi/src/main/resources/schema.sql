@@ -19,14 +19,14 @@ CREATE TABLE Kandidatura
 
 CREATE TABLE Korisnik
 (
-  ID_Korisnik AUTO_INCREMENT NOT NULL,
-  ime VARCHAR(30) NOT NULL,
-  prezime VARCHAR(30) NOT NULL,
+  ID_Korisnik INT AUTO_INCREMENT NOT NULL,
+  ime VARCHAR(50) NOT NULL,
+  prezime VARCHAR(50) NOT NULL,
   lozinka VARCHAR(70) NOT NULL,
   email VARCHAR(250) NOT NULL,
   uloga VARCHAR(15) NOT NULL,
   aktivan BOOLEAN NOT NULL,
-  token VARCHAR(500) NOT NULL,
+  token VARCHAR(500),
   duljina NUMERIC(17,14),
   sirina NUMERIC(17,14),
   PRIMARY KEY (ID_Korisnik),
@@ -36,8 +36,8 @@ CREATE TABLE Korisnik
 
 CREATE TABLE Zahtjev
 (
-  ID_Zahtjev AUTO_INCREMENT NOT NULL,
-  opis VARCHAR(250) NOT NULL,
+  ID_Zahtjev INT AUTO_INCREMENT NOT NULL,
+  opis VARCHAR(500) NOT NULL,
   datum DATE,
   vrijeme TIME,
   status VARCHAR(15) NOT NULL,
@@ -45,34 +45,32 @@ CREATE TABLE Zahtjev
   duljina NUMERIC(17,14),
   sirina NUMERIC(17,14),
   ID_Autor INT NOT NULL,
+  ID_Izvrsitelj INT,
   PRIMARY KEY (ID_Zahtjev),
   FOREIGN KEY (duljina, sirina) REFERENCES Lokacija(duljina, sirina),
-  FOREIGN KEY (ID_Autor) REFERENCES Korisnik(ID_Korisnik)
+  FOREIGN KEY (ID_Autor) REFERENCES Korisnik(ID_Korisnik),
+  FOREIGN KEY (ID_Izvrsitelj) REFERENCES Korisnik(ID_Korisnik)
 );
 
-CREATE TABLE Ocijenjivanje
+CREATE TABLE Ocjenjivanje
 (
-  ocijena INT NOT NULL,
-  komentar VARCHAR(150),
-  ID_Ocijenjeni INT NOT NULL,
-  ID_Ocijenjivac INT NOT NULL,
-  PRIMARY KEY (ID_Ocijenjeni, ID_Ocijenjivac),
-  FOREIGN KEY (ID_Ocijenjeni) REFERENCES Korisnik(ID_Korisnik),
-  FOREIGN KEY (ID_Ocijenjivac) REFERENCES Korisnik(ID_Korisnik)
+  ocjena INT NOT NULL,
+  komentar VARCHAR(250),
+  ID_Ocjenjivanje INT NOT NULL,
+  ID_Ocjenjivac INT NOT NULL,
+  ID_Ocjenjeni INT NOT NULL,
+  PRIMARY KEY (ID_Ocjenjivanje),
+  FOREIGN KEY (ID_Ocjenjivac) REFERENCES Korisnik(ID_Korisnik),
+  FOREIGN KEY (ID_Ocjenjeni) REFERENCES Korisnik(ID_Korisnik),
+  CONSTRAINT CHK_OCJENA CHECK (OCJENA BETWEEN 1 AND 5)
 );
 
 CREATE TABLE Izvrsavanje
 (
-  primljeno BOOLEAN NOT NULL,
-  ocijena INT,
-  komentar VARCHAR(150),
+  primljenNotif BOOLEAN NOT NULL,
   ID_Zahtjev INT NOT NULL,
-  ID_Izvrsitelj INT NOT NULL,
-  PRIMARY KEY (ID_Zahtjev, ID_Izvrsitelj),
-  FOREIGN KEY (ID_Zahtjev) REFERENCES Zahtjev(ID_Zahtjev),
-  FOREIGN KEY (ID_Izvrsitelj) REFERENCES Korisnik(ID_Korisnik),
-  CONSTRAINT CHK_OCIJENA CHECK (ocijena BETWEEN 1 AND 5)
-  /*check ocijena not null when status izvrsen...*/
+  PRIMARY KEY (ID_Zahtjev),
+  FOREIGN KEY (ID_Zahtjev) REFERENCES Zahtjev(ID_Zahtjev)
 );
 
 CREATE TABLE Kandidiranje
@@ -84,4 +82,14 @@ CREATE TABLE Kandidiranje
   PRIMARY KEY (godina, duljina, sirina, ID_Korisnik),
   FOREIGN KEY (godina, duljina, sirina) REFERENCES Kandidatura(godina, duljina, sirina),
   FOREIGN KEY (ID_Korisnik) REFERENCES Korisnik(ID_Korisnik)
+);
+
+CREATE TABLE OcjenaIzvrsavanja
+(
+  ID_Zahtjev INT NOT NULL,
+  ID_Ocjenjivanje INT NOT NULL,
+  PRIMARY KEY (ID_Zahtjev, ID_Ocjenjivanje),
+  FOREIGN KEY (ID_Zahtjev) REFERENCES Izvrsavanje(ID_Zahtjev),
+  FOREIGN KEY (ID_Ocjenjivanje) REFERENCES Ocjenjivanje(ID_Ocjenjivanje)
+  /*constraint za 1 zahtjev 2 ocijene...*/
 );

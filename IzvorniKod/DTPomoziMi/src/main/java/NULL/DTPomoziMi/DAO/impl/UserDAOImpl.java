@@ -26,21 +26,24 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User saveUser(User user) {
-        String sql = "INSERT into appUser (firstName, lastName, email, password, role, enabled) values (?,?,?,?,?,?)";
+        String sql = "INSERT into KORISNIK (IME, PREZIME, LOZINKA, EMAIL, ULOGA, AKTIVAN, TOKEN, DULJINA, SIRINA) values (?,?,?,?,?,?,?,?,?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         PreparedStatementCreatorFactory pscf = new PreparedStatementCreatorFactory(
-                sql, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.BOOLEAN);
+                sql, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.BOOLEAN, Types.VARCHAR, Types.NUMERIC, Types.NUMERIC);
 
         pscf.setReturnGeneratedKeys(true);
 
         PreparedStatementCreator psc = pscf.newPreparedStatementCreator(Arrays.asList(
                 user.getFirstName(),
                 user.getLastName(),
-                user.getEmail(),
                 user.getPassword(),
+                user.getEmail(),
                 user.getRole().toString(),
-                true
+                user.isEnabled(),
+                user.getToken(),
+                user.getLongitude(),
+                user.getLatitude()
         ));
 
         jdbcTemplate.update(psc, keyHolder);
@@ -52,28 +55,26 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User getUserByEmail(String email) {
-        String sql = "SELECT * FROM appUser WHERE email = ?";
-
-        email = email == null ? null : email.trim();
+        String sql = "SELECT * FROM KORISNIK WHERE EMAIL = ?";
 
         try {
             User user = jdbcTemplate.queryForObject(sql, new Object[]{email}, new RowMapper<User>() {
                 @Override
                 public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    User user = new User();
-
-                    user.setId(rs.getLong("id"));
-                    user.setFirstName(rs.getString("lastName"));
-                    user.setLastName(rs.getString("firstName"));
-                    user.setPassword(rs.getString("password"));
-                    user.setEmail(rs.getString("email"));
-                    user.setEnabled(true); // TODO
-                    user.setRole(Role.valueOf(rs.getString("role")));
-
-                    return user;
+                    return new User(
+                            rs.getLong("ID_KORISNIK"),
+                            rs.getString("IME"),
+                            rs.getString("PREZIME"),
+                            rs.getString("LOZINKA"),
+                            rs.getString("EMAIL"),
+                            Role.valueOf(rs.getString("ULOGA")),
+                            rs.getBoolean("AKTIVAN"),
+                            rs.getString("TOKEN"),
+                            rs.getBigDecimal("DULJINA"),
+                            rs.getBigDecimal("SIRINA")
+                    );
                 }
             });
-
             return user;
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;

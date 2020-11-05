@@ -1,8 +1,5 @@
 package NULL.DTPomoziMi.service.impl;
-
 import NULL.DTPomoziMi.DAO.UserDAO;
-import NULL.DTPomoziMi.MongoRepo.JwtModel;
-import NULL.DTPomoziMi.MongoRepo.JwtMongoRepository;
 import NULL.DTPomoziMi.exception.UserAlreadyExistException;
 import NULL.DTPomoziMi.model.Role;
 import NULL.DTPomoziMi.model.User;
@@ -17,52 +14,37 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    private UserDAO userDao;
+    private UserDAO userDAO;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private JwtMongoRepository jwtMongoRepository;
-
     @Override
     public User registerUser(UserDTO user) {
-        if(userDao.getUserByEmail(user.getEmail()) != null)
+        if(userDAO.getUserByEmail(user.getEmail()) != null)
             throw new UserAlreadyExistException("User with email address: " + user.getEmail() + " already exists!");
 
-        User newUser = new User();
+        User newUser = new User(
+                user.getFirstName(),
+                user.getLastName(),
+                passwordEncoder.encode(user.getPassword()),
+                user.getEmail(),
+                Role.ROLE_USER,
+                true,
+                null,
+                user.getLongitude(),
+                user.getLatitude()
+        );
 
-        newUser.setEmail(user.getEmail().trim());
-        newUser.setPassword(passwordEncoder.encode(user.getPassword()));
-        newUser.setFirstName(user.getEmail().trim());
-        newUser.setLastName(user.getLastName().trim());
-        newUser.setRole(Role.ROLE_USER);
-        newUser.setEnabled(true); // TODO enabled
-
-        return  userDao.saveUser(newUser);
+        return  userDAO.saveUser(newUser);
 
     }
 
     @Override
     public User getUserByEmail(String email) {
-        return userDao.getUserByEmail(email);
-    }
+        email = email == null ? null : email.trim();
 
-    @Override
-    @Transactional
-    public void switchToken(String email, String token) {
-        jwtMongoRepository.deleteById(email);
-
-        JwtModel jwtModel = new JwtModel();
-        jwtModel.setEmail(email);
-        jwtModel.setToken(token);
-
-        jwtMongoRepository.save(jwtModel);
-    }
-
-    @Override
-    public void deleteTokenByUsername(String email){
-        jwtMongoRepository.deleteById(email);
+        return userDAO.getUserByEmail(email);
     }
 
 }

@@ -4,6 +4,7 @@ import NULL.DTPomoziMi.validation.MatchPassword;
 import NULL.DTPomoziMi.validation.ValidPassword;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.math.BigDecimal;
 
 @MatchPassword(message = "{UserDTO.MatchPassword}")
 public class UserDTO {
@@ -17,7 +18,6 @@ public class UserDTO {
 
     @ValidPassword
     private String password;
-
     private String secondPassword;
 
     // TODO valid email i vracanje validacijskih errora
@@ -25,19 +25,22 @@ public class UserDTO {
     @Size(min = 1, message = "{Size.userDTO.email}")
     private String email;
 
-    private Integer role;
+    // TODO validacija duljine i sirine...
+    private BigDecimal longitude;
+    private BigDecimal latitude;
 
     public UserDTO() {
         super();
     }
 
-    public UserDTO(String firstName, String lastName, String password, String secondPassword, String email, Integer role) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public UserDTO(String firstName,  String lastName, String password, String secondPassword, String email, BigDecimal longitude, BigDecimal latitude) {
+        setFirstName(firstName);
+        setLastName(lastName);
         this.password = password;
         this.secondPassword = secondPassword;
-        this.email = email;
-        this.role = role;
+        setEmail(email);
+        this.longitude = longitude;
+        this.latitude = latitude;
     }
 
     public String getFirstName() {
@@ -45,6 +48,7 @@ public class UserDTO {
     }
 
     public void setFirstName(String firstName) {
+        firstName = firstName == null ? null : firstName.trim();
         this.firstName = firstName;
     }
 
@@ -53,6 +57,7 @@ public class UserDTO {
     }
 
     public void setLastName(String lastName) {
+        lastName = lastName == null ? null : lastName.trim();
         this.lastName = lastName;
     }
 
@@ -77,25 +82,23 @@ public class UserDTO {
     }
 
     public void setEmail(String email) {
+        email = email == null ? null : email.trim();
         this.email = email;
     }
 
-    public Integer getRole() {
-        return role;
+    public BigDecimal getLongitude() {
+        return longitude;
     }
 
-    public void setRole(Integer role) {
-        this.role = role;
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
     }
 
-    @Override
-    public String toString() {
-        return "UserDTO{" + "firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", password='" + password + '\'' +
-                ", secondPassword='" + secondPassword + '\'' +
-                ", email='" + email + '\'' +
-                ", role=" + role +
-                '}';
+    public BigDecimal getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
     }
 }
