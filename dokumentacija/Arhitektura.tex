@@ -23,6 +23,9 @@
 		
 			\subsection{Opis tablica}
 			
+					    \textbf{ Korisnik}
+		    \item Ovaj entitet sadržava sve važne informacije o korisniku aplikacije. Sadrži atribute: ID${\_}$Korisnika ,ime ,prezime,
+		     email, lozinku,ulogu,aktivan,token te duljinu i sirinu. Ovaj entitet je u vezi \emph{One-to-Many} s entitom Izvršavanje preko atributa ID${\_}$Korisnika, u vezi \emph{One-to-Many} s entitetom Zahtjev preko atributa ID${\_}$Korisnika,u vezi s Lokacijom prkeo atributa duljina i širina, u vezi s entitetom Kandidiranje preko atributa ID${\_}$Korisnika te u vezi \emph{One-to-Many} s entitetom Ocjenjivanje preko atributa ID${\_}$Korisnika gdje korisnik ima dvije uloge. 
 				
 				\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
 					
@@ -41,11 +44,16 @@
 					email & VARCHAR & e-mail adresa korisnika  \\ \hline 
 					lozinka	& VARCHAR & hash lozinke 	\\ \hline 
 					uloga	& VARCHAR & uloga korisnika (administrator ili registrirani korisnik)  	\\ \hline 
-					\cellcolor{LightBlue} geolokacija	& VARCHAR & geografska dužina i širina  	\\ \hline 
+					aktivan & BOOLEAN & status korisnika \\ \hline
+					token & VARCHAR & ??? \\ \hline
+					duljina & NUMERIC & geografska duljina \\ \hline
+					
+					\cellcolor{LightBlue} sirina	& NUMERIC & geografska širina  \\ \hline 
 					
 					
 				\end{longtabu}
-			
+			    \textbf{ Zahtjev}
+		    \item Ovaj entitet sadržava sve važne informacije o korisnikovu zahtjevu. Sadrži atribute: ID${\_}$Zahtjev ,opis,datum,vrijeme,status,brojMobitela,ID${\_}$Autora,duljinu i širinu.Ovaj entitet je u vezi s entitom Lokacija preko atributa sirina i duljina,također u vezi  s entitetom Izvrsavanje preko atributa ID${\_}$Zahtjev te u vezi \emph{Many-to-One} s entitetom Korisnik preko ID${\_}$Korisnika.  
 			
 				\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
 					
@@ -60,14 +68,18 @@
 					
 					\cellcolor{LightGreen}ID${\_}$Zahtjev & SERIAL	&  jedinstveni identifikator korisnika	 	\\ \hline
 					opis & VARCHAR	& opis zahtjeva 		\\ \hline 
-					date & DATE	& datum do kada se treba izvršiti zahtjev  		\\ \hline
+					datum & DATE	& datum do kada se treba izvršiti zahtjev  		\\ \hline
 					vrijeme & TIME & vrijeme do kada se treba izvršiti zahtjev \\ \hline 
-					status	& VARCHAR & status zahtjeva  	\\ \hline 
-					\cellcolor{LightBlue} geolokacija	& VARCHAR &geografska dužina i širina    	\\ \hline 
+					status	& VARCHAR & status zahtjeva  	\\ \hline
+					brojMobitela & VARCHAR & broj mobitela autora zahtjeva? \\ \hline
+					ID${\_}$Autora & SERIAL & jedinstveni identifikator korisnika(autora zahtjeva) \\ \hline
+					duljina & NUMERIC & geografska duljina \\ \hline
+					\cellcolor{LightBlue} sirina & NUMERIC & geografsk širina    	\\ \hline 
 					
 					
 				\end{longtabu}
-			
+						    \textbf{ Lokacija}
+		    \item Ovaj entitet sadržava sve važne informacije o lokaciji. Sadrži atribute: geografsku duljinu i geografsku širinu, ime drzave, naselje te adresu.Ovaj entitet je u vezi s entitom Zahtjev preko atributa sirina i duljina,također u vezi  s entitetom Korisnikom preko atributa duljina i sirina te u vezi \emph{One-to-Many} s entitetom Kandidatura preko duljina i sirina. 
 			
 				\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
 					
@@ -80,11 +92,11 @@
 					\hline 
 					\endlastfoot
 					
-					\cellcolor{LightGreen}geolokacija & SERIAL	& geografska dužina i širina  	\\ \hline
-					p${\_}$kod & INT	&  post kod		\\ \hline 
+					\cellcolor{LightGreen}duljina & NUMERIC	& geografska dužina \\ \hline
+					sirina & NUMERIC & geografska sirina \\ \hline
 					drzava & VARCHAR	& naziv države 		\\ \hline
 					naselje & VARCHAR & naziv naselja  \\ \hline 
-					adresa	& VARCHAR & adresa na kojoj treba odraditi zahtjev	\\ \hline 	
+					\cellcolor{LightBlue} adresa	& VARCHAR & adresa na kojoj treba odraditi zahtjev	\\ \hline 	
 					
 				\end{longtabu}
 			
