@@ -26,11 +26,11 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User saveUser(User user) {
-        String sql = "INSERT into KORISNIK (IME, PREZIME, LOZINKA, EMAIL, ULOGA, AKTIVAN, TOKEN, DULJINA, SIRINA) values (?,?,?,?,?,?,?,?,?)";
+        String sql = "INSERT into KORISNIK (IME, PREZIME, LOZINKA, EMAIL, AKTIVAN, TOKEN, DULJINA, SIRINA) values (?,?,?,?,?,?,?,?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         PreparedStatementCreatorFactory pscf = new PreparedStatementCreatorFactory(
-                sql, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.BOOLEAN, Types.VARCHAR, Types.NUMERIC, Types.NUMERIC);
+                sql, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.BOOLEAN, Types.VARCHAR, Types.NUMERIC, Types.NUMERIC);
 
         pscf.setReturnGeneratedKeys(true);
 
@@ -39,7 +39,6 @@ public class UserDAOImpl implements UserDAO {
                 user.getLastName(),
                 user.getPassword(),
                 user.getEmail(),
-                user.getRole().toString(),
                 user.isEnabled(),
                 user.getToken(),
                 user.getLongitude(),
@@ -55,7 +54,8 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User getUserByEmail(String email) {
-        String sql = "SELECT * FROM KORISNIK WHERE EMAIL = ?";
+        String sql = "SELECT KORISNIK.ID_KORISNIK, IME, TOKEN, PREZIME, LOZINKA, EMAIL, AKTIVAN, NAZIV, DULJINA, SIRINA"
+        		+ " FROM KORISNIK NATURAL JOIN ImaUlogu NATURAL JOIN ULOGA WHERE EMAIL = ?";
 
         try {
             User user = jdbcTemplate.queryForObject(sql, new Object[]{email}, new RowMapper<User>() {
@@ -67,7 +67,7 @@ public class UserDAOImpl implements UserDAO {
                             rs.getString("PREZIME"),
                             rs.getString("LOZINKA"),
                             rs.getString("EMAIL"),
-                            Role.valueOf(rs.getString("ULOGA")),
+                            Role.valueOf(rs.getString("NAZIV")),
                             rs.getBoolean("AKTIVAN"),
                             rs.getString("TOKEN"),
                             rs.getBigDecimal("DULJINA"),
@@ -79,5 +79,14 @@ public class UserDAOImpl implements UserDAO {
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;
         }
+    }
+    
+    @Override
+    public void saveRoleForUser(Long userId, String role) {
+    	
+    	String sql = "INSERT INTO ImaUlogu (ID_ULOGA, ID_KORISNIK) SELECT ID_ULOGA, ? FROM ULOGA WHERE NAZIV = ?";
+    	
+    	jdbcTemplate.update(sql, userId, role);
+   
     }
 }

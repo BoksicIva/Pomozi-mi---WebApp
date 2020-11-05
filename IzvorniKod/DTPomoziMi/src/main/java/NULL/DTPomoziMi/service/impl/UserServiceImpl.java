@@ -8,7 +8,6 @@ import NULL.DTPomoziMi.web.DTO.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -36,7 +35,11 @@ public class UserServiceImpl implements UserService {
                 user.getLatitude()
         );
 
-        return  userDAO.saveUser(newUser);
+        newUser = userDAO.saveUser(newUser);
+        
+        userDAO.saveRoleForUser(newUser.getId(), newUser.getRole().toString());
+        
+        return newUser;
 
     }
 

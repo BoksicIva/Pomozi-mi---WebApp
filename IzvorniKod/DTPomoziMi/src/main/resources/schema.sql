@@ -17,6 +17,14 @@ CREATE TABLE Kandidatura
   FOREIGN KEY (duljina, sirina) REFERENCES Lokacija(duljina, sirina)
 );
 
+CREATE TABLE Uloga
+(
+  naziv VARCHAR(15) NOT NULL,
+  ID_Uloga INT AUTO_INCREMENT NOT NULL,
+  PRIMARY KEY (ID_Uloga),
+  UNIQUE (naziv)
+);
+
 CREATE TABLE Korisnik
 (
   ID_Korisnik INT AUTO_INCREMENT NOT NULL,
@@ -24,7 +32,6 @@ CREATE TABLE Korisnik
   prezime VARCHAR(50) NOT NULL,
   lozinka VARCHAR(70) NOT NULL,
   email VARCHAR(250) NOT NULL,
-  uloga VARCHAR(15) NOT NULL,
   aktivan BOOLEAN NOT NULL,
   token VARCHAR(500),
   duljina NUMERIC(17,14),
@@ -93,3 +100,14 @@ CREATE TABLE OcjenaIzvrsavanja
   FOREIGN KEY (ID_Ocjenjivanje) REFERENCES Ocjenjivanje(ID_Ocjenjivanje)
   /*constraint za 1 zahtjev 2 ocijene...*/
 );
+
+
+CREATE TABLE ImaUlogu
+(
+  ID_Korisnik INT NOT NULL,
+  ID_Uloga INT NOT NULL,
+  PRIMARY KEY (ID_Korisnik, ID_Uloga),
+  FOREIGN KEY (ID_Korisnik) REFERENCES Korisnik(ID_Korisnik),
+  FOREIGN KEY (ID_Uloga) REFERENCES Uloga(ID_Uloga)
+);
+
