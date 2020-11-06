@@ -1,7 +1,6 @@
 package NULL.DTPomoziMi.security.config;
 
 import NULL.DTPomoziMi.model.Role;
-import NULL.DTPomoziMi.properties.JwtConstants;
 import NULL.DTPomoziMi.web.filters.CsrfTokenRequestFilter;
 import NULL.DTPomoziMi.web.filters.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +21,8 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 
 @Configuration
@@ -95,24 +94,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
     
     @Bean
-    public CorsFilter corsFilter() {
+    public CorsConfigurationSource corsConfigurationSource() {
     	UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     	CorsConfiguration conf = new CorsConfiguration();
     	
     	conf.setAllowCredentials(true);
     	conf.addAllowedOrigin("*");
     	conf.addAllowedHeader("*");
-    	conf.addExposedHeader(JwtConstants.JWT_COOKIE_NAME);
-    	conf.addExposedHeader(JwtConstants.JWT_REFRESH_COOKIE_NAME);
-    	conf.addExposedHeader("X-CSRF-TOKEN");
     	conf.addAllowedMethod(HttpMethod.OPTIONS);
     	conf.addAllowedMethod(HttpMethod.POST);
     	conf.addAllowedMethod(HttpMethod.GET);
     	conf.addAllowedMethod(HttpMethod.PUT);
     	conf.addAllowedMethod(HttpMethod.DELETE);
     	conf.addAllowedMethod(HttpMethod.PATCH);
-    	source.registerCorsConfiguration("/**", conf);
+    	source.registerCorsConfiguration("/api/**", conf);
     	
-    	return new CorsFilter(source);
+    	return source;
     }
+    
+    
 }
