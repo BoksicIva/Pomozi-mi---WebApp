@@ -1,6 +1,5 @@
 package NULL.DTPomoziMi.jwt;
 
-import NULL.DTPomoziMi.DAO.UserDAO;
 import NULL.DTPomoziMi.properties.JwtConstants;
 import NULL.DTPomoziMi.service.TokenService;
 import NULL.DTPomoziMi.util.MyCollectors;
@@ -18,9 +17,6 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtil {
-
-    @Autowired
-    private UserDAO userDAO;
 
     @Autowired
     private TokenService tokenService;
@@ -79,7 +75,6 @@ public class JwtUtil {
     }
 
     public boolean validateToken(String token) {
-        String username = extractUsername(token);
         return !isTokenExpired(token);
     }
 

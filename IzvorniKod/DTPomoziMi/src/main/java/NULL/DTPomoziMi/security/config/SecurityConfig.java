@@ -1,7 +1,6 @@
 package NULL.DTPomoziMi.security.config;
 
 import NULL.DTPomoziMi.model.Role;
-import NULL.DTPomoziMi.properties.JwtConstants;
 import NULL.DTPomoziMi.web.filters.CsrfTokenRequestFilter;
 import NULL.DTPomoziMi.web.filters.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;

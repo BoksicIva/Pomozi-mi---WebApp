@@ -5,7 +5,6 @@ import NULL.DTPomoziMi.properties.JwtConstants;
 import NULL.DTPomoziMi.service.TokenService;
 import NULL.DTPomoziMi.util.CookieUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;

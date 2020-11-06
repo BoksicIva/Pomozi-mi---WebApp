@@ -3,8 +3,8 @@ package NULL.DTPomoziMi.DAO.impl;
 import NULL.DTPomoziMi.DAO.UserDAO;
 import NULL.DTPomoziMi.model.Role;
 import NULL.DTPomoziMi.model.User;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
@@ -17,6 +17,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class UserDAOImpl implements UserDAO {
@@ -57,8 +59,7 @@ public class UserDAOImpl implements UserDAO {
         String sql = "SELECT KORISNIK.ID_KORISNIK, IME, TOKEN, PREZIME, LOZINKA, EMAIL, AKTIVAN, NAZIV, DULJINA, SIRINA"
         		+ " FROM KORISNIK NATURAL JOIN ImaUlogu NATURAL JOIN ULOGA WHERE EMAIL = ?";
 
-        try {
-            User user = jdbcTemplate.queryForObject(sql, new Object[]{email}, new RowMapper<User>() {
+            List<User> list = jdbcTemplate.query(sql, new Object[]{email}, new RowMapper<User>() {
                 @Override
                 public User mapRow(ResultSet rs, int rowNum) throws SQLException {
                     return new User(
@@ -67,7 +68,7 @@ public class UserDAOImpl implements UserDAO {
                             rs.getString("PREZIME"),
                             rs.getString("LOZINKA"),
                             rs.getString("EMAIL"),
-                            Role.valueOf(rs.getString("NAZIV")),
+                            Arrays.asList(Role.valueOf(rs.getString("NAZIV"))),
                             rs.getBoolean("AKTIVAN"),
                             rs.getString("TOKEN"),
                             rs.getBigDecimal("DULJINA"),
@@ -75,18 +76,23 @@ public class UserDAOImpl implements UserDAO {
                     );
                 }
             });
-            return user;
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return null;
-        }
+       if(list.isEmpty())
+    	   return null;
+       
+       User user = new User(list.get(0));
+       
+       user.setRoles(list.stream().flatMap(u -> u.getRoles().stream()).collect(Collectors.toList()));
+      
+       return user;
     }
     
     @Override
-    public void saveRoleForUser(Long userId, String role) {
+    public void saveRolesForUser(Long userId, List<Role> roles) {
     	
     	String sql = "INSERT INTO ImaUlogu (ID_ULOGA, ID_KORISNIK) SELECT ID_ULOGA, ? FROM ULOGA WHERE NAZIV = ?";
     	
-    	jdbcTemplate.update(sql, userId, role);
+    	for(Role role : roles)
+    		jdbcTemplate.update(sql, userId, role.toString());
    
     }
 }

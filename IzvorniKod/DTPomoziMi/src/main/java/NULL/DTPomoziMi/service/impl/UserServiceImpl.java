@@ -5,6 +5,9 @@ import NULL.DTPomoziMi.model.Role;
 import NULL.DTPomoziMi.model.User;
 import NULL.DTPomoziMi.service.UserService;
 import NULL.DTPomoziMi.web.DTO.UserDTO;
+
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,7 +31,7 @@ public class UserServiceImpl implements UserService {
                 user.getLastName(),
                 passwordEncoder.encode(user.getPassword()),
                 user.getEmail(),
-                Role.ROLE_USER,
+                Arrays.asList(Role.ROLE_USER),
                 true,
                 null,
                 user.getLongitude(),
@@ -37,7 +40,7 @@ public class UserServiceImpl implements UserService {
 
         newUser = userDAO.saveUser(newUser);
         
-        userDAO.saveRoleForUser(newUser.getId(), newUser.getRole().toString());
+        userDAO.saveRolesForUser(newUser.getId(), newUser.getRoles());
         
         return newUser;
 
