@@ -1,6 +1,7 @@
 package NULL.DTPomoziMi.security.config;
 
 import NULL.DTPomoziMi.model.Role;
+import NULL.DTPomoziMi.properties.JwtConstants;
 import NULL.DTPomoziMi.web.filters.CsrfTokenRequestFilter;
 import NULL.DTPomoziMi.web.filters.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,7 +102,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     	conf.setAllowCredentials(true);
     	conf.addAllowedOrigin("*");
     	conf.addAllowedHeader("*");
-    	conf.addExposedHeader("*");
+    	conf.addExposedHeader(JwtConstants.JWT_COOKIE_NAME);
+    	conf.addExposedHeader(JwtConstants.JWT_REFRESH_COOKIE_NAME);
+    	conf.addExposedHeader("X-CSRF-TOKEN");
     	conf.addAllowedMethod(HttpMethod.OPTIONS);
     	conf.addAllowedMethod(HttpMethod.POST);
     	conf.addAllowedMethod(HttpMethod.GET);
