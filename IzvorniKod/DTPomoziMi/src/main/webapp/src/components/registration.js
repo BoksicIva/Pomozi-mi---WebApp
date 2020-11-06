@@ -6,6 +6,7 @@ import * as Yup from "yup";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import RegService from '../service/login-service';
 
 export const Registration = () => (
   <div className="app">
@@ -26,6 +27,34 @@ export const Registration = () => (
           onSubmit={async (values) => {
             await new Promise((resolve) => setTimeout(resolve, 500));
             alert(JSON.stringify(values, null, 2));
+
+            let data = new FormData();
+
+            data.append('firstName', 'Jan');
+            data.append('lastName', 'Roček');
+            data.append('password', 'JanRoček1@');
+            data.append('secondPassword', 'JanRoček1@');
+            data.append('email', 'jan.rocek@gmail.com');
+            
+
+            RegService.getCSRF().then((response) => {
+
+              console.log(response);
+              console.log(response.data)
+              console.log(response.headers);
+
+              RegService.register(data).then((response1) => {
+                alert(JSON.stringify(response1, null, 2));
+              }).catch((error1) => {
+                console.log(error1);
+              });
+            }).catch((error) => {
+              console.log(error);
+            });
+
+
+
+
           }}
           validationSchema={Yup.object().shape({
             email: Yup.string().email().required("Email required"),
@@ -170,7 +199,7 @@ export const Registration = () => (
           }}
         </Formik>
         <div className="inp-line">
-          Already signed in? <Link to="/login">Log in</Link>
+          Already signed up? <Link to="/login">Log in</Link>
         </div>
       </Card>
     </div>

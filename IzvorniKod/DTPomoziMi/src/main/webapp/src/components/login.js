@@ -23,16 +23,32 @@ export const Login = () => (
                     }}
                     onSubmit={async values => {
                           await new Promise(resolve => setTimeout(resolve, 500));
-                        alert(JSON.stringify(values, null, 2));
-                     /*  let formData = new FormData();
-  
-                       formData.append("email", values.email);
-                       formData.append("password", values.password);
+                          alert(JSON.stringify(values, null, 2));
+                       let formData = new FormData();
+                       
+                       formData.append('email', 'jan.rocek@gmail.com');
+                       formData.append('password', 'JanRoček1@');
 
-                       LoginService.login(formData).then((response) => {
-                        //   const token = response.headers[];
+                        LoginService.getCSRF().then((response) => {
+                            console.log(response);
+                            console.log(response.data)
+                            console.log(response.headers);
+                        }).catch((error) => {
+                            console.log(error);
                         });
-                        */
+
+                         LoginService.login(formData).then((response) => {
+                            alert(JSON.stringify(response, null, 2));
+
+                            LoginService.notPer().then((response2) => {
+                                alert(JSON.stringify(response2, null, 2));
+                            }).catch((error2) => {
+                                console.log(error2);
+                            });
+                        }).catch((error) => {
+                            console.log(error);
+                        });
+                        
 
                     }}
                     validationSchema={Yup.object().shape({
@@ -124,7 +140,7 @@ export const Login = () => (
                         );
                     }}
                 </Formik>
-                <div className="inp-line">not signed in yet? <Link to='/register'>Sign in</Link></div>
+                <div className="inp-line">not signed in yet? <Link to='/register'>Sign up</Link></div>
             </Card>
         </div>
     </div>
