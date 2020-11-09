@@ -26,6 +26,7 @@ export const Registration = () => (
           }}
           onSubmit={async (values) => {
             await new Promise((resolve) => setTimeout(resolve, 500));
+
             alert(JSON.stringify(values, null, 2));
 
             let data = new FormData();
@@ -55,13 +56,23 @@ export const Registration = () => (
               });
           }}
           validationSchema={Yup.object().shape({
-            email: Yup.string().email().required("Unesite e-mail"),
-            password: Yup.string().required("Unesite zaporku"),
-            secondPassword: Yup.string().required(
-              "Unesite potvrdu"
-            ),
-            firstName: Yup.string().required("Unesite ime"),
-            lastName: Yup.string().required("Unesite prezime"),
+            email: Yup.string()
+              .email("Unesite e-mail ispravnog formata")
+              .required("Unesite e-mail"),
+            password: Yup.string()
+              .min(8, "Zaporka mora imati barem 8 znakova")
+              .required("Unesite zaporku"),
+            secondPassword: Yup.string()
+              .oneOf([Yup.ref("password")], "Potvrda mora biti jednaka zaporci")
+              .required("Unesite potvrdu"),
+            firstName: Yup.string()
+              .min(2, "Prekratko ime")
+              .matches(/^[a-zA-Z]+$/, "Ime smije sadržavati samo slova")
+              .required("Unesite ime"),
+            lastName: Yup.string()
+              .min(2, "Prekratko prezime")
+              .matches(/^[a-zA-Z]+$/, "Prezime smije sadržavati samo slova")
+              .required("Unesite prezime"),
           })}
         >
           {(props) => {
@@ -87,7 +98,7 @@ export const Registration = () => (
                       value={values.firstName}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      classfirstName={
+                      className={
                         errors.firstName && touched.firstName
                           ? "text-input error"
                           : "text-input"
@@ -159,7 +170,7 @@ export const Registration = () => (
                     <input
                       id="secondPassword"
                       placeholder="Potvrdi"
-                      type="text"
+                      type="password"
                       value={values.secondPassword}
                       onChange={handleChange}
                       onBlur={handleBlur}
