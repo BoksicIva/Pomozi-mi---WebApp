@@ -2,29 +2,80 @@
 		
 		\textbf{\textit{dio 1. revizije}}\\
 
-		\textit{ Potrebno je opisati stil arhitekture te identificirati: podsustave, preslikavanje na radnu platformu, spremišta podataka, mrežne protokole, globalni upravljački tok i sklopovsko-programske zahtjeve. Po točkama razraditi i popratiti odgovarajućim skicama:}
-	\begin{itemize}
-		\item 	\textit{izbor arhitekture temeljem principa oblikovanja pokazanih na predavanjima (objasniti zašto ste baš odabrali takvu arhitekturu)}
-		\item 	\textit{organizaciju sustava s najviše razine apstrakcije (npr. klijent-poslužitelj, baza podataka, datotečni sustav, grafičko sučelje)}
-		\item 	\textit{organizaciju aplikacije (npr. slojevi frontend i backend, MVC arhitektura) }		
-	\end{itemize}
-
+		
+		Arhitekturu sustava možemo podijeliti na tri podsustava:
+		\begin{itemize}
+			\item Web preglednik
+			\item Web poslužitelj
+			\item Baza podataka
+		\end{itemize}
 	
 		
-
+		%unos slike
+		\begin{figure}[H]
+			\includegraphics[scale=0.35]{slike/arhitektura.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+			\centering
+			\caption {Arhitektura sustava}
+			\label{fig:promjene}
+		\end{figure}
 		
+		Korisnik pomoću web preglednika po vlastitom izboru dobiva mogućnost  pristupa web aplikaciji na  Internetu. Preglednik zapravo šalje zahtjev protokolom web poslužitelju na kojem se nalazi web aplikacija i on ju pokreteće i omogućuje korisniku daljnji rad na aplikaciji.
+		
+		Pred korisnikom se nalaze sve funkcionalnosti koje aplikacija pruža. On svojevoljno odabire pojedinu fukcionalnost te tako šalje zahtjev aplikaciji koja pristupa bazi podataka i prikuplja zatražene podatke i osvježava mu pregled aplikacije s prikupljenim podacima. 
 
-				
+		Sama aplikacija je sastavljena po načelu objektno usmjerene arhitekture. Razlog njezinog odabira je trenutna sveprisutnost u industriji te predstavlja standard razvoja složenih programskih zahtjeva. Budući da je razvoj aplikacije zamišljen kao rad više ljudi u timu  objektno usmjerena arhitektura nudi da se logički razdijeli sustav na više cjelina te time omogućuje paralelnost razvoja.
+		Također nudi recikliranje koda, mogućnost dodavanja novih funkcionalnosti bez poteškoća i greške se lako detektiraju i ispravljaju.
+		
+		Aplikacija je razvijena u programskom jeziku Java 15 te kao razvojni okvir koristi Java Spring Boot verzije 2.3.4. Za sigurnost i spriječavanje vanjskih napada koristi se Spring Security.
+		Kako bi se olakšala komunikacija s bazom koristi se Spring JDBC.  
+		Za razvojno okruženje koristi se Ecplise i IntelliJ.
+		 
+		
+		Frontend je pisan u  React. React je open-source, frontend, JavaScript knjižnica koja služi  za izgradnju korisničkog sučelja. Koristi HTML, CSS, JSX i JavaScript kako bi modelirao sučelje.
+		
+		Komunikacija između Jave na backendu i Reacta na frontendu je omogućena korištenjem REST api-ja.
+			%unos slike
+		\begin{figure}[H]
+			\includegraphics[scale=0.7]{slike/arhitektura2.jpg} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+			\centering
+			\caption {Arhitektura sustava}
+			\label{fig:promjene}
+		\end{figure}
+	
+			\begin{figure}[H]
+			\includegraphics[scale=0.9]{slike/arhitektura3.jpg} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+			\centering
+			\caption {Arhitektura sustava}
+			\label{fig:promjene}
+		\end{figure}
+
+		\newpage	
 		\section{Baza podataka}
 			
 			\textbf{\textit{dio 1. revizije}}\\
+		
+		Implementacija baze podataka ostvarena je uporabom PostgreSQL zbog jednostavnosti korištenja i pozitivnog iskustva članova tima. 
+		
+		Baza podataka sastoji se od sljedećih tablica:
+		
+		\begin{packed_item}
+			\item Korisnik
+			\item Zahtjev
+			\item Lokacija
+			\item Izvršavanje
+			\item Kandidatura
+			\item Kandidiranje
+			\item Ocjenjivanje
+			\item OcjenaIzvršavanja
+			\item ImaUlogu 
+			\item Uloga
 			
-		\textit{Potrebno je opisati koju vrstu i implementaciju baze podataka ste odabrali, glavne komponente od kojih se sastoji i slično.}
+		\end{packed_item}
 		
 			\subsection{Opis tablica}
 			
 					    \textbf{ Korisnik}
-		    \item Ovaj entitet sadržava sve važne informacije o korisniku aplikacije. Sadrži atribute: ID${\_}$Korisnika ,ime ,prezime,
+		    \text Ovaj entitet sadržava sve važne informacije o korisniku aplikacije. Sadrži atribute: ID${\_}$Korisnika ,ime ,prezime,
 		     email, lozinku,ulogu,aktivan,token te duljinu i sirinu. Ovaj entitet je u vezi \emph{One-to-Many} s entitom Izvršavanje preko atributa ID${\_}$Korisnika, u vezi \emph{One-to-Many} s entitetom Zahtjev preko atributa ID${\_}$Korisnika,u vezi s Lokacijom prkeo atributa duljina i širina, u vezi s entitetom Kandidiranje preko atributa ID${\_}$Korisnika te u vezi \emph{One-to-Many} s entitetom Ocjenjivanje preko atributa ID${\_}$Korisnika gdje korisnik ima dvije uloge. 
 				
 				\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
@@ -42,18 +93,16 @@
 					ime & VARCHAR	&  ime korisnika	\\ \hline 
 					prezime & VARCHAR	& prezime korisnika 		\\ \hline
 					email & VARCHAR & e-mail adresa korisnika  \\ \hline 
-					lozinka	& VARCHAR & hash lozinke 	\\ \hline 
-					uloga	& VARCHAR & uloga korisnika (administrator ili registrirani korisnik)  	\\ \hline 
+					lozinka	& VARCHAR & hash lozinke 	\\ \hline  
 					aktivan & BOOLEAN & status korisnika \\ \hline
-					token & VARCHAR & ??? \\ \hline
-					duljina & NUMERIC & geografska duljina \\ \hline
-					
+					token & VARCHAR & JWT refresh token koji se koristi pri autentifikaciji korisnika \\ \hline
+					\cellcolor{LightBlue}duljina & NUMERIC & geografska duljina \\ \hline
 					\cellcolor{LightBlue} sirina	& NUMERIC & geografska širina  \\ \hline 
 					
 					
 				\end{longtabu}
-			    \textbf{ Zahtjev}
-		    \item Ovaj entitet sadržava sve važne informacije o korisnikovu zahtjevu. Sadrži atribute: ID${\_}$Zahtjev ,opis,datum,vrijeme,status,brojMobitela,ID${\_}$Autora,duljinu i širinu.Ovaj entitet je u vezi s entitom Lokacija preko atributa sirina i duljina,također u vezi  s entitetom Izvrsavanje preko atributa ID${\_}$Zahtjev te u vezi \emph{Many-to-One} s entitetom Korisnik preko ID${\_}$Korisnika.  
+				    \textbf{ Zahtjev}
+			    \text Ovaj entitet sadržava sve važne informacije o korisnikovu zahtjevu. Sadrži atribute: ID${\_}$Zahtjev ,opis,datum,vrijeme,status,brojMobitela,ID${\_}$Autora,duljinu i širinu.Ovaj entitet je u vezi s entitom Lokacija preko atributa sirina i duljina,također u vezi  s entitetom Izvrsavanje preko atributa ID${\_}$Zahtjev te u vezi \emph{Many-to-One} s entitetom Korisnik preko ID${\_}$Korisnika.  
 			
 				\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
 					
@@ -66,20 +115,23 @@
 					\hline 
 					\endlastfoot
 					
-					\cellcolor{LightGreen}ID${\_}$Zahtjev & SERIAL	&  jedinstveni identifikator korisnika	 	\\ \hline
+					\cellcolor{LightGreen}ID${\_}$Zahtjev & SERIAL	&  jedinstveni identifikator zahtjeva	 	\\ \hline
 					opis & VARCHAR	& opis zahtjeva 		\\ \hline 
 					datum & DATE	& datum do kada se treba izvršiti zahtjev  		\\ \hline
 					vrijeme & TIME & vrijeme do kada se treba izvršiti zahtjev \\ \hline 
 					status	& VARCHAR & status zahtjeva  	\\ \hline
 					brojMobitela & VARCHAR & broj mobitela autora zahtjeva? \\ \hline
-					ID${\_}$Autora & SERIAL & jedinstveni identifikator korisnika(autora zahtjeva) \\ \hline
-					duljina & NUMERIC & geografska duljina \\ \hline
+					\cellcolor{LightBlue}ID${\_}$Autora & SERIAL & jedinstveni identifikator korisnika(autora zahtjeva) \\ \hline
+					\cellcolor{LightBlue}ID${\_}$Izvršitelj & SERIAL & jedinstveni identifikator korisnika(izvršitelja zahtjeva) \\ \hline
+					\cellcolor{LightBlue}duljina & NUMERIC & geografska duljina \\ \hline
 					\cellcolor{LightBlue} sirina & NUMERIC & geografsk širina    	\\ \hline 
 					
-					
+				
 				\end{longtabu}
+			
+			    \newpage
 						    \textbf{ Lokacija}
-		    \item Ovaj entitet sadržava sve važne informacije o lokaciji. Sadrži atribute: geografsku duljinu i geografsku širinu, ime drzave, naselje te adresu.Ovaj entitet je u vezi s entitom Zahtjev preko atributa sirina i duljina,također u vezi  s entitetom Korisnikom preko atributa duljina i sirina te u vezi \emph{One-to-Many} s entitetom Kandidatura preko duljina i sirina. 
+			    \text Ovaj entitet sadržava sve važne informacije o lokaciji. Sadrži atribute: geografsku duljinu i geografsku širinu, ime drzave, naselje te adresu.Ovaj entitet je u vezi s entitom Zahtjev preko atributa sirina i duljina,također u vezi  s entitetom Korisnikom preko atributa duljina i sirina te u vezi \emph{One-to-Many} s entitetom Kandidatura preko duljina i sirina. 
 			
 				\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
 					
@@ -93,37 +145,36 @@
 					\endlastfoot
 					
 					\cellcolor{LightGreen}duljina & NUMERIC	& geografska dužina \\ \hline
-					sirina & NUMERIC & geografska sirina \\ \hline
+					\cellcolor{LightGreen}sirina & NUMERIC & geografska sirina \\ \hline
 					drzava & VARCHAR	& naziv države 		\\ \hline
 					naselje & VARCHAR & naziv naselja  \\ \hline 
-					\cellcolor{LightBlue} adresa	& VARCHAR & adresa na kojoj treba odraditi zahtjev	\\ \hline 	
+					adresa	& VARCHAR & adresa na kojoj treba odraditi zahtjev	\\ \hline 	
 					
 				\end{longtabu}
 			
 			
 		    \textbf{ Izvršavanje}
-		    \item Ovaj entitet sadržava sve važne informacije o izvršiteljima zahtjeva i podacima koji im omogućavaju samo izvršavanje. Sadrži atribute: ID zahtjeva koji izvršavaju, ID izvršitelja, primljena obavijest sa nužnim podacima o autoru, ocjena i komentar. Ovaj entitet je u vezi \emph{Many-to-One} sa korisnikom preko atributa ID Izvršitelja i u vezi \emph{One-to-One} sa entitetom Zahtjev preko atributa ID Zahtjev.
+		    \text Ovaj entitet sadržava sve važne informacije o izvršiteljima zahtjeva i podacima koji im omogućavaju samo izvršavanje. Sadrži atribute: ID zahtjeva koji izvršavaju, ID izvršitelja, primljena obavijest sa nužnim podacima o autoru, ocjena i komentar. Ovaj entitet je u vezi \emph{Many-to-One} sa korisnikom preko atributa ID Izvršitelja i u vezi \emph{One-to-One} sa entitetom Zahtjev preko atributa ID Zahtjev.
 
-				\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
+				\begin{longtabu} to \textwidth {|X[6, l]|X[4, l]|X[20, l]|}
 					
 					\hline \multicolumn{3}{|c|}{\textbf{Izvršavanje}}	 \\[3pt] \hline
 					\endfirsthead
 					
-					\hline \multicolumn{3}{|c|}{\textbf{Aut${\_}$Zahtj${\_}$Izvr}}	 \\[3pt] \hline
+					\hline \multicolumn{3}{|c|}{\textbf{Izvršavanje}}	 \\[3pt] \hline
 					\endhead
 					
 					\hline 
 					\endlastfoot
 					
-					\cellcolor{LightGreen}ID${\_}$Zahtjev & INT	& jedinstveni identifikator zahtjeva 	\\ \hline
-					\cellcolor{LightBlue}ID${\_}$Autor & INT	& jedinstveni identifikator autora zahtjeva 	\\ \hline
-					\cellcolor{LightBlue}ID${\_}$Izvrsitelj & SERIAL	& jedinstveni identifikator izvršitelja zahtjeva  	\\ \hline
+					\cellcolor{LightGreen}ID${\_}$Zahtjev & INT	& jedinstveni identifikator  \\ \hline
+					primljenNotif & BOOLEAN & status o primitku notifikacije od strane korisnika  \\ \hline
 				
 					
 					
 				\end{longtabu}
 			\textbf{ Kandidatura}
-		    \item Ovaj entitet sadržava sve važne informacije o kandidaturi za korisnika godine. Sadrži atribute: godina kandidature, geografska duljina i širina. Ovaj entitet je u vezi \emph{Many-to-One} sa entitetom Kandidiranje preko atributa godina kandidature, geografska duljina i širina i u vezi \emph{Many-to-One} sa Lokacijom preko atributa geografska duljina i širina.
+		    \text Ovaj entitet sadržava sve važne informacije o kandidaturi za korisnika godine. Sadrži atribute: godina kandidature, geografska duljina i širina. Ovaj entitet je u vezi \emph{Many-to-One} sa entitetom Kandidiranje preko atributa godina kandidature, geografska duljina i širina i u vezi \emph{Many-to-One} sa Lokacijom preko atributa geografska duljina i širina.
 
 				\begin{longtabu} to \textwidth {|X[7, l]|X[6, l]|X[20, l]|}
 					
@@ -136,45 +187,132 @@
 					\hline 
 					\endlastfoot
 					
-					\cellcolor{LightGreen}ID${\_}$Kandidatura & SERIAL	& jedinstveni identifikator kandidature 	\\ \hline
-					godina & INT & godina kandidature  \\ \hline 
-					\cellcolor{LightBlue}ID${\_}$Korisnik & INT	& jedinstveni identifikator korisnika 	\\ \hline
+					\cellcolor{LightGreen}duljina & NUMERIC	& geografska duljina  \\ \hline
+					\cellcolor{LightGreen}sirina & NUMERIC	& geografska sirina  \\ \hline
+					godina & INT & godina kandidature  \\[3pt] \hline 
+				
 					
 				\end{longtabu}
-				
+				\newpage
 				\textbf{Kandidiranje}
-		    \item Ovaj entitet sadržava sve važne informacije o korisniku koji se kandidira za korisnika godine. Sadrži atribute: ID korisnika, godina kandidature, geografska duljina i širina. Ovaj entitet je u vezi \emph{One-to-Many} sa entitetom Kandidatura preko atributa godina kandidature, geografska duljina i širina te u vezi \emph{One-to-One} sa entitetom Korisnik preko atributa ID Korisnika.
-		    \newline
+		    \text Ovaj entitet sadržava sve važne informacije o korisniku koji se kandidira za korisnika godine. Sadrži atribute: ID korisnika, godina kandidature, geografska duljina i širina. Ovaj entitet je u vezi \emph{One-to-Many} sa entitetom Kandidatura preko atributa godina kandidature, geografska duljina i širina te u vezi \emph{One-to-One} sa entitetom Korisnik preko atributa ID Korisnika.
+		    
+		    
+		    	\begin{longtabu} to \textwidth {|X[7, l]|X[6, l]|X[20, l]|}
+		    		
+		    		\hline \multicolumn{3}{|c|}{\textbf{Kandidiranje}}	 \\[3pt] \hline
+		    		\endfirsthead
+		    		
+		    		\hline \multicolumn{3}{|c|}{\textbf{Kandidiranje}}	 \\[3pt] \hline
+		    		\endhead
+		    		
+		    		\hline 
+		    		\endlastfoot
+		    		\cellcolor{LightGreen}ID${\_}$Korisnik & SERIAL	& jedinstveni identifikator korisnika 	 	\\ \hline
+		    		\cellcolor{LightGreen}duljina & NUMERIC	& geografska duljina  \\ \hline
+		    		\cellcolor{LightGreen}sirina & NUMERIC	& geografska sirina  \\ \hline
+		    		godina & INT & godina kandidature  \\[3pt] \hline 
+		    		
+		    		
+		    	\end{longtabu}
+		    
+		    
+		    
 		        \textbf{Ocjenjivanje}
-		    \item Ovaj entitet sadržava sve važne informacije o međusobnom ocjenjivanju korisnika. Sadrži atribute: ID ocjenjenog korisnika te ID ocjenjivača, ocjena i komentar. Ovaj entitet je u vezi \emph{Many-to-One} sa entitetom Korisnik preko atributa ID ocjenjenog korisnika i ID ocjenjivača.
-				\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
+		    \text Ovaj entitet sadržava sve važne informacije o međusobnom ocjenjivanju korisnika. Sadrži atribute: ID ocjenjenog korisnika te ID ocjenjivača, ocjena i komentar. Ovaj entitet je u vezi \emph{Many-to-One} sa entitetom Korisnik preko atributa ID ocjenjenog korisnika i ID ocjenjivača.
+		    
+				\begin{longtabu} to \textwidth {|X[7, l]|X[6, l]|X[20, l]|}
 					
-					\hline \multicolumn{3}{|c|}{\textbf{Ocjena}}	 \\[3pt] \hline
+					\hline \multicolumn{3}{|c|}{\textbf{Ocjenjivanje}}	 \\[3pt] \hline
 					\endfirsthead
 					
-					\hline \multicolumn{3}{|c|}{\textbf{Ocjena }}	 \\[3pt] \hline
+					\hline \multicolumn{3}{|c|}{\textbf{Ocjenjivanje }}	 \\[3pt] \hline
 					\endhead
 					
 					\hline 
 					\endlastfoot
 					
-					\cellcolor{LightGreen}ID${\_}$Ocjenitelj & INT	& jedinstveni identifikator ocjenitelja 	\\ \hline
-					\cellcolor{LightGreen}ID${\_}$Ocjenjeni & INT	& jedinstveni identifikator ocjenjenog 	\\ \hline
+					\cellcolor{LightGreen}ID${\_}$Ocjenjivanje & INT	& jedinstveni identifikator ocjenjivanja 	\\ \hline
 					ocjena & INT	&  ocjena usluge		\\ \hline 
 					komentar & VARCHAR	& komentar ocjenitelja 		\\ \hline
-					
-					
+					\cellcolor{LightGreen}ID${\_}$Ocjenjivac & INT	& jedinstveni identifikator ocjenjivaca 	\\ \hline
+					\cellcolor{LightGreen}ID${\_}$Ocjenjeni & INT	& jedinstveni identifikator ocjenjenog 	\\ \hline
 					
 				\end{longtabu}
+			
+			
+			
+			\textbf{OcjenaIzvrsavanja}
+			\text je vezna tablica koja sadržava sve važne informacije o ocjeninjivanju izvršenog zahtjeva. Sadrži atribute: ID${\_}$Zahtjeva, ID${\_}$Ocjenjivanja. U vezi \emph{Many-to-one} sa entitetom Izvrsavanje preko atributa ID${\_}$Zahtjeva, te u vezi \emph{One-to-One} sa entitetom Ocjenjivanje preko atributa ID${\_}$Ocjenjivanja.
+			krive veze
+			
+			\begin{longtabu} to \textwidth {|X[7, l]|X[6, l]|X[20, l]|}
+				
+				\hline \multicolumn{3}{|c|}{\textbf{OcjenaIzvrsavanja}}	 \\[3pt] \hline
+				\endfirsthead
+				
+				\hline \multicolumn{3}{|c|}{\textbf{OcjenaIzvrsavanja }}	 \\[3pt] \hline
+				\endhead
+				
+				\hline 
+				\endlastfoot
+				
+				\cellcolor{LightGreen}ID${\_}$Zahtjev & SERIAL	&  jedinstveni identifikator zahtjeva	 	\\ \hline
+				\cellcolor{LightGreen}ID${\_}$Ocjenjivanje & INT	& jedinstveni identifikator ocjenjivanja 	\\ \hline
+				
+				
+			\end{longtabu}
 		
+		\newpage
 		
+			\textbf{Uloga}
+			\text Entitet sadržavi informaciju o ulozi korisnika tijekom korištenja aplikacije. Uloga može biti administrator ili obični korisnik. Sadrži atribute: ID${\_}$Uloga i naziv. U vezi \emph{Many-to-One} sa entitetom ImaUlogu preko atributa ID${\_}$Uloga.
+			\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
+				
+				\hline \multicolumn{3}{|c|}{\textbf{Uloga}}	 \\[3pt] \hline
+				\endfirsthead
+				
+				\hline \multicolumn{3}{|c|}{\textbf{Uloga }}	 \\[3pt] \hline
+				\endhead
+				
+				\hline 
+				\endlastfoot
+				
+				\cellcolor{LightGreen}ID${\_}$Uloga & SERIAL	&  jedinstveni identifikator uloge	 	\\ \hline
+				naziv & VARCHAR	& naziv uloge 	\\ \hline
+				
+				
+			\end{longtabu}
+		
+			\textbf{ImaUlogu}
+			\text je vezna tablica koja sadržava informacije koji korisnik ima koju ulogu unutar aplikaicje.Sadrži atribute:ID${\_}$Korisnik i ID${\_}$Uloga. U vezi je \emph{One-to-Many} sa entitetom Uloga preko atributa ID${\_}$Uloga te u vezi \emph{One-to-Many} sa entitetom Korisnik preko atributa ID${\_}$Korisnik.
+			krive veze
+			\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
+				
+				\hline \multicolumn{3}{|c|}{\textbf{ImaUlogu}}	 \\[3pt] \hline
+				\endfirsthead
+				
+				\hline \multicolumn{3}{|c|}{\textbf{ImaUlogu }}	 \\[3pt] \hline
+				\endhead
+				
+				\hline 
+				\endlastfoot
+				\cellcolor{LightGreen}ID${\_}$Korisnik & SERIAL	& jedinstveni identifikator korisnika 	 	\\ \hline
+				\cellcolor{LightGreen}ID${\_}$Uloga & SERIAL	&  jedinstveni identifikator uloge	 	\\ \hline
+				
+				
+				
+			\end{longtabu}
+		
+		   \newpage
 			\subsection{Dijagram baze podataka}
+			
 			
 			%unos slike
 			\begin{figure}[H]
-				\includegraphics[scale=0.65]{slike/dijagram2.jpeg} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+				\includegraphics[scale=0.77]{slike/baza_podataka.jpeg} %veličina slike u odnosu na originalnu datoteku i pozicija slike
 				\centering
-				\caption \newline E-R dijagram baze podataka
+				\caption {Dijagram baze podataka}
 				\label{fig:promjene}
 			\end{figure}
 			
@@ -189,14 +327,16 @@
 			
 			\textit{Prilikom prve predaje projekta, potrebno je priložiti potpuno razrađen dijagram razreda vezan uz \textbf{generičku funkcionalnost} sustava. Ostale funkcionalnosti trebaju biti idejno razrađene u dijagramu sa sljedećim komponentama: nazivi razreda, nazivi metoda i vrste pristupa metodama (npr. javni, zaštićeni), nazivi atributa razreda, veze i odnosi između razreda.}\\
 			
+			
+			\begin{comment}
 			\textbf{\textit{dio 2. revizije}}\\			
 			
 			\textit{Prilikom druge predaje projekta dijagram razreda i opisi moraju odgovarati stvarnom stanju implementacije}
-			
+			\end{comment}
 			
 			
 			\eject
-		
+\begin{comment}		
 		\section{Dijagram stanja}
 			
 			
@@ -219,3 +359,4 @@
 			\textbf{\textit{dio 2. revizije}}\\
 		
 			 \textit{Potrebno je priložiti dijagram komponenti s pripadajućim opisom. Dijagram komponenti treba prikazivati strukturu cijele aplikacije.}
+\end{comment}
