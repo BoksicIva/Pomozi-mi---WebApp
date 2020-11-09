@@ -6,7 +6,7 @@ import * as Yup from "yup";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import RegService from '../service/login-service';
+import RegService from "../service/login-service";
 
 export const Registration = () => (
   <div className="app">
@@ -14,7 +14,7 @@ export const Registration = () => (
     <div className="container">
       <Card className="crd col-lg-7 mx-auto">
         <Card.Title className="title">
-          Dobrodošli u aplikaciju <span className="pomozi">Pomozi mi</span>
+          Izradite svoj <span style={{ color: "red" }}>Pomozi</span>Mi račun
         </Card.Title>
         <Formik
           initialValues={{
@@ -22,7 +22,7 @@ export const Registration = () => (
             surname: "",
             email: "",
             password: "",
-            username: "",
+            secondPassword: "",
           }}
           onSubmit={async (values) => {
             await new Promise((resolve) => setTimeout(resolve, 500));
@@ -30,38 +30,38 @@ export const Registration = () => (
 
             let data = new FormData();
 
-            data.append('firstName', 'Jan');
-            data.append('lastName', 'Roček');
-            data.append('password', 'JanRoček1@');
-            data.append('secondPassword', 'JanRoček1@');
-            data.append('email', 'jan.rocek@gmail.com');
-            
+            data.append("firstName", "Jan");
+            data.append("lastName", "Roček");
+            data.append("password", "JanRoček1@");
+            data.append("secondPassword", "JanRoček1@");
+            data.append("email", "jan.rocek@gmail.com");
 
-            RegService.getCSRF().then((response) => {
+            RegService.getCSRF()
+              .then((response) => {
+                console.log(response);
+                console.log(response.data);
+                console.log(response.headers);
 
-              console.log(response);
-              console.log(response.data)
-              console.log(response.headers);
-
-              RegService.register(data).then((response1) => {
-                alert(JSON.stringify(response1, null, 2));
-              }).catch((error1) => {
-                console.log(error1);
+                RegService.register(data)
+                  .then((response1) => {
+                    alert(JSON.stringify(response1, null, 2));
+                  })
+                  .catch((error1) => {
+                    console.log(error1);
+                  });
+              })
+              .catch((error) => {
+                console.log(error);
               });
-            }).catch((error) => {
-              console.log(error);
-            });
-
-
-
-
           }}
           validationSchema={Yup.object().shape({
-            email: Yup.string().email().required("Email required"),
-            password: Yup.string().required("Password required"),
-            username: Yup.string().min(5).max(10).required("Username required"),
-            name: Yup.string().required("Name required"),
-            surname: Yup.string().required("Surname required"),
+            email: Yup.string().email().required("Unesite e-mail"),
+            password: Yup.string().required("Unesite zaporku"),
+            secondPassword: Yup.string().required(
+              "Unesite potvrdu"
+            ),
+            name: Yup.string().required("Unesite ime"),
+            surname: Yup.string().required("Unesite prezime"),
           })}
         >
           {(props) => {
@@ -78,12 +78,11 @@ export const Registration = () => (
             } = props;
             return (
               <form onSubmit={handleSubmit}>
-                <div>
+                <div className="form-fields">
                   <div className="inp-line">
-                    <label htmlFor="name">Name:</label>
                     <input
                       id="name"
-                      placeholder="Enter your name"
+                      placeholder="Ime"
                       type="text"
                       value={values.name}
                       onChange={handleChange}
@@ -100,10 +99,9 @@ export const Registration = () => (
                   </div>
 
                   <div className="inp-line">
-                    <label htmlFor="surname">Surname:</label>
                     <input
                       id="surname"
-                      placeholder="Enter your surname"
+                      placeholder="Prezime"
                       type="text"
                       value={values.surname}
                       onChange={handleChange}
@@ -120,10 +118,9 @@ export const Registration = () => (
                   </div>
 
                   <div className="inp-line">
-                    <label htmlFor="email">Email:</label>
                     <input
                       id="email"
-                      placeholder="Enter your email"
+                      placeholder="E-mail"
                       type="text"
                       value={values.email}
                       onChange={handleChange}
@@ -140,30 +137,9 @@ export const Registration = () => (
                   </div>
 
                   <div className="inp-line">
-                    <label htmlFor="username">Username:</label>
-                    <input
-                      id="username"
-                      placeholder="Enter your username"
-                      type="text"
-                      value={values.username}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      className={
-                        errors.username && touched.username
-                          ? "text-input error"
-                          : "text-input"
-                      }
-                    />
-                    {errors.username && touched.username && (
-                      <div className="input-feedback">{errors.username}</div>
-                    )}
-                  </div>
-
-                  <div className="inp-line">
-                    <label htmlFor="password">Password:</label>
                     <input
                       id="password"
-                      placeholder="Enter your password"
+                      placeholder="Zaporka"
                       type="password"
                       value={values.password}
                       onChange={handleChange}
@@ -178,7 +154,29 @@ export const Registration = () => (
                       <div className="input-feedback">{errors.password}</div>
                     )}
                   </div>
+
+                  <div className="inp-line">
+                    <input
+                      id="secondPassword"
+                      placeholder="Potvrdi"
+                      type="text"
+                      value={values.secondPassword}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      className={
+                        errors.secondPassword && touched.secondPassword
+                          ? "text-input error"
+                          : "text-input"
+                      }
+                    />
+                    {errors.secondPassword && touched.secondPassword && (
+                      <div className="input-feedback">
+                        {errors.secondPassword}
+                      </div>
+                    )}
+                  </div>
                 </div>
+
                 <div className="inp-line">
                   <span className="res-btn">
                     <button
@@ -187,11 +185,11 @@ export const Registration = () => (
                       onClick={handleReset}
                       disabled={!dirty || isSubmitting}
                     >
-                      Reset
+                      Resetiraj
                     </button>
                   </span>
                   <button type="submit" disabled={isSubmitting}>
-                    Submit
+                    Registracija
                   </button>
                 </div>
               </form>
@@ -199,7 +197,7 @@ export const Registration = () => (
           }}
         </Formik>
         <div className="inp-line">
-          Already signed up? <Link to="/login">Log in</Link>
+          Već imate račun? <Link to="/login">Prijavite se</Link>
         </div>
       </Card>
     </div>

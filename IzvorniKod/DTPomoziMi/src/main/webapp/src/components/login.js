@@ -140,7 +140,7 @@ export const Login = () => (
                         );
                     }}
                 </Formik>
-                <div className="inp-line">not signed in yet? <Link to='/register'>Sign up</Link></div>
+                <div className="inp-line">Not signed in yet? <Link to='/register'>Sign up</Link></div>
             </Card>
         </div>
     </div>
