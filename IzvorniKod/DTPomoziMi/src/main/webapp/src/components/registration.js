@@ -18,8 +18,8 @@ export const Registration = () => (
         </Card.Title>
         <Formik
           initialValues={{
-            name: "",
-            surname: "",
+            firstName: "",
+            lastName: "",
             email: "",
             password: "",
             secondPassword: "",
@@ -60,8 +60,8 @@ export const Registration = () => (
             secondPassword: Yup.string().required(
               "Unesite potvrdu"
             ),
-            name: Yup.string().required("Unesite ime"),
-            surname: Yup.string().required("Unesite prezime"),
+            firstName: Yup.string().required("Unesite ime"),
+            lastName: Yup.string().required("Unesite prezime"),
           })}
         >
           {(props) => {
@@ -81,39 +81,39 @@ export const Registration = () => (
                 <div className="form-fields">
                   <div className="inp-line">
                     <input
-                      id="name"
+                      id="firstName"
                       placeholder="Ime"
                       type="text"
-                      value={values.name}
+                      value={values.firstName}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className={
-                        errors.name && touched.name
+                      classfirstName={
+                        errors.firstName && touched.firstName
                           ? "text-input error"
                           : "text-input"
                       }
                     />
-                    {errors.name && touched.name && (
-                      <div className="input-feedback">{errors.name}</div>
+                    {errors.firstName && touched.firstName && (
+                      <div className="input-feedback">{errors.firstName}</div>
                     )}
                   </div>
 
                   <div className="inp-line">
                     <input
-                      id="surname"
+                      id="lastName"
                       placeholder="Prezime"
                       type="text"
-                      value={values.surname}
+                      value={values.lastName}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       className={
-                        errors.surname && touched.surname
+                        errors.lastName && touched.lastName
                           ? "text-input error"
                           : "text-input"
                       }
                     />
-                    {errors.surname && touched.surname && (
-                      <div className="input-feedback">{errors.surname}</div>
+                    {errors.lastName && touched.lastName && (
+                      <div className="input-feedback">{errors.lastName}</div>
                     )}
                   </div>
 
