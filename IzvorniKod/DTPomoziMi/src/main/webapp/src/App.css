@@ -2,6 +2,14 @@
   text-align: center;
 }
 
+body{
+ /* background-color: #f5a8f5; */
+ overflow: auto;
+}
+#grad {
+  background-image: linear-gradient(180deg, #f5a8f5, #ffffff);
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
