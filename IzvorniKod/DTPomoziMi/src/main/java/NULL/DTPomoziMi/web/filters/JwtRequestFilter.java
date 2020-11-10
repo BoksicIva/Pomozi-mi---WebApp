@@ -3,7 +3,12 @@ package NULL.DTPomoziMi.web.filters;
 import NULL.DTPomoziMi.jwt.JwtUtil;
 import NULL.DTPomoziMi.properties.JwtConstants;
 import NULL.DTPomoziMi.util.CookieUtil;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,17 +39,33 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             String emailFromToken = null;
             String emailFromRefreshToken = null;
 
-            if(token != null && !token.isBlank())
-                emailFromToken = jwtUtil.extractUsername(token);
-            if(refreshToken != null && !refreshToken.isBlank())
-                emailFromRefreshToken = jwtUtil.extractUsername(refreshToken);
+            try {
+                if (token != null && !token.isBlank())
+                    emailFromToken = jwtUtil.extractUsername(token);
 
+            }catch (SignatureException e){
+                deleteCookies(response);
+
+            }catch(JwtException e){
+                try{
+                    if (refreshToken != null && !refreshToken.isBlank())
+                        emailFromRefreshToken = jwtUtil.extractUsername(refreshToken);
+
+                }catch (JwtException ex){
+                    deleteCookies(response);
+
+                }
+            }
+
+            boolean valid = false;
             if(emailFromToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 if (jwtUtil.validateToken(token)) {
                     setAuth(token);
+                    valid = true;
                 }
+            }
 
-            }else if(emailFromRefreshToken != null && SecurityContextHolder.getContext().getAuthentication() == null){
+            if(!valid && emailFromRefreshToken != null && SecurityContextHolder.getContext().getAuthentication() == null){
                 if(jwtUtil.validateRefreshToken(emailFromRefreshToken)){
                     setAuth(refreshToken);
 
@@ -53,13 +74,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
                     String newtoken = jwtUtil.generateToken(claims, emailFromRefreshToken);
                     CookieUtil.create(response, JwtConstants.JWT_COOKIE_NAME, newtoken, false, -1);
+
                 }else{
-                    CookieUtil.clear(response, JwtConstants.JWT_REFRESH_COOKIE_NAME);
-                    CookieUtil.clear(response, JwtConstants.JWT_COOKIE_NAME);
+                    deleteCookies(response);
                 }
-            }else if(token != null && refreshToken != null){
-                CookieUtil.clear(response, JwtConstants.JWT_REFRESH_COOKIE_NAME);
-                CookieUtil.clear(response, JwtConstants.JWT_COOKIE_NAME);
             }
 
         filterChain.doFilter(request, response);
@@ -74,5 +92,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         );
 
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+    }
+
+    private void deleteCookies(HttpServletResponse response){
+        CookieUtil.clear(response, JwtConstants.JWT_REFRESH_COOKIE_NAME);
+        CookieUtil.clear(response, JwtConstants.JWT_COOKIE_NAME);
     }
 }

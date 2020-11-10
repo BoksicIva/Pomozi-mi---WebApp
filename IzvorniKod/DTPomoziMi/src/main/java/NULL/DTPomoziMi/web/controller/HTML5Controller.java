@@ -16,7 +16,7 @@ public class HTML5Controller {
         return "forward:/";
     }
 
-    @GetMapping("/getCsrf") // TODO makni
+    @GetMapping("/api/getCsrf") // TODO makni
     public ResponseEntity<?> get(){
         return ResponseEntity.ok("");
     }

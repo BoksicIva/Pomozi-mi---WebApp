@@ -12,7 +12,6 @@ class LoginService {
     }
 
     getCSRF() {
-
       return http.get("/getCsrf", {});
     }
 

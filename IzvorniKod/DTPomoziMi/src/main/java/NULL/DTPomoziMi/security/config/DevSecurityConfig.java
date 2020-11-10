@@ -1,14 +1,17 @@
 package NULL.DTPomoziMi.security.config;
 
-import NULL.DTPomoziMi.model.Role;
 import NULL.DTPomoziMi.web.filters.CsrfTokenRequestFilter;
 import NULL.DTPomoziMi.web.filters.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,10 +23,11 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
 
-
+@Profile("dev")
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
+public class DevSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserDetailsService myUserDetailsService;
@@ -56,22 +60,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .cors()
                 .and()
-                .csrf().csrfTokenRepository(cookieCsrfTokenRepository()).ignoringAntMatchers("/h2/**") // TODO makni h2
-                .and()
-                .authorizeRequests()
-                .antMatchers("/h2/**").permitAll() // TODO makni h2
-                .antMatchers("/auth/*").permitAll()
-                .antMatchers("/getCsrf").permitAll()
-                .anyRequest().hasAnyRole(Role.ROLE_USER.toString().substring(5), Role.ROLE_ADMIN.toString().substring(5))
-                .and()
-                .formLogin().disable()
-                .logout().logoutUrl("/logout")
-                    .logoutSuccessHandler(myLogoutHandler);
+                .csrf().csrfTokenRepository(cookieCsrfTokenRepository()).ignoringAntMatchers("/h2/**");
 
+        http.authorizeRequests()
+                .antMatchers("/h2/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/getCsrf").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/auth/*").permitAll()
+                .anyRequest().authenticated();
+
+        http.headers().frameOptions().disable();
+
+        http.formLogin().disable()
+                .logout().logoutUrl("/logout")
+                .logoutSuccessHandler(myLogoutHandler);
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(csrfTokenRequestFilter, CsrfFilter.class);
-        http.headers().frameOptions().disable(); // TODO h2 makni
 
     }
 
@@ -84,9 +88,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return repo;
     }
 
+    @Override
+    public void configure(WebSecurity web){
+        web.ignoring().antMatchers("/");
+        web.ignoring().antMatchers("/*.ico");
+        web.ignoring().antMatchers("/*.js");
+        web.ignoring().antMatchers("/*.json");
+        web.ignoring().antMatchers("/*.png");
+        web.ignoring().antMatchers("/static/**");
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(11);
-    } 
-    
+    }
+
 }

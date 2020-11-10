@@ -17,7 +17,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>15</java.version>
+		<java.version>11</java.version>
 		<frontend-src-dir>${project.basedir}/src/main/webapp</frontend-src-dir>
 		<node.version>v14.13.1</node.version>
 		<yarn.version>v1.22.5</yarn.version>
@@ -25,6 +25,47 @@
 		<jjwt.version>0.9.1</jjwt.version>
 		<passay.version>1.6.0</passay.version>
 	</properties>
+
+	<profiles>
+		<profile>
+			<id>dev</id>
+
+			<properties>
+				<spring.profiles.active>dev</spring.profiles.active>
+			</properties>
+
+			<dependencies>
+
+				<dependency>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+					<scope>runtime</scope>
+				</dependency>
+
+			</dependencies>
+
+		</profile>
+		<profile>
+			<id>prod</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+
+			<properties>
+				<spring.profiles.active>prod</spring.profiles.active>
+			</properties>
+
+			<dependencies>
+
+				<dependency>
+					<groupId>org.postgresql</groupId>
+					<artifactId>postgresql</artifactId>
+					<scope>runtime</scope>
+				</dependency>
+
+			</dependencies>
+		</profile>
+	</profiles>
 
 	<dependencies>
 		<dependency>
@@ -49,6 +90,12 @@
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+			<version>2.3.3.RELEASE</version>
+		</dependency>
+
 		<!-- JWT -->
 		<dependency>
 		    <groupId>io.jsonwebtoken</groupId>
@@ -59,14 +106,6 @@
 		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
 			<artifactId>jakarta.xml.bind-api</artifactId>
-		</dependency>
-
-
-		<!-- DATABASE -->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
 		</dependency>
 
 		<!-- TEST -->
@@ -97,6 +136,14 @@
 	</dependencies>
 
 	<build>
+
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
 			<plugin>

@@ -35,6 +35,7 @@ public class UserDAOImpl implements UserDAO {
                 sql, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.BOOLEAN, Types.VARCHAR, Types.NUMERIC, Types.NUMERIC);
 
         pscf.setReturnGeneratedKeys(true);
+        pscf.setGeneratedKeysColumnNames("id_korisnik");
 
         PreparedStatementCreator psc = pscf.newPreparedStatementCreator(Arrays.asList(
                 user.getFirstName(),

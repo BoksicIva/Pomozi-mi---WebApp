@@ -24,12 +24,12 @@ public class TokenDAOImpl implements TokenDAO {
 
     @Override
     public String getTokenByEmail(String email) {
-        String sql = "SELECT TOKEN FROM KORISNIK WHERE EMAIL=?";
+        String sql = "SELECT TOKEN FROM KORISNIK WHERE EMAIL=? AND AKTIVAN = ?";
 
         String token = null;
 
         try{
-            token = jdbcTemplate.queryForObject(sql, new Object[]{email}, (rs, rowNum) -> rs.getString("TOKEN"));
+            token = jdbcTemplate.queryForObject(sql, new Object[]{email, Boolean.valueOf(true)}, (rs, rowNum) -> rs.getString("TOKEN"));
         }catch(IncorrectResultSizeDataAccessException e){
             logger.error(e.getMessage());
         }

@@ -4,6 +4,7 @@ import NULL.DTPomoziMi.properties.JwtConstants;
 import NULL.DTPomoziMi.service.TokenService;
 import NULL.DTPomoziMi.util.MyCollectors;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,12 +76,20 @@ public class JwtUtil {
     }
 
     public boolean validateToken(String token) {
-        return !isTokenExpired(token);
+        try {
+            return !isTokenExpired(token);
+        }catch (JwtException e){
+            return false;
+        }
     }
 
     public boolean validateRefreshToken(String token) {
-        String username = extractUsername(token);
-        return (!isTokenExpired(token) && token.equals(tokenService.getTokenByEmail(username)));
+        try{
+            String username = extractUsername(token);
+            return (!isTokenExpired(token) && token.equals(tokenService.getTokenByEmail(username)));
+        }catch (JwtException e){
+            return false;
+        }
     }
 
 }

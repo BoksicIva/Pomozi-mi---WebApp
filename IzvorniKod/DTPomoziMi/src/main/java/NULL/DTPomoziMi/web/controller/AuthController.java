@@ -1,5 +1,6 @@
 package NULL.DTPomoziMi.web.controller;
 
+import NULL.DTPomoziMi.exception.UserAlreadyExistException;
 import NULL.DTPomoziMi.jwt.JwtUtil;
 import NULL.DTPomoziMi.properties.JwtConstants;
 import NULL.DTPomoziMi.service.TokenService;
@@ -10,11 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.validation.BindingResult;
@@ -28,7 +32,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -62,7 +66,11 @@ public class AuthController {
 
         logger.debug("Registering user account with info: {}", user);
 
-        userService.registerUser(user);
+        try {
+            userService.registerUser(user);
+        }catch (DataIntegrityViolationException e){
+            throw new UserAlreadyExistException("User with username: " + user.getEmail() + " already exists");
+        }
 
         return ResponseEntity.ok(messageSource.getMessage("auth.registration.success", null,"Registration successful", request.getLocale()));
     }

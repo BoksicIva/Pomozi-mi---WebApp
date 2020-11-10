@@ -59,6 +59,14 @@ CREATE TABLE Zahtjev
   FOREIGN KEY (ID_Izvrsitelj) REFERENCES Korisnik(ID_Korisnik)
 );
 
+CREATE TABLE Izvrsavanje
+(
+  primljenNotif BOOLEAN NOT NULL,
+  ID_Zahtjev INT NOT NULL,
+  PRIMARY KEY (ID_Zahtjev),
+  FOREIGN KEY (ID_Zahtjev) REFERENCES Zahtjev(ID_Zahtjev)
+);
+
 CREATE TABLE Ocjenjivanje
 (
   ocjena INT NOT NULL,
@@ -66,18 +74,12 @@ CREATE TABLE Ocjenjivanje
   ID_Ocjenjivanje INT NOT NULL,
   ID_Ocjenjivac INT NOT NULL,
   ID_Ocjenjeni INT NOT NULL,
+  ID_Zahtjev INT,
   PRIMARY KEY (ID_Ocjenjivanje),
   FOREIGN KEY (ID_Ocjenjivac) REFERENCES Korisnik(ID_Korisnik),
   FOREIGN KEY (ID_Ocjenjeni) REFERENCES Korisnik(ID_Korisnik),
+  FOREIGN KEY (ID_Zahtjev) REFERENCES Izvrsavanje(ID_Zahtjev),
   CONSTRAINT CHK_OCJENA CHECK (OCJENA BETWEEN 1 AND 5)
-);
-
-CREATE TABLE Izvrsavanje
-(
-  primljenNotif BOOLEAN NOT NULL,
-  ID_Zahtjev INT NOT NULL,
-  PRIMARY KEY (ID_Zahtjev),
-  FOREIGN KEY (ID_Zahtjev) REFERENCES Zahtjev(ID_Zahtjev)
 );
 
 CREATE TABLE Kandidiranje
@@ -90,17 +92,6 @@ CREATE TABLE Kandidiranje
   FOREIGN KEY (godina, duljina, sirina) REFERENCES Kandidatura(godina, duljina, sirina),
   FOREIGN KEY (ID_Korisnik) REFERENCES Korisnik(ID_Korisnik)
 );
-
-CREATE TABLE OcjenaIzvrsavanja
-(
-  ID_Zahtjev INT NOT NULL,
-  ID_Ocjenjivanje INT NOT NULL,
-  PRIMARY KEY (ID_Zahtjev, ID_Ocjenjivanje),
-  FOREIGN KEY (ID_Zahtjev) REFERENCES Izvrsavanje(ID_Zahtjev),
-  FOREIGN KEY (ID_Ocjenjivanje) REFERENCES Ocjenjivanje(ID_Ocjenjivanje)
-  /*constraint za 1 zahtjev 2 ocijene...*/
-);
-
 
 CREATE TABLE ImaUlogu
 (
