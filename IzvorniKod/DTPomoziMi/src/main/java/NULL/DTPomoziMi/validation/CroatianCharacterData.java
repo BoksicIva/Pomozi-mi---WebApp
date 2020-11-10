@@ -4,10 +4,10 @@ import org.passay.CharacterData;
 
 public enum CroatianCharacterData implements CharacterData {
     /** Lower case characters. */
-    LowerCase("INSUFFICIENT_LOWERCASE", "abcčćddžđefghijklljmnnjoprsštuvzžqxyw"),
+    LowerCase("INSUFFICIENT_LOWERCASE", "abcčćdđefghijklmnnoprsštuvzžqxyw"),
 
     /** Upper case characters. */
-    UpperCase("INSUFFICIENT_UPPERCASE", "ABCČĆDDŽĐEFGHIJKLLJMNNJOPRSŠTUVZŽQWYX");
+    UpperCase("INSUFFICIENT_UPPERCASE", "ABCČĆDĐEFGHIJKLMNOPRSŠTUVZŽQWYX");
 
     /** Error code. */
     private final String errorCode;

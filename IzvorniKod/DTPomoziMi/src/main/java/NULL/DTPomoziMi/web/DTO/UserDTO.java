@@ -2,6 +2,8 @@ package NULL.DTPomoziMi.web.DTO;
 
 import NULL.DTPomoziMi.validation.MatchPassword;
 import NULL.DTPomoziMi.validation.ValidPassword;
+
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
@@ -13,16 +15,15 @@ public class UserDTO {
     private String firstName;
 
     @NotNull
-    @Size(min=1, message = "{Size.UserDTO.lastName}")
+    @Size(message = "{Size.UserDTO.lastName}", min=1)
     private String lastName;
 
     @ValidPassword
     private String password;
     private String secondPassword;
 
-    // TODO valid email i vracanje validacijskih errora
     @NotNull
-    @Size(min = 1, message = "{Size.userDTO.email}")
+    @Email(message = "{UserDTO.email}")
     private String email;
 
     // TODO validacija duljine i sirine...
