@@ -13,9 +13,10 @@ public class User{
     private List<Role> roles;
     private boolean enabled;
     private String token;
-
+	private Location location;
     private BigDecimal longitude; //dužina
     private BigDecimal latitude; //širina
+
     
     
 	public User(Long id, String firstName, String lastName, String password, String email, List<Role> roles,

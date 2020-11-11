@@ -72,7 +72,7 @@ public class AuthController {
             throw new UserAlreadyExistException("User with username: " + user.getEmail() + " already exists");
         }
 
-        return ResponseEntity.ok(messageSource.getMessage("auth.registration.success", null,"Registration successful", request.getLocale()));
+        return ResponseEntity.ok(messageSource.getMessage("auth.registration.success", null, request.getLocale()));
     }
 
     @PostMapping("/login")

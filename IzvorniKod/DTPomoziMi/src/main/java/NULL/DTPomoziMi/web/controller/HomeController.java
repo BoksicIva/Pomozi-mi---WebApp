@@ -1,8 +1,8 @@
 package NULL.DTPomoziMi.web.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -14,14 +14,9 @@ public class HomeController {
     }
 
     @ResponseBody
-    @GetMapping("/api/notPermitted")
-    public String notPermitted(){
-        return "Restricted access point reached!";
+    @GetMapping("/api/getCsrf")
+    public ResponseEntity<?> get(){
+        return ResponseEntity.ok("");
     }
 
-    @ResponseBody
-    @PostMapping("/api/notPermitted")
-    public String notPostPermitted(){
-        return "Restricted access point reached!";
-    }
 }
