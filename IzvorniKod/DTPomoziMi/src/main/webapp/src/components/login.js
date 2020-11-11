@@ -15,7 +15,9 @@ export const Login = () => (
         <div className="empthy"></div>
         <div className="container">
             <Card className="crd col-lg-7 mx-auto">
-                <Card.Title className="title">Prijavi se u aplikaciju <span className="pomozi">Pomozi mi</span></Card.Title>
+                <Card.Title className="title">
+                Prijavi se u aplikaciju <span style={{ color: "red" }}>Pomozi</span>Mi
+                </Card.Title>
                 <Formik
                     initialValues={{
                         email: "",
@@ -51,11 +53,12 @@ export const Login = () => (
                         
 
                     }}
+                    
                     validationSchema={Yup.object().shape({
                         email: Yup.string()
-                            .email()
-                            .required("Required"),
-                        password: Yup.string().required("password required")
+                            .email("Unesite e-mail ispravnog formata")
+                            .required("Ovo polje je obavezno"),
+                        password: Yup.string("Ovo polje je obavezno").required("Ovo polje je obavezno")
                     })}
                 >
                     {props => {
@@ -79,7 +82,7 @@ export const Login = () => (
                                     </label>
                                         <input
                                             id="email"
-                                            placeholder="Enter your email"
+                                            placeholder="Upisite svoj email"
                                             type="text"
                                             value={values.email}
                                             onChange={handleChange}
@@ -97,11 +100,11 @@ export const Login = () => (
                                     
                                     <div className="inp-line">
                                         <label htmlFor="password">
-                                            Password:
+                                            Lozinka:
                                     </label>
                                         <input
                                             id="password"
-                                            placeholder="Enter your password"
+                                            placeholder="Upisite svoju lozinku"
                                             type="password"
                                             value={values.password}
                                             onChange={handleChange}
@@ -121,18 +124,18 @@ export const Login = () => (
                                     </div>
                                 </div>
                                 <div className="inp-line">
-                                <span className="res-btn">
+                                
                                 <button
                                     type="button"
                                     className="outline"
                                     onClick={handleReset}
                                     disabled={!dirty || isSubmitting}
                                 >
-                                    Reset
+                                    Resetiraj
                                 </button>
-                                </span>
+                                
                                 <button type="submit"  disabled={isSubmitting}>
-                                    Submit
+                                    Prijavi se
                                 </button>
                                 </div>
 
@@ -140,7 +143,7 @@ export const Login = () => (
                         );
                     }}
                 </Formik>
-                <div className="inp-line">Not signed in yet? <Link to='/register'>Sign up</Link></div>
+                <div className="inp-line">Niste registrirani? <Link to='/register'>Registracija</Link></div>
             </Card>
         </div>
     </div>
