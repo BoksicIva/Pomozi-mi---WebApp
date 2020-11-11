@@ -23,7 +23,7 @@ export const Login = (props) => (
           }}
           onSubmit={async (values) => {
             await new Promise((resolve) => setTimeout(resolve, 500));
-            //alert(JSON.stringify(values, null, 2));
+
             let formData = new FormData();
 
             formData.append("email", "jan.rocek@gmail.com");
