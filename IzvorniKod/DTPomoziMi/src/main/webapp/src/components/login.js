@@ -26,8 +26,8 @@ export const Login = (props) => (
 
             let formData = new FormData();
 
-            formData.append("email", "jan.rocek@gmail.com");
-            formData.append("password", "JanRoček1@");
+            formData.append("email", values.email);
+            formData.append("password", values.password);
 
             LoginService.getCSRF()
               .then((response) => {
