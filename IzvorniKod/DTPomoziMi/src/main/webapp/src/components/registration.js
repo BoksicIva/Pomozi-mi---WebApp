@@ -25,35 +25,36 @@ export const Registration = () => (
             secondPassword: "",
           }}
           onSubmit={async (values) => {
-            await new Promise((resolve) => setTimeout(resolve, 500));
+              await new Promise((resolve) => setTimeout(resolve, 500));
 
-            alert(JSON.stringify(values, null, 2));
+              alert(JSON.stringify(values, null, 2));
 
-            let data = new FormData();
+              let data = new FormData();
 
-            data.append("firstName", "Jan");
-            data.append("lastName", "Roček");
-            data.append("password", "JanRoček1@");
-            data.append("secondPassword", "JanRoček1@");
-            data.append("email", "jan.rocek@gmail.com");
+              data.append("firstName", "Jan");
+              data.append("lastName", "Roček");
+              data.append("password", "JanRoček1@");
+              data.append("secondPassword", "JanRoček1@");
+              data.append("email", "jan.rocek@gmail.com");
 
-            RegService.getCSRF()
-              .then((response) => {
-                console.log(response);
-                console.log(response.data);
-                console.log(response.headers);
+              RegService.getCSRF()
+                  .then((response) => {
+                      console.log(response);
+                      console.log(response.data);
+                      console.log(response.headers);
 
-                RegService.register(data)
-                  .then((response1) => {
-                    alert(JSON.stringify(response1, null, 2));
+                      RegService.register(data)
+                          .then((response1) => {
+                              // alert(JSON.stringify(response1, null, 2));
+                              props.history.push('/login');
+                          })
+                          .catch((error1) => {
+                              console.log(error1);
+                          });
                   })
-                  .catch((error1) => {
-                    console.log(error1);
+                  .catch((error) => {
+                      console.log(error);
                   });
-              })
-              .catch((error) => {
-                console.log(error);
-              });
           }}
           validationSchema={Yup.object().shape({
             email: Yup.string()

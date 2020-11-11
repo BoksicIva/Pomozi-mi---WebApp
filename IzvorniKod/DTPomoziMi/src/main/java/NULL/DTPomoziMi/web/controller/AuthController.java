@@ -54,7 +54,7 @@ public class AuthController {
     @Resource(name = "myUserDetailsService")
     private UserDetailsService userDetailsService;
 
-    @PostMapping("/registration")
+    @PostMapping(value = "/registration", produces = {"application/json; charset=UTF-8"} )
     public ResponseEntity<?> register(@Valid UserDTO user, BindingResult bindingResult, HttpServletRequest request) {
 
         if(bindingResult.hasErrors()) {
@@ -75,7 +75,7 @@ public class AuthController {
         return ResponseEntity.ok(messageSource.getMessage("auth.registration.success", null, request.getLocale()));
     }
 
-    @PostMapping("/login")
+    @PostMapping(value = "/login", produces = {"application/json; charset=UTF-8"})
     public ResponseEntity<?> login(@RequestParam("email") String email, @RequestParam("password") String password,
 								   HttpServletResponse response) throws Exception {
         logger.debug("Login with username: {}", email);

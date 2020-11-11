@@ -35,23 +35,23 @@ export const Login = () => (
                             console.log(response);
                             console.log(response.data)
                             console.log(response.headers);
-                        }).catch((error) => {
-                            console.log(error);
-                        });
 
-                         LoginService.login(formData).then((response) => {
-                            alert(JSON.stringify(response, null, 2));
+                            LoginService.login(formData).then((response) => {
+                                //alert(JSON.stringify(response, null, 2));
 
-                            LoginService.notPer().then((response2) => {
-                                alert(JSON.stringify(response2, null, 2));
-                            }).catch((error2) => {
-                                console.log(error2);
+                                LoginService.notPer().then((response2) => {
+                                    // alert(JSON.stringify(response2, null, 2));
+                                    localStorage.setItem("username", values.email);
+                                    props.history.push('/home');
+                                }).catch((error2) => {
+                                    console.log(error2);
+                                });
+                            }).catch((error) => {
+                                console.log(error);
                             });
                         }).catch((error) => {
                             console.log(error);
                         });
-                        
-
                     }}
                     
                     validationSchema={Yup.object().shape({
@@ -123,7 +123,7 @@ export const Login = () => (
 
                                     </div>
                                 </div>
-                                <div className="inp-line">
+                                <div className="inp-line lr-button-container">
                                 
                                 <button
                                     type="button"

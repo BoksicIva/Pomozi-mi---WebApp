@@ -17,12 +17,12 @@ public class SecuredController {
     @Autowired
     MessageSource messageSource;
 
-    @GetMapping("/notPermitted")
+    @GetMapping(value = "/notPermitted", produces = {"application/json; charset=UTF-8"})
     public ResponseEntity<?> notPermitted(HttpServletRequest request){
         return ResponseEntity.ok(messageSource.getMessage("secured.not.permitted", null, request.getLocale()));
     }
 
-    @PostMapping("/notPermitted")
+    @PostMapping(value = "/notPermitted", produces = {"application/json; charset=UTF-8"})
     public ResponseEntity<?> notPostPermitted(HttpServletRequest request){
         return ResponseEntity.ok(messageSource.getMessage("secured.not.permitted", null, request.getLocale()));
     }
