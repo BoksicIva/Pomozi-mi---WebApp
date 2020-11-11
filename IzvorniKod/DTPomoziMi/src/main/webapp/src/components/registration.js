@@ -23,19 +23,18 @@ export const Registration = (props) => (
             email: "",
             password: "",
             secondPassword: "",
+            error1: "",
           }}
           onSubmit={async (values) => {
             await new Promise((resolve) => setTimeout(resolve, 500));
 
-            alert(JSON.stringify(values, null, 2));
-
             let data = new FormData();
 
-            data.append("firstName", "Jan");
-            data.append("lastName", "Roček");
-            data.append("password", "JanRoček1@");
-            data.append("secondPassword", "JanRoček1@");
-            data.append("email", "jan.rocek@gmail.com");
+            data.append("firstName", values.firstName);
+            data.append("lastName", values.lastName);
+            data.append("password", values.password);
+            data.append("secondPassword", values.secondPassword);
+            data.append("email", values.email);
 
             RegService.getCSRF()
               .then((response) => {
@@ -45,11 +44,35 @@ export const Registration = (props) => (
 
                 RegService.register(data)
                   .then((response1) => {
-                    // alert(JSON.stringify(response1, null, 2));
                     props.history.push("/login");
                   })
                   .catch((error1) => {
-                    console.log(error1);
+                    const code = error1.response.status;
+                    const response = error1.response.data;
+
+                    if (code === 400) {
+                      for (let obj of response) {
+                        let div = document.createElement("div");
+                        for(let s of obj.defaultMessage.split("] | [")) {
+                          div.innerHTML += s + "</br>";
+                        }
+                        
+                        if (obj.field !== undefined) {
+                          document
+                            .getElementById(obj.field + "-error")
+                            .append(div);
+                        } else {
+                          document.getElementById("uncategorised").append(div);
+                        }
+                      }
+                    }
+                    if (code === 403) {
+                     
+                        let div = document.createElement("div");
+                        div.innerHTML = response;
+                        document.getElementById("uncategorised").append(div);
+                  
+                    }
                   });
               })
               .catch((error) => {
@@ -106,6 +129,7 @@ export const Registration = (props) => (
                   {errors.firstName && touched.firstName && (
                     <div className="input-feedback">{errors.firstName}</div>
                   )}
+                  <span className="input-feedback" id="firstName-error"></span>
                 </div>
 
                 <div className="inp-line">
@@ -126,6 +150,7 @@ export const Registration = (props) => (
                   {errors.lastName && touched.lastName && (
                     <div className="input-feedback">{errors.lastName}</div>
                   )}
+                  <span className="input-feedback" id="lastName-error"></span>
                 </div>
 
                 <div className="inp-line">
@@ -146,6 +171,7 @@ export const Registration = (props) => (
                   {errors.email && touched.email && (
                     <div className="input-feedback">{errors.email}</div>
                   )}
+                  <span className="input-feedback" id="email-error"></span>
                 </div>
 
                 <div className="inp-line">
@@ -166,6 +192,7 @@ export const Registration = (props) => (
                   {errors.password && touched.password && (
                     <div className="input-feedback">{errors.password}</div>
                   )}
+                  <span className="input-feedback" id="password-error"></span>
                 </div>
 
                 <div className="inp-line">
@@ -188,6 +215,10 @@ export const Registration = (props) => (
                       {errors.secondPassword}
                     </div>
                   )}
+                  <span
+                    className="input-feedback"
+                    id="secondPassword-error"
+                  ></span>
                 </div>
 
                 <div className="inp-line">
@@ -250,6 +281,7 @@ export const Registration = (props) => (
                   )}
                 </div>
 
+                <span className="input-feedback" id="uncategorised"></span>
                 <div className="inp-line lr-button-container">
                   <span className="res-btn">
                     <button
