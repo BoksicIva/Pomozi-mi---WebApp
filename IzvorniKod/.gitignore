@@ -1,12 +1,3 @@
-/dokumentacija/**/*.aux
-/dokumentacija/**/*.lof
-/dokumentacija/**/*.log
-/dokumentacija/**/*.lot
-/dokumentacija/**/*.out
-/dokumentacija/**/*.pdf
-/dokumentacija/**/*.synctex.gz
-/dokumentacija/**/*.toc
-
 **/DTPomoziMi/HELP.md
 **/target/
 !**/.mvn/wrapper/maven-wrapper.jar
@@ -44,4 +35,3 @@
 ### frontend ###
 **/src/main/webapp/build/
 **/src/main/webapp/node_modules/
->>>>>>> .gitignore
