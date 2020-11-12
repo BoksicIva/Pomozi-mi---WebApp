@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -54,7 +55,7 @@ public class AuthController {
     @Resource(name = "myUserDetailsService")
     private UserDetailsService userDetailsService;
 
-    @PostMapping("/registration")
+    @PostMapping(value = "/registration", produces = {"application/json; charset=UTF-8"} )
     public ResponseEntity<?> register(@Valid UserDTO user, BindingResult bindingResult, HttpServletRequest request) {
 
         if(bindingResult.hasErrors()) {
@@ -72,10 +73,10 @@ public class AuthController {
             throw new UserAlreadyExistException("User with username: " + user.getEmail() + " already exists");
         }
 
-        return ResponseEntity.ok(messageSource.getMessage("auth.registration.success", null,"Registration successful", request.getLocale()));
+        return ResponseEntity.ok(messageSource.getMessage("auth.registration.success", null, request.getLocale()));
     }
 
-    @PostMapping("/login")
+    @PostMapping(value = "/login", produces = {"application/json; charset=UTF-8"})
     public ResponseEntity<?> login(@RequestParam("email") String email, @RequestParam("password") String password,
 								   HttpServletResponse response) throws Exception {
         logger.debug("Login with username: {}", email);
@@ -84,7 +85,7 @@ public class AuthController {
 
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-        } catch (BadCredentialsException e) {
+        } catch (AuthenticationException e) {
             logger.debug("Incorect username: {} or password", email);
             return new ResponseEntity<String>("Incorect username or password", HttpStatus.UNAUTHORIZED); // TODO promjeni
         }

@@ -3,7 +3,6 @@ package NULL.DTPomoziMi.DAO.impl;
 import NULL.DTPomoziMi.DAO.UserDAO;
 import NULL.DTPomoziMi.model.Role;
 import NULL.DTPomoziMi.model.User;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;

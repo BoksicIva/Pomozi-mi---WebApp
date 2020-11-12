@@ -93,6 +93,9 @@ public class ProdSecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/*.json");
         web.ignoring().antMatchers("/*.png");
         web.ignoring().antMatchers("/static/**");
+        web.ignoring().antMatchers("/register");
+        web.ignoring().antMatchers("/login");
+        web.ignoring().antMatchers("/home");
     }
 
     @Bean

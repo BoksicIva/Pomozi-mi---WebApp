@@ -1,24 +1,17 @@
 package NULL.DTPomoziMi.web.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
 public class HTML5Controller {
 
     /*all paths that do not contain a period (and are not explicitly mapped already)
     are React routes, and should forward to the home page:
     */
-    @RequestMapping(value = "/{[path:[^\\.]*}")
+    @RequestMapping(value = "/{path:^[^.]+$}")
     public String redirect() {
         return "forward:/";
-    }
-
-    @GetMapping("/api/getCsrf") // TODO makni
-    public ResponseEntity<?> get(){
-        return ResponseEntity.ok("");
     }
 
 }

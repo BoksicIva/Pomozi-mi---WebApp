@@ -37,7 +37,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
             return true;
 
 
-        String message = val.getMessages(result).stream().collect(Collectors.joining("] | [", "[", "]"));
+        String message = val.getMessages(result).stream().collect(Collectors.joining("] | ["));
 
         constraintValidatorContext.disableDefaultConstraintViolation();
         constraintValidatorContext.buildConstraintViolationWithTemplate(message).addConstraintViolation();
