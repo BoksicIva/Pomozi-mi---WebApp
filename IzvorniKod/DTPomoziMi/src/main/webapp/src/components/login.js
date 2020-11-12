@@ -46,11 +46,19 @@ export const Login = (props) => (
                         props.history.push("/home");
                       })
                       .catch((error2) => {
-                        console.log(error2);
+                        const response = error2.response.data;
+                        let div = document.createElement("div");
+                        div.innerHTML = response;
+                        document.getElementById("uncategorised").append(div);
                       });
                   })
                   .catch((error) => {
                     console.log(error);
+                    const response = error.response.data;
+                        let div = document.createElement("div");
+                        div.innerHTML = response;
+                        document.getElementById("uncategorised").innerHTML="";
+                        document.getElementById("uncategorised").append(div);
                   });
               })
               .catch((error) => {
@@ -119,6 +127,8 @@ export const Login = (props) => (
                     )}
                   </div>
                 </div>
+
+                <span className="input-feedback" id="uncategorised"></span>
                 <div className="inp-line lr-button-container">
                   <button
                     type="button"
