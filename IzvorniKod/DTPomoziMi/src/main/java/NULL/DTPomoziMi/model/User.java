@@ -2,24 +2,65 @@ package NULL.DTPomoziMi.model;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
+
+@Entity(name = "Korisnik")
 public class User{
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "ID_Korisnik")
     private Long id;
+	
+	@Column(name = "ime", nullable = false)
     private String firstName;
+	
+	@Column(name = "prezime", nullable = false)
     private String lastName;
-    private String password; // TODO length password encoder u bazi...
+	
+	@Column(name = "lozinka", nullable = false)
+    private String password;
+	
+	@Column(unique = true, nullable = false)
     private String email;
-    private List<Role> roles;
+	
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(
+	  name = "ImaUlogu",
+	  joinColumns = @JoinColumn(name = "ID_Korisnik"),
+	  inverseJoinColumns = @JoinColumn(name = "ID_Uloga")
+	)
+    private List<RoleEntity> roles;
+	
+	@Column(name = "aktivan")
     private boolean enabled;
+	
+	@Column(nullable = true)
     private String token;
+    
+    @Transient
 	private Location location;
-    private BigDecimal longitude; //dužina
-    private BigDecimal latitude; //širina
-
+	
+	@Column(name = "duljina", nullable = true)
+    private BigDecimal longitude;
+	
+	@Column(name = "sirina", nullable = true)
+    private BigDecimal latitude; 
+	
+	public User() {}
     
-    
-	public User(Long id, String firstName, String lastName, String password, String email, List<Role> roles,
+	public User(Long id, String firstName, String lastName, String password, String email, List<RoleEntity> roles,
 			boolean enabled, String token, BigDecimal longitude, BigDecimal latitude) {
 		super();
 		this.id = id;
@@ -34,7 +75,7 @@ public class User{
 		this.latitude = latitude;
 	}
 	
-	public User(String firstName, String lastName, String password, String email, List<Role> roles, boolean enabled,
+	public User(String firstName, String lastName, String password, String email, List<RoleEntity> roles, boolean enabled,
 			String token, BigDecimal longitude, BigDecimal latitude) {
 		
 		this(null, firstName, lastName, password, email, roles, enabled, token, longitude, latitude);
@@ -78,11 +119,14 @@ public class User{
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public List<Role> getRoles() {
+	public List<RoleEntity> getRoles() {
 		return roles;
 	}
-	public void setRoles(List<Role> roles) {
+	public void setRoles(List<RoleEntity> roles) {
 		this.roles = roles;
+	}
+	public List<Role> getEnumRoles() {
+		return roles.stream().map(r -> r.getRole()).collect(Collectors.toList());
 	}
 	public boolean isEnabled() {
 		return enabled;
