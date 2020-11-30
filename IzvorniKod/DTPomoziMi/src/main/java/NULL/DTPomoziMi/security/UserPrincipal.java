@@ -24,7 +24,7 @@ public class UserPrincipal implements UserDetails{
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return mapToGrantedAuthorities(user.getRoles());
+		return mapToGrantedAuthorities(user.getEnumRoles());
 	}
 	
 	private List<? extends GrantedAuthority> mapToGrantedAuthorities(List<Role> roles){
@@ -55,10 +55,14 @@ public class UserPrincipal implements UserDetails{
 	public boolean isCredentialsNonExpired() {
 		return true;
 	}
+	
 	@Override
 	public boolean isEnabled() {
 		return user.isEnabled();
 	}
 	
+	public User getUser() {
+		return user;
+	}
 	
 }

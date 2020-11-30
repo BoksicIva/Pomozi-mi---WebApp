@@ -78,7 +78,7 @@ public class ProdSecurityConfig extends WebSecurityConfigurerAdapter {
 
     CookieCsrfTokenRepository cookieCsrfTokenRepository() {
         CookieCsrfTokenRepository repo = new CookieCsrfTokenRepository();
-        repo.setCookieHttpOnly(true);
+        repo.setCookieHttpOnly(false);
         repo.setCookieName("X-CSRF-COOKIE"); //TODO constants
         repo.setHeaderName("X-CSRF-TOKEN");
 

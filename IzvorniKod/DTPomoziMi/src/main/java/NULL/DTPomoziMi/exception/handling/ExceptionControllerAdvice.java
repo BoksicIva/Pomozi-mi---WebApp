@@ -39,7 +39,7 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity handleUsernameNotFoundException(UsernameNotFoundException e){
+    public ResponseEntity<?> handleUsernameNotFoundException(UsernameNotFoundException e){
         e.printStackTrace();
 
         Map<String, String> props = new HashMap<>();

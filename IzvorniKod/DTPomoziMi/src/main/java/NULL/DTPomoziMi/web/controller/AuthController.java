@@ -3,6 +3,7 @@ package NULL.DTPomoziMi.web.controller;
 import NULL.DTPomoziMi.exception.UserAlreadyExistException;
 import NULL.DTPomoziMi.jwt.JwtUtil;
 import NULL.DTPomoziMi.properties.JwtConstants;
+import NULL.DTPomoziMi.security.UserPrincipal;
 import NULL.DTPomoziMi.service.TokenService;
 import NULL.DTPomoziMi.service.UserService;
 import NULL.DTPomoziMi.util.CookieUtil;
@@ -11,15 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.validation.BindingResult;
@@ -91,11 +89,17 @@ public class AuthController {
         }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        
+        String refreshToken = null;
+        
+        if(userDetails instanceof UserPrincipal && ((UserPrincipal) userDetails).getUser().getToken() != null) {
+        	refreshToken = ((UserPrincipal) userDetails).getUser().getToken();
+        }else {
+        	refreshToken = jwtUtil.generateRefreshToken(userDetails);
+        	tokenService.updateToken(userDetails.getUsername(), refreshToken);
+        }
 
         String token = jwtUtil.generateToken(userDetails);
-        String refreshToken = jwtUtil.generateRefreshToken(userDetails);
-
-        tokenService.updateToken(userDetails.getUsername(), refreshToken);
 
         CookieUtil.create(response, JwtConstants.JWT_COOKIE_NAME, token, false, -1);
         CookieUtil.create(response, JwtConstants.JWT_REFRESH_COOKIE_NAME, refreshToken, false, -1);

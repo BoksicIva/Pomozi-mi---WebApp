@@ -1,7 +1,8 @@
 package NULL.DTPomoziMi.security;
 
-import NULL.DTPomoziMi.DAO.UserDAO;
 import NULL.DTPomoziMi.model.User;
+import NULL.DTPomoziMi.repository.UserRepo;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,12 +13,12 @@ import org.springframework.stereotype.Service;
 public class MyUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private UserDAO userDAO;
+    private UserRepo userRepo;//UserDAO userDAO;
 
     @Override
     public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
         try {
-            User user = userDAO.getUserByEmail(email);
+            User user = userRepo.findByEmail(email);
             if (user == null)
                 throw new UsernameNotFoundException("User with username: " + email + " was not found.");
 

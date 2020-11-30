@@ -1,7 +1,9 @@
 package NULL.DTPomoziMi.model;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.Column;
@@ -19,7 +21,7 @@ import javax.persistence.Transient;
 public class User{
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID_Korisnik")
     private Long id;
 	
@@ -37,12 +39,11 @@ public class User{
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(
-	  name = "ImaUlogu",
+	  name = "imaulogu",
 	  joinColumns = @JoinColumn(name = "ID_Korisnik"),
 	  inverseJoinColumns = @JoinColumn(name = "ID_Uloga")
 	)
-    private List<RoleEntity> roles;
-	
+    private Set<RoleEntity> roles = new HashSet<>();
 	@Column(name = "aktivan")
     private boolean enabled;
 	
@@ -60,35 +61,6 @@ public class User{
 	
 	public User() {}
     
-	public User(Long id, String firstName, String lastName, String password, String email, List<RoleEntity> roles,
-			boolean enabled, String token, BigDecimal longitude, BigDecimal latitude) {
-		super();
-		this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.password = password;
-		this.email = email;
-		this.roles = roles;
-		this.enabled = enabled;
-		this.token = token;
-		this.longitude = longitude;
-		this.latitude = latitude;
-	}
-	
-	public User(String firstName, String lastName, String password, String email, List<RoleEntity> roles, boolean enabled,
-			String token, BigDecimal longitude, BigDecimal latitude) {
-		
-		this(null, firstName, lastName, password, email, roles, enabled, token, longitude, latitude);
-		
-	}
-	
-	public User(User user) {
-		this(user.id, user.firstName, user.lastName, user.password, user.email, user.roles,
-				user.enabled, user.token, user.longitude, user.latitude);
-	}
-	
-	
-
 	public Long getId() {
 		return id;
 	}
@@ -119,10 +91,10 @@ public class User{
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public List<RoleEntity> getRoles() {
+	public Set<RoleEntity> getRoles() {
 		return roles;
 	}
-	public void setRoles(List<RoleEntity> roles) {
+	public void setRoles(Set<RoleEntity> roles) {
 		this.roles = roles;
 	}
 	public List<Role> getEnumRoles() {
@@ -151,6 +123,15 @@ public class User{
 	}
 	public void setLatitude(BigDecimal latitude) {
 		this.latitude = latitude;
+	}
+	
+	public void addRole(RoleEntity role) {
+		this.roles.add(role);
+		role.getUsers().add(this);
+	}
+	public void removeRole(RoleEntity role) {
+		this.roles.remove(role);
+		role.getUsers().remove(this);
 	}
 
     

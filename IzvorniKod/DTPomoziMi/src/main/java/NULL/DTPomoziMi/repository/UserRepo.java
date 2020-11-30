@@ -1,5 +1,7 @@
 package NULL.DTPomoziMi.repository;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -11,11 +13,12 @@ public interface UserRepo extends CrudRepository<User, Long>{
 
 	User findByEmail(String email);
 	
+	@Transactional
 	@Modifying
-	@Query("update Korisnik u set u.token = :token where u.email = :email")
+	@Query(nativeQuery = false, value = "update Korisnik u set u.token = :token where u.email = :email")
 	void updateToken(@Param(value = "token") String token, @Param(value = "email") String email);
 	
-	@Query("SELECT TOKEN FROM KORISNIK WHERE EMAIL= :email AND AKTIVAN = TRUE")
+	@Query(nativeQuery = false, value = "SELECT token FROM Korisnik WHERE EMAIL = :email AND enabled = TRUE")
 	String getTokenByEmail(@Param(value = "email") String email);
 	
 }

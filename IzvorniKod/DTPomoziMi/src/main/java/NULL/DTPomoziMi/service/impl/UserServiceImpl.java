@@ -1,12 +1,11 @@
 package NULL.DTPomoziMi.service.impl;
-import NULL.DTPomoziMi.DAO.UserDAO;
-import NULL.DTPomoziMi.exception.UserAlreadyExistException;
 import NULL.DTPomoziMi.model.Role;
+import NULL.DTPomoziMi.model.RoleEntity;
 import NULL.DTPomoziMi.model.User;
+import NULL.DTPomoziMi.repository.RoleRepo;
+import NULL.DTPomoziMi.repository.UserRepo;
 import NULL.DTPomoziMi.service.UserService;
 import NULL.DTPomoziMi.web.DTO.UserDTO;
-
-import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,41 +15,45 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    private UserDAO userDAO;
+    private UserRepo userRepo; // UserDAO userDAO;
+    
+    @Autowired
+    private RoleRepo roleRepo;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
     public User registerUser(UserDTO user) {
-        if(userDAO.getUserByEmail(user.getEmail()) != null)
-            throw new UserAlreadyExistException("User with email address: " + user.getEmail() + " already exists!");
-
-        User newUser = new User(
-                user.getFirstName(),
-                user.getLastName(),
-                passwordEncoder.encode(user.getPassword()),
-                user.getEmail(),
-                Arrays.asList(Role.ROLE_USER),
-                true,
-                null,
-                user.getLongitude(),
-                user.getLatitude()
-        );
-
-        newUser = userDAO.saveUser(newUser);
+//        if(userRepo.findByEmail(user.getEmail()) != null)
+//            throw new UserAlreadyExistException("User with email address: " + user.getEmail() + " already exists!");
         
-        userDAO.saveRolesForUser(newUser.getId(), newUser.getRoles());
+        User newUser = new User();
         
-        return newUser;
+        newUser.setEmail(user.getEmail());
+        newUser.setFirstName(user.getFirstName());
+        newUser.setLastName(user.getLastName());
+        newUser.setEnabled(true);
+        newUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        
+        RoleEntity roleEntity = roleRepo.findByRole(Role.ROLE_USER);
+        if(roleEntity == null) {
+        	roleEntity = new RoleEntity();
+        	roleEntity.setRole(Role.ROLE_USER);
+        	roleEntity = roleRepo.save(roleEntity);
+        }
+        
+        roleEntity.addUser(newUser);
+        newUser.addRole(roleEntity);
 
+        return userRepo.save(newUser);
     }
 
     @Override
     public User getUserByEmail(String email) {
         email = email == null ? null : email.trim();
 
-        return userDAO.getUserByEmail(email);
+        return userRepo.findByEmail(email);
     }
 
 }
