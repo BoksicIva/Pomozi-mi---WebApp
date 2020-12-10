@@ -1,5 +1,7 @@
 package NULL.DTPomoziMi.model;
 
+import lombok.*;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,6 +15,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 @Entity(name = "Uloga")
 public class RoleEntity {
 
@@ -33,30 +41,6 @@ public class RoleEntity {
 //	)
 	@ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     private Set<User> users = new HashSet<>();
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Role getRole() {
-		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
-	}
-
-	public Set<User> getUsers() {
-		return users;
-	}
-
-	public void setUsers(Set<User> users) {
-		this.users = users;
-	}
 
 	public void addUser(User user) {
 		this.users.add(user);

@@ -1,4 +1,5 @@
 package NULL.DTPomoziMi.service.impl;
+
 import NULL.DTPomoziMi.model.Role;
 import NULL.DTPomoziMi.model.RoleEntity;
 import NULL.DTPomoziMi.model.User;
@@ -6,8 +7,9 @@ import NULL.DTPomoziMi.repository.RoleRepo;
 import NULL.DTPomoziMi.repository.UserRepo;
 import NULL.DTPomoziMi.service.UserService;
 import NULL.DTPomoziMi.web.DTO.UserDTO;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +18,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepo userRepo; // UserDAO userDAO;
-    
+
     @Autowired
     private RoleRepo roleRepo;
 
@@ -27,22 +29,22 @@ public class UserServiceImpl implements UserService {
     public User registerUser(UserDTO user) {
 //        if(userRepo.findByEmail(user.getEmail()) != null)
 //            throw new UserAlreadyExistException("User with email address: " + user.getEmail() + " already exists!");
-        
+
         User newUser = new User();
-        
+
         newUser.setEmail(user.getEmail());
         newUser.setFirstName(user.getFirstName());
         newUser.setLastName(user.getLastName());
         newUser.setEnabled(true);
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
-        
+
         RoleEntity roleEntity = roleRepo.findByRole(Role.ROLE_USER);
-        if(roleEntity == null) {
-        	roleEntity = new RoleEntity();
-        	roleEntity.setRole(Role.ROLE_USER);
-        	roleEntity = roleRepo.save(roleEntity);
+        if (roleEntity == null) {
+            roleEntity = new RoleEntity();
+            roleEntity.setRole(Role.ROLE_USER);
+            roleEntity = roleRepo.save(roleEntity);
         }
-        
+
         roleEntity.addUser(newUser);
         newUser.addRole(roleEntity);
 
@@ -56,4 +58,8 @@ public class UserServiceImpl implements UserService {
         return userRepo.findByEmail(email);
     }
 
+    @Override
+    public Page<User> findUsers(Pageable pageable) {
+        return userRepo.findAll(pageable);
+    }
 }

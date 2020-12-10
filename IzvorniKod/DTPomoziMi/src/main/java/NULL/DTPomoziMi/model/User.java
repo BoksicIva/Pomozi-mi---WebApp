@@ -1,5 +1,7 @@
 package NULL.DTPomoziMi.model;
 
+import lombok.*;
+
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +19,12 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 @Entity(name = "Korisnik")
 public class User{
 
@@ -44,6 +52,7 @@ public class User{
 	  inverseJoinColumns = @JoinColumn(name = "ID_Uloga")
 	)
     private Set<RoleEntity> roles = new HashSet<>();
+
 	@Column(name = "aktivan")
     private boolean enabled;
 	
@@ -57,72 +66,10 @@ public class User{
     private BigDecimal longitude;
 	
 	@Column(name = "sirina", nullable = true)
-    private BigDecimal latitude; 
-	
-	public User() {}
-    
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getFirstName() {
-		return firstName;
-	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-	public String getLastName() {
-		return lastName;
-	}
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	public String getEmail() {
-		return email;
-	}
-	public void setEmail(String email) {
-		this.email = email;
-	}
-	public Set<RoleEntity> getRoles() {
-		return roles;
-	}
-	public void setRoles(Set<RoleEntity> roles) {
-		this.roles = roles;
-	}
+    private BigDecimal latitude;
+
 	public List<Role> getEnumRoles() {
 		return roles.stream().map(r -> r.getRole()).collect(Collectors.toList());
-	}
-	public boolean isEnabled() {
-		return enabled;
-	}
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-	public String getToken() {
-		return token;
-	}
-	public void setToken(String token) {
-		this.token = token;
-	}
-	public BigDecimal getLongitude() {
-		return longitude;
-	}
-	public void setLongitude(BigDecimal longitude) {
-		this.longitude = longitude;
-	}
-	public BigDecimal getLatitude() {
-		return latitude;
-	}
-	public void setLatitude(BigDecimal latitude) {
-		this.latitude = latitude;
 	}
 	
 	public void addRole(RoleEntity role) {
@@ -133,6 +80,4 @@ public class User{
 		this.roles.remove(role);
 		role.getUsers().remove(this);
 	}
-
-    
 }

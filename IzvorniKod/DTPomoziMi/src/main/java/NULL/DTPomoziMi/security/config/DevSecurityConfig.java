@@ -26,7 +26,7 @@ import org.springframework.security.web.csrf.CsrfFilter;
 @Profile("dev")
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class DevSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired

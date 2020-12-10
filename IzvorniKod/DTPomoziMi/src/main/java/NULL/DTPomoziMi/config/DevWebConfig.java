@@ -46,6 +46,8 @@ public class DevWebConfig implements WebMvcConfigurer {
         return messageSource;
     }
 
+
+
     //    @Override
 //    public void addResourceHandlers(ResourceHandlerRegistry registry) {
 //        registry.addResourceHandler("**/*.map", "**/*.js", "**/*.css","**/*.txt","**/*.json", "**/*.ico", "**/*.png")
