@@ -18,7 +18,7 @@ import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
-import lombok.EqualsAndHashCode.Exclude;
+import lombok.EqualsAndHashCode.Include;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,13 +28,14 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString
 @Entity(name = "uloga")
 @Table(name = "uloga")
 public class RoleEntity implements Serializable {
 	private static final long serialVersionUID = -6873258326473510073L;
 
+	@Include
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_uloga")
@@ -44,7 +45,7 @@ public class RoleEntity implements Serializable {
 	@Column(name = "naziv")
 	private Role role;
 
-	@Exclude
+	
 	@ManyToMany
 	@JoinTable(
 			name = "imaulogu", joinColumns = { @JoinColumn(name = "id_uloga") },

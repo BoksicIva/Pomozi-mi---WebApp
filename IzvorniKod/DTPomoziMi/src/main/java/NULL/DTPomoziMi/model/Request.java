@@ -20,7 +20,7 @@ import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
-import lombok.EqualsAndHashCode.Exclude;
+import lombok.EqualsAndHashCode.Include;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,7 +30,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString
 @Table(name = "zahtjev")
 @Entity(name = "zahtjev")
@@ -38,6 +38,7 @@ public class Request implements Serializable {
 
 	private static final long serialVersionUID = 1835469530725494808L;
 
+	@Include
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_zahtjev")
@@ -64,21 +65,17 @@ public class Request implements Serializable {
 	@Column(name = "vrijeme")
 	private Time time;
 
-	@Exclude
 	@OneToMany(mappedBy = "request")
 	private Set<Rating> ratings = new HashSet<>();
 
-	@Exclude
 	@ManyToOne
 	@JoinColumn(name = "id_autor")
 	private User author;
 
-	@Exclude
 	@ManyToOne
 	@JoinColumn(name = "id_izvrsitelj")
 	private User executor;
 
-	@Exclude
 	@ManyToOne
 	@JoinColumn(name = "id_lokacija")
 	private Location location;

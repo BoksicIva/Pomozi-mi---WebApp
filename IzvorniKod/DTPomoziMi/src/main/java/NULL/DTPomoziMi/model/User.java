@@ -20,7 +20,7 @@ import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
-import lombok.EqualsAndHashCode.Exclude;
+import lombok.EqualsAndHashCode.Include;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,13 +30,14 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString
 @Entity(name = "korisnik")
 @Table(name = "korisnik")
 public class User implements Serializable {
 	private static final long serialVersionUID = -7095903751090463181L;
 
+    @Include
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_korisnik")
@@ -58,7 +59,10 @@ public class User implements Serializable {
 
 	private String token;
 
-	@Exclude
+	@ManyToOne
+	@JoinColumn(name = "id_lokacija")
+	private Location location;
+
 	@ManyToMany
 	@JoinTable(
 			name = "kandidiranje", joinColumns = { @JoinColumn(name = "id_korisnik") },
@@ -66,28 +70,18 @@ public class User implements Serializable {
 	)
 	private Set<Candidacy> candidacies = new HashSet<>();
 
-	@Exclude
-	@ManyToOne
-	@JoinColumn(name = "id_lokacija")
-	private Location location;
-
-	@Exclude
 	@OneToMany(mappedBy = "rated")
 	private Set<Rating> ratedBy = new HashSet<>();
 
-	@Exclude
 	@OneToMany(mappedBy = "rator")
 	private Set<Rating> ratedOthers = new HashSet<>();
 
-	@Exclude
 	@ManyToMany(mappedBy = "users")
 	private Set<RoleEntity> roles = new HashSet<>();
 
-	@Exclude
 	@OneToMany(mappedBy = "author")
 	private Set<Request> authoredReqs = new HashSet<>();
 
-	@Exclude
 	@OneToMany(mappedBy = "executor")
 	private Set<Request> executedReqs = new HashSet<>();
 

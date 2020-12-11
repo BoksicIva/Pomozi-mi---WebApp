@@ -15,17 +15,17 @@ import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.EqualsAndHashCode.Include;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.EqualsAndHashCode.Exclude;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString
 @Entity(name = "lokacija")
 @Table(name = "lokacija")
@@ -33,6 +33,7 @@ public class Location implements Serializable {
 
 	private static final long serialVersionUID = -5793615200714679731L;
 
+	@Include
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_lokacija")
@@ -53,15 +54,12 @@ public class Location implements Serializable {
 	@Column(name = "sirina")
 	private BigDecimal latitude;
 
-	@Exclude
 	@OneToMany(mappedBy = "location")
 	private Set<Candidacy> candidacies = new HashSet<>();
 
-	@Exclude
 	@OneToMany(mappedBy = "location")
 	private Set<User> users = new HashSet<>();
 
-	@Exclude
 	@OneToMany(mappedBy = "location")
 	private Set<Request> requests = new HashSet<>();
 

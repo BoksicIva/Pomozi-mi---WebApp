@@ -1,14 +1,15 @@
 package NULL.DTPomoziMi.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import NULL.DTPomoziMi.model.Request;
 import NULL.DTPomoziMi.repository.RequestRepo;
 import NULL.DTPomoziMi.service.RequestService;
 import NULL.DTPomoziMi.web.DTO.RequestDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class RequestServiceImpl implements RequestService {
@@ -24,7 +25,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public void updateRequest(RequestDTO requestDTO) {
-       Request request = requestRepo.findById(requestDTO.getId()).get();
+       Request request = requestRepo.findById(requestDTO.getIdRequest()).get();
        return;
     }
 

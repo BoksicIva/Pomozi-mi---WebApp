@@ -5,6 +5,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import NULL.DTPomoziMi.model.User;
 import NULL.DTPomoziMi.web.DTO.UserDTO;
 import NULL.DTPomoziMi.web.controller.UsersController;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
@@ -16,6 +19,9 @@ import java.lang.reflect.Method;
 @Component
 public class UserDTOModelAssembler extends RepresentationModelAssemblerSupport<User, UserDTO> {
 
+	@Autowired
+	private ModelMapper moddelMapper;
+	
     public UserDTOModelAssembler(){
         super(UsersController.class, UserDTO.class);
     }
@@ -40,16 +46,9 @@ public class UserDTOModelAssembler extends RepresentationModelAssemblerSupport<U
 
         //  TODO dodaj dohvat po id
         userDTO.add(linkTo(methodOn(UsersController.class).getUsers(0, 3, null)).withSelfRel());
-
-        userDTO.setId(entity.getIdUser());
-        userDTO.setEmail(entity.getEmail());
-        userDTO.setFirstName(entity.getFirstName());
-        userDTO.setLastName(entity.getLastName());
-        if(entity.getLocation() != null) {
-		    userDTO.setLatitude(entity.getLocation().getLatitude());
-		    userDTO.setLongitude(entity.getLocation().getLongitude());
-        }
-
+ 
+        moddelMapper.map(entity, userDTO);
+        
         return userDTO;
     }
 
