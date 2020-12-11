@@ -1,26 +1,29 @@
 CREATE TABLE Lokacija
 (
+  ID_Lokacija BIGINT AUTO_INCREMENT NOT NULL,
   duljina NUMERIC(17,14) NOT NULL,
   sirina NUMERIC(17,14) NOT NULL,
   drzava VARCHAR(50) NOT NULL,
   naselje VARCHAR(60) NOT NULL,
   adresa VARCHAR(80) NOT NULL,
-  PRIMARY KEY (duljina, sirina)
+  PRIMARY KEY (ID_Lokacija),
+  UNIQUE (duljina, sirina)
 );
 
 CREATE TABLE Kandidatura
-(
+( 
+  ID_Kandidatura BIGINT AUTO_INCREMENT NOT NULL,
   godina INT NOT NULL,
-  duljina NUMERIC(17,14) NOT NULL,
-  sirina NUMERIC(17,14) NOT NULL,
-  PRIMARY KEY (godina, duljina, sirina),
-  FOREIGN KEY (duljina, sirina) REFERENCES Lokacija(duljina, sirina)
+  ID_Lokacija BIGINT NOT NULL,
+  PRIMARY KEY (ID_Kandidatura),
+  FOREIGN KEY (ID_Lokacija) REFERENCES Lokacija(ID_Lokacija),
+  UNIQUE (ID_Lokacija, godina)
 );
 
 CREATE TABLE Uloga
 (
-  naziv VARCHAR(15) NOT NULL,
   ID_Uloga BIGINT AUTO_INCREMENT NOT NULL,
+  naziv VARCHAR(15) NOT NULL,
   PRIMARY KEY (ID_Uloga),
   UNIQUE (naziv)
 );
@@ -34,10 +37,9 @@ CREATE TABLE Korisnik
   email VARCHAR(250) NOT NULL,
   aktivan BOOLEAN NOT NULL,
   token VARCHAR(500),
-  duljina NUMERIC(17,14),
-  sirina NUMERIC(17,14),
+  ID_Lokacija BIGINT,
   PRIMARY KEY (ID_Korisnik),
-  FOREIGN KEY (duljina, sirina) REFERENCES Lokacija(duljina, sirina),
+  FOREIGN KEY (ID_Lokacija) REFERENCES Lokacija(ID_Lokacija),
   UNIQUE (email)
 );
 
@@ -49,48 +51,39 @@ CREATE TABLE Zahtjev
   vrijeme TIME,
   status VARCHAR(15) NOT NULL,
   brojMobitela VARCHAR(15),
-  duljina NUMERIC(17,14),
-  sirina NUMERIC(17,14),
-  ID_Autor INT NOT NULL,
-  ID_Izvrsitelj INT,
+  ID_Lokacija BIGINT,
+  ID_Autor BIGINT NOT NULL,
+  ID_Izvrsitelj BIGINT, -- ako nije null, a izvrsen false, onda odabran...
+  izvrsen BOOLEAN NOT NULL,
+  primljenaNotif BOOLEAN NOT NULL,
   PRIMARY KEY (ID_Zahtjev),
-  FOREIGN KEY (duljina, sirina) REFERENCES Lokacija(duljina, sirina),
   FOREIGN KEY (ID_Autor) REFERENCES Korisnik(ID_Korisnik),
-  FOREIGN KEY (ID_Izvrsitelj) REFERENCES Korisnik(ID_Korisnik)
-);
-
-CREATE TABLE Izvrsavanje
-(
-  primljenNotif BOOLEAN NOT NULL,
-  ID_Zahtjev INT NOT NULL,
-  PRIMARY KEY (ID_Zahtjev),
-  FOREIGN KEY (ID_Zahtjev) REFERENCES Zahtjev(ID_Zahtjev)
+  FOREIGN KEY (ID_Izvrsitelj) REFERENCES Korisnik(ID_Korisnik),
+  FOREIGN KEY (ID_Lokacija) REFERENCES Lokacija(ID_Lokacija)
 );
 
 CREATE TABLE Ocjenjivanje
 (
+  ID_Ocjenjivanje BIGINT AUTO_INCREMENT NOT NULL,
   ocjena INT NOT NULL,
   komentar VARCHAR(250),
-  ID_Ocjenjivanje INT NOT NULL,
-  ID_Ocjenjivac INT NOT NULL,
-  ID_Ocjenjeni INT NOT NULL,
-  ID_Zahtjev INT,
+  ID_Ocjenjivac BIGINT NOT NULL,
+  ID_Ocjenjeni BIGINT NOT NULL,
+  ID_Zahtjev BIGINT,
   PRIMARY KEY (ID_Ocjenjivanje),
   FOREIGN KEY (ID_Ocjenjivac) REFERENCES Korisnik(ID_Korisnik),
   FOREIGN KEY (ID_Ocjenjeni) REFERENCES Korisnik(ID_Korisnik),
-  FOREIGN KEY (ID_Zahtjev) REFERENCES Izvrsavanje(ID_Zahtjev),
+  FOREIGN KEY (ID_Zahtjev) REFERENCES Zahtjev(ID_Zahtjev),
   CONSTRAINT CHK_OCJENA CHECK (OCJENA BETWEEN 1 AND 5)
 );
 
 CREATE TABLE Kandidiranje
 (
-  godina INT NOT NULL,
-  duljina NUMERIC(17,14) NOT NULL,
-  sirina NUMERIC(17,14) NOT NULL,
-  ID_Korisnik INT NOT NULL,
-  PRIMARY KEY (godina, duljina, sirina, ID_Korisnik),
-  FOREIGN KEY (godina, duljina, sirina) REFERENCES Kandidatura(godina, duljina, sirina),
-  FOREIGN KEY (ID_Korisnik) REFERENCES Korisnik(ID_Korisnik)
+  ID_Korisnik BIGINT NOT NULL,
+  ID_Kandidatura BIGINT NOT NULL,
+  PRIMARY KEY (ID_Korisnik, ID_Kandidatura),
+  FOREIGN KEY (ID_Korisnik) REFERENCES Korisnik(ID_Korisnik),
+  FOREIGN KEY (ID_Kandidatura) REFERENCES Kandidatura(ID_Kandidatura)
 );
 
 CREATE TABLE ImaUlogu

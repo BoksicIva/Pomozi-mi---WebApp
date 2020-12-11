@@ -1,9 +1,5 @@
 package NULL.DTPomoziMi.web.controller;
 
-import NULL.DTPomoziMi.model.User;
-import NULL.DTPomoziMi.service.UserService;
-import NULL.DTPomoziMi.web.DTO.UserDTO;
-import NULL.DTPomoziMi.web.pagination.assemblers.UserDTOModelAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
@@ -14,14 +10,15 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import NULL.DTPomoziMi.model.User;
+import NULL.DTPomoziMi.service.UserService;
+import NULL.DTPomoziMi.web.DTO.UserDTO;
+import NULL.DTPomoziMi.web.pagination.assemblers.UserDTOModelAssembler;
 
 @RestController
 @RequestMapping("/api")
@@ -41,7 +38,7 @@ public class UsersController {
     @GetMapping("/users")
     public ResponseEntity<?> getUsers(
             /*@RequestParam(required = false) String firstName, @RequestParam(required = false) String lastName*/
-    @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "3") int size, PagedResourcesAssembler assembler){
+    @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "3") int size, PagedResourcesAssembler<User> assembler){
 
         try{ //https://howtodoinjava.com/spring5/hateoas/pagination-links/
             Pageable paging = PageRequest.of(page, size);

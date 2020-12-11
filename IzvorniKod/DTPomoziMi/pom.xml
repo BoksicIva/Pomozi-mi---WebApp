@@ -24,6 +24,7 @@
 		<frontend-maven-plugin.version>1.10.3</frontend-maven-plugin.version>
 		<jjwt.version>0.9.1</jjwt.version>
 		<passay.version>1.6.0</passay.version>
+		<model-mapper.version>2.3.9</model-mapper.version>
 	</properties>
 
 	<profiles>
@@ -138,6 +139,13 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+		</dependency>
+
+		<!-- model mapper -->
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>${model-mapper.version}</version>
 		</dependency>
 	</dependencies>
 

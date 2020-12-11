@@ -6,23 +6,21 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
-import lombok.EqualsAndHashCode.Exclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.EqualsAndHashCode.Exclude;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,26 +28,26 @@ import lombok.ToString;
 @Setter
 @EqualsAndHashCode
 @ToString
-@Entity(name = "uloga")
-@Table(name = "uloga")
-public class RoleEntity implements Serializable {
-	private static final long serialVersionUID = -6873258326473510073L;
+@Entity(name = "kandidatura")
+@Table(name = "kandidatura")
+public class Candidacy implements Serializable {
+
+	private static final long serialVersionUID = -363733843956508119L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id_uloga")
-	private Long IdRole;
+	@Column(name = "id_kandidatura")
+	private Long IdCandidacy;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "naziv")
-	private Role role;
+	@Column(name = "godina")
+	private Integer year;
+
+	@ManyToOne
+	@JoinColumn(name = "id_lokacija")
+	private Location location;
 
 	@Exclude
-	@ManyToMany
-	@JoinTable(
-			name = "imaulogu", joinColumns = { @JoinColumn(name = "id_uloga") },
-			inverseJoinColumns = { @JoinColumn(name = "id_korisnik") }
-	)
+	@ManyToMany(mappedBy = "candidacies")
 	private Set<User> users = new HashSet<>();
 
 }

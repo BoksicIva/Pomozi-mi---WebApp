@@ -1,11 +1,30 @@
 package NULL.DTPomoziMi.model;
 
-import lombok.*;
-
-import javax.persistence.*;
-import java.math.BigDecimal;
+import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.EqualsAndHashCode.Exclude;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,41 +32,68 @@ import java.sql.Time;
 @Setter
 @EqualsAndHashCode
 @ToString
+@Table(name = "zahtjev")
+@Entity(name = "zahtjev")
+public class Request implements Serializable {
 
-@Entity(name = "Zahtjev")
-public class Request {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID_Zahtjev")
-    private Long id;
+	private static final long serialVersionUID = 1835469530725494808L;
 
-    @Column(name = "opis", nullable = false)
-    private String description;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id_zahtjev")
+	private Long IdRequest;
 
-    @Column(nullable = true)
-    private Date date;
+	@Column(name = "brojmobitela")
+	private String phone;
 
-    @Column(nullable = true)
-    private Time time;
+	@Column(name = "datum")
+	private Date date;
 
-    @Column(name = "status", nullable = false)
-    private String status;
+	@Column(name = "izvrsen")
+	private Boolean executed;
 
-    @Column(nullable = true)
-    private String phone;
+	@Column(name = "opis")
+	private String description;
 
-    @Column(name = "ID_Autor", nullable = false)
-    private Long id_Author;
+	@Column(name = "primljenanotif")
+	private Boolean recivedNotif;
 
-    @Column(name = "ID_Izvrsitelj", nullable = true)
-    private Long id_executor;
+	@Enumerated(EnumType.STRING)
+	private RequestStatus status;
 
-    @Transient
-    private Location location;
+	@Column(name = "vrijeme")
+	private Time time;
 
-    @Column(name = "duljina", nullable = true)
-    private BigDecimal longitude;
+	@Exclude
+	@OneToMany(mappedBy = "request")
+	private Set<Rating> ratings = new HashSet<>();
 
-    @Column(name = "sirina", nullable = true)
-    private BigDecimal latitude;
+	@Exclude
+	@ManyToOne
+	@JoinColumn(name = "id_autor")
+	private User author;
+
+	@Exclude
+	@ManyToOne
+	@JoinColumn(name = "id_izvrsitelj")
+	private User executor;
+
+	@Exclude
+	@ManyToOne
+	@JoinColumn(name = "id_lokacija")
+	private Location location;
+
+	public Rating addRating(Rating rating) {
+		getRatings().add(rating);
+		rating.setRequest(this);
+
+		return rating;
+	}
+
+	public Rating removeRating(Rating rating) {
+		getRatings().remove(rating);
+		rating.setRequest(null);
+
+		return rating;
+	}
 }

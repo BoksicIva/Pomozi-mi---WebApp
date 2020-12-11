@@ -42,11 +42,9 @@ public class UserServiceImpl implements UserService {
         if (roleEntity == null) {
             roleEntity = new RoleEntity();
             roleEntity.setRole(Role.ROLE_USER);
-            roleEntity = roleRepo.save(roleEntity);
         }
 
-        roleEntity.addUser(newUser);
-        newUser.addRole(roleEntity);
+        newUser.addRoleEntity(roleEntity);
 
         return userRepo.save(newUser);
     }

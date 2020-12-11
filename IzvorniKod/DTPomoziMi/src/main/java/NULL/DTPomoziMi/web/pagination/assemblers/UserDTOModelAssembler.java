@@ -41,12 +41,14 @@ public class UserDTOModelAssembler extends RepresentationModelAssemblerSupport<U
         //  TODO dodaj dohvat po id
         userDTO.add(linkTo(methodOn(UsersController.class).getUsers(0, 3, null)).withSelfRel());
 
-        userDTO.setId(entity.getId());
+        userDTO.setId(entity.getIdUser());
         userDTO.setEmail(entity.getEmail());
         userDTO.setFirstName(entity.getFirstName());
         userDTO.setLastName(entity.getLastName());
-        userDTO.setLatitude(entity.getLatitude());
-        userDTO.setLongitude(entity.getLongitude());
+        if(entity.getLocation() != null) {
+		    userDTO.setLatitude(entity.getLocation().getLatitude());
+		    userDTO.setLongitude(entity.getLocation().getLongitude());
+        }
 
         return userDTO;
     }
