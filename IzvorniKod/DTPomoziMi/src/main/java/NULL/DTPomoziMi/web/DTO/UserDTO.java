@@ -9,7 +9,6 @@ import org.springframework.hateoas.server.core.Relation;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import NULL.DTPomoziMi.model.Location;
 import NULL.DTPomoziMi.validation.MatchPassword;
 import NULL.DTPomoziMi.validation.ValidPassword;
 import lombok.AllArgsConstructor;
@@ -45,8 +44,9 @@ public class UserDTO extends RepresentationModel<UserDTO> {
 
     @NotNull
     @Email(message = "{UserDTO.email}")
+    
     private String email;
 
-    private Location location;
+    private Long IdLocation;
 
 }
