@@ -1,5 +1,7 @@
 package NULL.DTPomoziMi.service.impl;
 
+import NULL.DTPomoziMi.exception.EntityMissingException;
+import NULL.DTPomoziMi.model.Request;
 import NULL.DTPomoziMi.model.Role;
 import NULL.DTPomoziMi.model.RoleEntity;
 import NULL.DTPomoziMi.model.User;
@@ -54,6 +56,16 @@ public class UserServiceImpl implements UserService {
         email = email == null ? null : email.trim();
 
         return userRepo.findByEmail(email);
+    }
+
+    @Override
+    public User fetch(long id) {
+        return userRepo.findById(id).orElseThrow(() -> new EntityMissingException(User.class, id));
+    }
+
+    @Override
+    public User getUserByID(long ID) {
+        return fetch(ID);
     }
 
     @Override

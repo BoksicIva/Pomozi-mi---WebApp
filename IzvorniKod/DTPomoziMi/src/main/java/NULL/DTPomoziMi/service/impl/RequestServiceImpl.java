@@ -50,7 +50,7 @@ public class RequestServiceImpl implements RequestService {
 
 	@Override
 	public Request getRequestbyId(long id_zahtjev) {
-		return requestRepo.findById(id_zahtjev).get();
+		return fetch(id_zahtjev);
 	}
 
 	@Override
