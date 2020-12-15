@@ -1,11 +1,10 @@
 package NULL.DTPomoziMi.service;
 
-import NULL.DTPomoziMi.model.Request;
-import NULL.DTPomoziMi.web.DTO.RequestDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import NULL.DTPomoziMi.model.Request;
+import NULL.DTPomoziMi.web.DTO.RequestDTO;
 
 public interface RequestService {
 

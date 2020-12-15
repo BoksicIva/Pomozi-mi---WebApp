@@ -1,6 +1,5 @@
 package NULL.DTPomoziMi.web.controller;
 
-import NULL.DTPomoziMi.web.DTO.RequestDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import NULL.DTPomoziMi.model.User;
 import NULL.DTPomoziMi.service.UserService;
 import NULL.DTPomoziMi.web.DTO.UserDTO;
-import NULL.DTPomoziMi.web.pagination.assemblers.UserDTOModelAssembler;
+import NULL.DTPomoziMi.web.assemblers.UserDTOModelAssembler;
 
 @RestController
 @RequestMapping("/api/users")

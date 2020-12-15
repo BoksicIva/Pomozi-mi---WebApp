@@ -1,4 +1,4 @@
-package NULL.DTPomoziMi.web.pagination.assemblers;
+package NULL.DTPomoziMi.web.assemblers;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,20 +11,19 @@ import NULL.DTPomoziMi.web.controller.RequestController;
 
 @Component
 public class RequestDTOAssembler extends RepresentationModelAssemblerSupport<Request, RequestDTO> {
-	
-	@Autowired 
+
+	@Autowired
 	private ModelMapper modelMapper;
-	
+
 	public RequestDTOAssembler() {
 		super(RequestController.class, RequestDTO.class);
 	}
 
 	@Override
 	public RequestDTO toModel(Request entity) {
-		RequestDTO requestDTO = instantiateModel(entity);
-		
+		RequestDTO requestDTO = createModelWithId(entity.getIdRequest(), entity);
 		modelMapper.map(entity, requestDTO);
-		
+
 		return requestDTO;
 	}
 }

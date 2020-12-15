@@ -1,7 +1,12 @@
 package NULL.DTPomoziMi.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import NULL.DTPomoziMi.exception.EntityMissingException;
-import NULL.DTPomoziMi.model.Request;
 import NULL.DTPomoziMi.model.Role;
 import NULL.DTPomoziMi.model.RoleEntity;
 import NULL.DTPomoziMi.model.User;
@@ -9,11 +14,6 @@ import NULL.DTPomoziMi.repository.RoleRepo;
 import NULL.DTPomoziMi.repository.UserRepo;
 import NULL.DTPomoziMi.service.UserService;
 import NULL.DTPomoziMi.web.DTO.UserDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {

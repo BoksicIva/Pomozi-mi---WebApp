@@ -1,4 +1,4 @@
-package NULL.DTPomoziMi.web.pagination.assemblers;
+package NULL.DTPomoziMi.web.assemblers;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,22 +11,19 @@ import NULL.DTPomoziMi.web.controller.UsersController;
 
 @Component
 public class UserDTOModelAssembler extends RepresentationModelAssemblerSupport<User, UserDTO> {
-
 	@Autowired
-	private ModelMapper moddelMapper;
-	
-    public UserDTOModelAssembler(){
-        super(UsersController.class, UserDTO.class);
-    }
+	private ModelMapper modelMapper;
 
-    @Override
-    public UserDTO toModel(User entity) {
+	public UserDTOModelAssembler() {
+		super(UsersController.class, UserDTO.class);
+	}
 
-        UserDTO userDTO = instantiateModel(entity);
-        moddelMapper.map(entity, userDTO);
-        
-        return userDTO;
-    }
+	@Override
+	public UserDTO toModel(User entity) {
+		UserDTO userDTO = createModelWithId(entity.getIdUser(), entity);
+		modelMapper.map(entity, userDTO);
 
+		return userDTO;
+	}
 
 }

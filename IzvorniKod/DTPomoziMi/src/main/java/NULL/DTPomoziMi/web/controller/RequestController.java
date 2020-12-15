@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 import NULL.DTPomoziMi.model.Request;
 import NULL.DTPomoziMi.service.RequestService;
 import NULL.DTPomoziMi.web.DTO.RequestDTO;
-import NULL.DTPomoziMi.web.pagination.assemblers.RequestDTOAssembler;
+import NULL.DTPomoziMi.web.assemblers.RequestDTOAssembler;
 
 @PreAuthorize(value = "isAuthenticated()")
 @RestController
