@@ -12,7 +12,6 @@ class LoginService {
     }
 
     getCSRF() {
-
       return http.get("/getCsrf", {});
     }
 
@@ -28,6 +27,10 @@ class LoginService {
 
     notPer(){
       return http.post("/notPermitted", {});
+    }
+
+    logout(){
+      return http.post("../logout", {});
     }
   
   }

@@ -15,19 +15,19 @@ export const Dash = props => {
     document.body.style = 'background-image: none;';
     const [long, setLong] = useState("");
     const [lat, setLat] = useState("");
-    const [checed, setcheced] = useState(false);
+    const [checked, setchecked] = useState(false);
 
     const handleClick = () => {
-        console.log(checed);
-        if (checed === false) {
+        console.log(checked);
+        if (checked === false) {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(showPosition);
             } else {
                 alert("Geolocation is not supported by this browser.");
             }
-            setcheced(true);
+            setchecked(true);
         } else {
-            setcheced(false);
+            setchecked(false);
             setLat("");
             setLong("");
         }
@@ -63,7 +63,7 @@ export const Dash = props => {
                             postData.append("phone", values.phone);
                             postData.append("req", values.req);
                             postData.append("date", values.date);
-                            if (checed === true) {
+                            if (checked === true) {
                                 postData.append("long", long);
                                 postData.append("lat", lat);
                             }
