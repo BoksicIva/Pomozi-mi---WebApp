@@ -1,6 +1,7 @@
 package NULL.DTPomoziMi.service.impl;
 
 import NULL.DTPomoziMi.model.Rating;
+import NULL.DTPomoziMi.model.RequestStatus;
 import NULL.DTPomoziMi.web.DTO.RatingDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import NULL.DTPomoziMi.model.Request;
 import NULL.DTPomoziMi.repository.RequestRepo;
 import NULL.DTPomoziMi.service.RequestService;
 import NULL.DTPomoziMi.web.DTO.RequestDTO;
+
+import java.util.*;
 
 @Service
 public class RequestServiceImpl implements RequestService {
@@ -43,6 +46,19 @@ public class RequestServiceImpl implements RequestService {
         return req;
     }
 
+    @Override
+	public Request blockRequest(RequestDTO request) {
+		Request r = fetch(request.getIdRequest());
+		r.setStatus(RequestStatus.BLOKIRAN);
+		return r;
+	}
+	@Override
+	public Request executeRequest(RequestDTO request) {
+		Request r = fetch(request.getIdRequest());
+		r.setStatus(RequestStatus.IZVRSEN);
+		return r;
+	}
+
 	@Override
 	public Request fetch(long requestId) {
 		return requestRepo
@@ -58,5 +74,27 @@ public class RequestServiceImpl implements RequestService {
 	@Override
 	public Page<Request> findAll(Pageable pageable) {
 		return requestRepo.findAll(pageable);
+	}
+
+	@Override
+	public HashMap<String, List<Request>> getMyReq(long userID) {
+		Iterable<Request> all = requestRepo.findAll();
+
+		List<Request> active = new ArrayList<>();
+		List<Request> done = new ArrayList<>();
+
+		for (Request r : all) {
+			if (r.getAuthor().getIdUser() == userID) {
+				if (r.getStatus().equals(RequestStatus.AKTIVAN)) {
+					active.add(r);
+				} else if (r.getStatus().equals(RequestStatus.IZVRSEN)) {
+					done.add(r);
+				}
+			}
+		}
+		HashMap<String, List<Request>> m = new HashMap<>();
+		m.put("aktivni", active);
+		m.put("izvrseni", done);
+		return m;
 	}
 }

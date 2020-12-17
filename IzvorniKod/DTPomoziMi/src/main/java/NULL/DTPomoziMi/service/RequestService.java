@@ -7,6 +7,9 @@ import org.springframework.data.domain.Pageable;
 import NULL.DTPomoziMi.model.Request;
 import NULL.DTPomoziMi.web.DTO.RequestDTO;
 
+import java.util.HashMap;
+import java.util.List;
+
 public interface RequestService {
 
 	Request createRequest(RequestDTO request);
@@ -28,4 +31,10 @@ public interface RequestService {
 	Page<Request> findAll(Pageable pageable);
 	
 	Request fetch(long requestId);
+
+	HashMap<String, List<Request>> getMyReq(long userID);
+
+	Request blockRequest(RequestDTO request);
+
+	Request executeRequest(RequestDTO request);
 }

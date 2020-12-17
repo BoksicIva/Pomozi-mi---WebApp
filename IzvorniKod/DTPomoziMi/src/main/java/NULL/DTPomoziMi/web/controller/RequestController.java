@@ -9,6 +9,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import NULL.DTPomoziMi.model.Location;
+import NULL.DTPomoziMi.model.User;
+import NULL.DTPomoziMi.security.UserPrincipal;
+import NULL.DTPomoziMi.web.DTO.UserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,27 +50,28 @@ public class RequestController { // TODO linkovi...
 	@Autowired
 	private RequestDTOAssembler requestDTOassembler;
 
-	@GetMapping(value = "", produces = { "application/json; charset=UTF-8" })
+	@GetMapping(value = "", produces = {"application/json; charset=UTF-8"})
 	public ResponseEntity<?>
-			getAll(@PageableDefault Pageable pageable,
-				   PagedResourcesAssembler<Request> assembler,
-				   @RequestParam (required = false) Location location) {
+	getAll(@PageableDefault Pageable pageable,
+		   PagedResourcesAssembler<Request> assembler
+		   //		   ,@RequestParam (required = false) Location location
+	) {
 
 		Page<Request> page = requestService.findAll(pageable);
 
 		PagedModel<RequestDTO> pagedModel
 				= assembler
-						.toModel(
-								page, requestDTOassembler,
-								linkTo(methodOn(RequestController.class).getAll(null, null))
-										.withSelfRel()
-						);
+				.toModel(
+						page, requestDTOassembler,
+						linkTo(methodOn(RequestController.class).getAll(null, null))
+								.withSelfRel()
+				);
 
 		return new ResponseEntity<>(pagedModel, HttpStatus.OK);
 	}
 
 
-	@GetMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
+	@GetMapping(value = "/{id}", produces = {"application/json; charset=UTF-8"})
 	public ResponseEntity<RequestDTO> getRequest(@PathVariable("id") long id) {
 
 		RequestDTO req = requestDTOassembler.toModel(requestService.getRequestbyId(id));
@@ -76,7 +80,7 @@ public class RequestController { // TODO linkovi...
 	}
 
 	@Secured("ROLE_USER")
-	@PostMapping(value = "", produces = { "application/json; charset=UTF-8" })
+	@PostMapping(value = "", produces = {"application/json; charset=UTF-8"})
 	public ResponseEntity<?> createRequest(
 			RequestDTO requestDTO, BindingResult bindingResult, HttpServletRequest request
 	) {
@@ -97,24 +101,74 @@ public class RequestController { // TODO linkovi...
 	}
 
 	@Secured("ROLE_USER")
-	@PutMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
-	public
-			ResponseEntity<?>
-			updateRequest(@PathVariable("id") long id, @RequestBody RequestDTO requestDTO) { // TODO DA JE ONAJ KOJI UPDATEA REQUEST I AUTOR TOG REQUESTA...
+	@PutMapping(value = "/{id}", produces = {"application/json; charset=UTF-8"})
+	public ResponseEntity<?>
+	updateRequest(@PathVariable("id") long id,
+				  UserDTO user,
+				  @RequestBody RequestDTO requestDTO) { // TODO DA JE ONAJ KOJI UPDATEA REQUEST I AUTOR TOG REQUESTA...
 		if (!requestDTO.getIdRequest().equals(id))
 			throw new IllegalArgumentException("Request ID must be preserved"); //FIXME handler
 
-		RequestDTO updated = requestDTOassembler.toModel(requestService.updateRequest(requestDTO));
+		if (user.equals(requestDTO.getAuthor())) {
+			RequestDTO updated = requestDTOassembler.toModel(requestService.updateRequest(requestDTO));
+			return new ResponseEntity<RepresentationModel<RequestDTO>>(updated, HttpStatus.OK);
+		} else return (ResponseEntity<?>) ResponseEntity.badRequest();
 
-		return new ResponseEntity<RepresentationModel<RequestDTO>>(updated, HttpStatus.OK);
 	}
 
 	@Secured("ROLE_USER")
-	@DeleteMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> deleteRequest(@PathVariable("id") long requestId) {// TODO DA JE ONAJ KOJI BRISE REQUEST I AUTOR TOG REQUESTA...
+	@PutMapping(value = "/{id}", produces = {"application/json; charset=UTF-8"})
+	public ResponseEntity<?>
+	blockingRequest(@PathVariable("id") long id,
+				  UserDTO user,
+				  @RequestBody RequestDTO requestDTO) {
+		if (!requestDTO.getIdRequest().equals(id))
+			throw new IllegalArgumentException("Request ID must be preserved"); //FIXME handler
 
-		RequestDTO deleted = requestDTOassembler.toModel(requestService.deleteRequest(requestId));
-		
-		return ResponseEntity.ok(deleted);
+		if (user.equals(requestDTO.getAuthor())) // is author
+			{
+			RequestDTO blocked = requestDTOassembler.toModel(requestService.blockRequest(requestDTO));
+			return new ResponseEntity<RepresentationModel<RequestDTO>>(blocked, HttpStatus.OK);
+		} else return (ResponseEntity<?>) ResponseEntity.badRequest();
+
+	}
+
+	@Secured("ROLE_USER")
+	@PutMapping(value = "/{id}", produces = {"application/json; charset=UTF-8"})
+	public ResponseEntity<?>
+	executeRequest(@PathVariable("id") long id,
+					UserDTO user,
+					@RequestBody RequestDTO requestDTO) {
+		if (!requestDTO.getIdRequest().equals(id))
+			throw new IllegalArgumentException("Request ID must be preserved"); //FIXME handler
+
+		if (user.equals(requestDTO.getAuthor())) // is author
+		{
+			RequestDTO executed = requestDTOassembler.toModel(requestService.executeRequest(requestDTO));
+			return new ResponseEntity<RepresentationModel<RequestDTO>>(executed, HttpStatus.OK);
+		}
+		else return (ResponseEntity<?>) ResponseEntity.badRequest();
+
+	}
+
+	@Secured("ROLE_USER")
+	@DeleteMapping(value = "/{id}", produces = {"application/json; charset=UTF-8"}) // TODO DA JE ONAJ KOJI BRISE REQUEST I AUTOR TOG REQUESTA...
+	public ResponseEntity<?> deleteRequest(@PathVariable("id") long requestId,
+										   UserDTO user,
+										   RequestDTO requestDTO,
+										   BindingResult bindingResult,
+										   HttpServletRequest request
+	) {
+		if (bindingResult.hasErrors()) {
+			List<ObjectError> errors = bindingResult.getAllErrors();
+			logger.debug("Binding errors {}", requestDTO.getAuthor());
+			return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+		}
+
+
+		if (user.equals(requestDTO.getAuthor())) {
+			Request deleted = requestService.deleteRequest(requestId);
+			return ResponseEntity.ok(deleted);
+		} else return (ResponseEntity<?>) ResponseEntity.badRequest();
 	}
 }
