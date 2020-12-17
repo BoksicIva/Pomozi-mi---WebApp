@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import NULL.DTPomoziMi.model.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +25,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import NULL.DTPomoziMi.model.Request;
 import NULL.DTPomoziMi.service.RequestService;
@@ -54,9 +48,10 @@ public class RequestController { // TODO linkovi...
 	private RequestDTOAssembler requestDTOassembler;
 
 	@GetMapping(value = "", produces = { "application/json; charset=UTF-8" })
-	public
-			ResponseEntity<?>
-			getAll(@PageableDefault Pageable pageable, PagedResourcesAssembler<Request> assembler) {
+	public ResponseEntity<?>
+			getAll(@PageableDefault Pageable pageable,
+				   PagedResourcesAssembler<Request> assembler,
+				   @RequestParam (required = false) Location location) {
 
 		Page<Request> page = requestService.findAll(pageable);
 
@@ -70,6 +65,7 @@ public class RequestController { // TODO linkovi...
 
 		return new ResponseEntity<>(pagedModel, HttpStatus.OK);
 	}
+
 
 	@GetMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<RequestDTO> getRequest(@PathVariable("id") long id) {
@@ -120,6 +116,5 @@ public class RequestController { // TODO linkovi...
 		RequestDTO deleted = requestDTOassembler.toModel(requestService.deleteRequest(requestId));
 		
 		return ResponseEntity.ok(deleted);
-
 	}
 }

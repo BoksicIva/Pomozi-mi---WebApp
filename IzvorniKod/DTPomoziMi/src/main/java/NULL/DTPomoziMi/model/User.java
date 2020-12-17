@@ -131,18 +131,18 @@ public class User implements Serializable {
 		return authoredReq;
 	}
 
-	public Request addExectedReq(Request exectedReq) {
-		getExecutedReqs().add(exectedReq);
-		exectedReq.setExecutor(this);
+	public Request addExecutedReq(Request executedReq) {
+		getExecutedReqs().add(executedReq);
+		executedReq.setExecutor(this);
 
-		return exectedReq;
+		return executedReq;
 	}
 
-	public Request removeExectedReq(Request exectedReq) {
-		getExecutedReqs().remove(exectedReq);
-		exectedReq.setExecutor(null);
+	public Request removeExecutedReq(Request executedReq) {
+		getExecutedReqs().remove(executedReq);
+		executedReq.setExecutor(null);
 
-		return exectedReq;
+		return executedReq;
 	}
 
 	public RoleEntity addRoleEntity(RoleEntity roleEntity) {

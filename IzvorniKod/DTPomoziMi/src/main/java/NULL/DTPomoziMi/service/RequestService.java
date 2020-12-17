@@ -1,5 +1,6 @@
 package NULL.DTPomoziMi.service;
 
+import NULL.DTPomoziMi.model.Rating;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

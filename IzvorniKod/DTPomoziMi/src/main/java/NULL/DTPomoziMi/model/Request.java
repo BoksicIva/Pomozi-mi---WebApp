@@ -83,7 +83,6 @@ public class Request implements Serializable {
 	public Rating addRating(Rating rating) {
 		getRatings().add(rating);
 		rating.setRequest(this);
-
 		return rating;
 	}
 

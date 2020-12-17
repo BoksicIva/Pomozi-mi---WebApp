@@ -1,5 +1,7 @@
 package NULL.DTPomoziMi.service.impl;
 
+import NULL.DTPomoziMi.model.Rating;
+import NULL.DTPomoziMi.web.DTO.RatingDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

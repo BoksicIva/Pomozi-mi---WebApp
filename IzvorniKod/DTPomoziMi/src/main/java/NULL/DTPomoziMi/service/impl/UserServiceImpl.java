@@ -1,5 +1,10 @@
 package NULL.DTPomoziMi.service.impl;
 
+import NULL.DTPomoziMi.model.*;
+import NULL.DTPomoziMi.repository.RatingRepo;
+import NULL.DTPomoziMi.web.DTO.RatingDTO;
+import NULL.DTPomoziMi.web.DTO.RequestDTO;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -7,13 +12,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import NULL.DTPomoziMi.exception.EntityMissingException;
-import NULL.DTPomoziMi.model.Role;
-import NULL.DTPomoziMi.model.RoleEntity;
-import NULL.DTPomoziMi.model.User;
 import NULL.DTPomoziMi.repository.RoleRepo;
 import NULL.DTPomoziMi.repository.UserRepo;
 import NULL.DTPomoziMi.service.UserService;
 import NULL.DTPomoziMi.web.DTO.UserDTO;
+
+import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -25,7 +29,13 @@ public class UserServiceImpl implements UserService {
     private RoleRepo roleRepo;
 
     @Autowired
+    private RatingRepo ratingRepo;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public User registerUser(UserDTO user) {
@@ -71,5 +81,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<User> findUsers(Pageable pageable) {
         return userRepo.findAll(pageable);
+    }
+
+    @Override
+    public Set<Rating> findRatings(long id) {
+        User r = userRepo.findById(id).get();
+        return r.getRatedBy();
+    }
+    @Override
+    public Rating createRating(RatingDTO ratingDTO) {
+        Rating saved = ratingRepo.save(modelMapper.map(ratingDTO, Rating.class));
+        return saved;
     }
 }
