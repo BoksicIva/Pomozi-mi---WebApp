@@ -1,5 +1,5 @@
 import React from 'react'
-import './home.css'
+import './style/home.css'
 import { Button } from 'react-bootstrap';
 import LogoutService from "../service/login-service";
 

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Form, Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./page.css";
+import "./style/page.css";
 import { Formik } from "formik";
 import Sidebar from "./sidebar"
 import * as Yup from "yup";
-import "./log-reg.css";
+import "./style/log-reg.css";
 
 
 

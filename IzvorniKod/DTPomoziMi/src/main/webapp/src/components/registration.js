@@ -1,5 +1,5 @@
 import React from "react";
-import "./log-reg.css";
+import "./style/log-reg.css";
 import "../index.css";
 import { Formik } from "formik";
 import * as Yup from "yup";
