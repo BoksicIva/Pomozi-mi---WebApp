@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -24,75 +25,85 @@ import java.util.Map;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+	@Autowired
+	private JwtUtil jwtUtil;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+	@Autowired
+	private UserDetailsService userDetailsService;
 
-            String token = CookieUtil.getValue(request, JwtConstants.JWT_COOKIE_NAME);
-            String refreshToken = CookieUtil.getValue(request, JwtConstants.JWT_REFRESH_COOKIE_NAME);
+	@Override
+	protected void doFilterInternal(
+		HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
+	)
+		throws ServletException, IOException {
 
-            String emailFromToken = null;
-            String emailFromRefreshToken = null;
+		String token = CookieUtil.getValue(request, JwtConstants.JWT_COOKIE_NAME);
+		String refreshToken = CookieUtil.getValue(request, JwtConstants.JWT_REFRESH_COOKIE_NAME);
 
-            try {
-                if (token != null && !token.isBlank())
-                    emailFromToken = jwtUtil.extractUsername(token);
+		String emailFromToken = null;
+		String emailFromRefreshToken = null;
 
-            }catch (SignatureException e){
-                deleteCookies(response);
+		try {
+			if (token != null && !token.isBlank()) emailFromToken = jwtUtil.extractUsername(token);
 
-            }catch(JwtException e){
-                try{
-                    if (refreshToken != null && !refreshToken.isBlank())
-                        emailFromRefreshToken = jwtUtil.extractUsername(refreshToken);
+		} catch (SignatureException e) {
+			deleteCookies(response);
 
-                }catch (JwtException ex){
-                    deleteCookies(response);
+		} catch (JwtException e) {
+			try {
+				if (refreshToken != null && !refreshToken.isBlank())
+					emailFromRefreshToken = jwtUtil.extractUsername(refreshToken);
 
-                }
-            }
+			} catch (JwtException ex) {
+				deleteCookies(response);
 
-            boolean valid = false;
-            if(emailFromToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                if (jwtUtil.validateToken(token)) {
-                    setAuth(token);
-                    valid = true;
-                }
-            }
+			}
+		}
 
-            if(!valid && emailFromRefreshToken != null && SecurityContextHolder.getContext().getAuthentication() == null){
-                if(jwtUtil.validateRefreshToken(emailFromRefreshToken)){
-                    setAuth(refreshToken);
+		boolean valid = false;
+		if (
+			emailFromToken != null && SecurityContextHolder.getContext().getAuthentication() == null
+		) {
+			if (jwtUtil.validateToken(token)) {
+				setAuth(token);
+				valid = true;
+			}
+		}
 
-                    Map<String, Object> claims = new HashMap<>();
-                    claims.put("role", jwtUtil.extractRole(refreshToken));
+		if (
+			!valid
+				&& emailFromRefreshToken != null
+				&& SecurityContextHolder.getContext().getAuthentication() == null
+		) {
+			if (jwtUtil.validateRefreshToken(emailFromRefreshToken)) {
+				setAuth(refreshToken);
 
-                    String newtoken = jwtUtil.generateToken(claims, emailFromRefreshToken);
-                    CookieUtil.create(response, JwtConstants.JWT_COOKIE_NAME, newtoken, false, -1);
+				Map<String, Object> claims = new HashMap<>();
+				claims.put("role", jwtUtil.extractRole(refreshToken));
 
-                }else{
-                    deleteCookies(response);
-                }
-            }
+				String newtoken = jwtUtil.generateToken(claims, emailFromRefreshToken);
+				CookieUtil.create(response, JwtConstants.JWT_COOKIE_NAME, newtoken, false, -1);
 
-        filterChain.doFilter(request, response);
-    }
+			} else {
+				deleteCookies(response);
+			}
+		}
 
-    private void setAuth(String token){
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-                = new UsernamePasswordAuthenticationToken(
-                jwtUtil.extractUsername(token),
-                null,
-                Arrays.asList(new SimpleGrantedAuthority(jwtUtil.extractRole(token)))
-        );
+		filterChain.doFilter(request, response);
+	}
 
-        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-    }
+	private void setAuth(String token) {
+		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+			= new UsernamePasswordAuthenticationToken(
+				userDetailsService.loadUserByUsername(jwtUtil.extractUsername(token)), null,
+				Arrays.asList(new SimpleGrantedAuthority(jwtUtil.extractRole(token)))
+			);
 
-    private void deleteCookies(HttpServletResponse response){
-        CookieUtil.clear(response, JwtConstants.JWT_REFRESH_COOKIE_NAME);
-        CookieUtil.clear(response, JwtConstants.JWT_COOKIE_NAME);
-    }
+		SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+	}
+
+	private void deleteCookies(HttpServletResponse response) {
+		CookieUtil.clear(response, JwtConstants.JWT_REFRESH_COOKIE_NAME);
+		CookieUtil.clear(response, JwtConstants.JWT_COOKIE_NAME);
+	}
 }

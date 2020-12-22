@@ -33,8 +33,8 @@ import lombok.ToString;
 @Entity(name = "uloga")
 @Table(name = "uloga")
 public class RoleEntity implements Serializable {
-	private static final long serialVersionUID = -6873258326473510073L;
-
+	private static final long serialVersionUID = 1L;
+	
 	@Include
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

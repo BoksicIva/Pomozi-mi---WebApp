@@ -1,23 +1,28 @@
 package NULL.DTPomoziMi.service.impl;
 
-import NULL.DTPomoziMi.model.*;
-import NULL.DTPomoziMi.repository.RatingRepo;
-import NULL.DTPomoziMi.web.DTO.RatingDTO;
-import NULL.DTPomoziMi.web.DTO.RequestDTO;
+import java.util.Set;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import NULL.DTPomoziMi.exception.EntityMissingException;
+import NULL.DTPomoziMi.model.Rating;
+import NULL.DTPomoziMi.model.Role;
+import NULL.DTPomoziMi.model.RoleEntity;
+import NULL.DTPomoziMi.model.User;
+import NULL.DTPomoziMi.repository.RatingRepo;
 import NULL.DTPomoziMi.repository.RoleRepo;
 import NULL.DTPomoziMi.repository.UserRepo;
+import NULL.DTPomoziMi.security.UserPrincipal;
 import NULL.DTPomoziMi.service.UserService;
-import NULL.DTPomoziMi.web.DTO.UserDTO;
-
-import java.util.Set;
+import NULL.DTPomoziMi.util.UserPrincipalGetter;
+import NULL.DTPomoziMi.web.DTO.RatingDTO;
+import NULL.DTPomoziMi.web.DTO.UserRegisterDTO;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -38,7 +43,7 @@ public class UserServiceImpl implements UserService {
     private ModelMapper modelMapper;
 
     @Override
-    public User registerUser(UserDTO user) {
+    public User registerUser(UserRegisterDTO user) {
 //        if(userRepo.findByEmail(user.getEmail()) != null)
 //            throw new UserAlreadyExistException("User with email address: " + user.getEmail() + " already exists!");
 
@@ -73,12 +78,40 @@ public class UserServiceImpl implements UserService {
         return userRepo.findById(id).orElseThrow(() -> new EntityMissingException(User.class, id));
     }
 
+    
+    
     @Override
     public User getUserByID(long ID) {
+    	UserPrincipal userPrincipal = UserPrincipalGetter.getPrincipal();
+    	
+    	if(userPrincipal.getUser().getIdUser().equals(ID)) {
+    		getUserWithIdEquals(ID);
+    	}else if(userPrincipal.getUser().getEnumRoles().contains(Role.ROLE_ADMIN)){
+    		getUserForAdminView(ID);
+    	}else {
+    		getUserForOtherUser(ID);
+    	}
+    	
         return fetch(ID);
     }
 
-    @Override
+    private void getUserForOtherUser(long iD) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Secured("ROLE_ADMIN")
+    private void getUserForAdminView(long iD) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void getUserWithIdEquals(long iD) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
     public Page<User> findUsers(Pageable pageable) {
         return userRepo.findAll(pageable);
     }

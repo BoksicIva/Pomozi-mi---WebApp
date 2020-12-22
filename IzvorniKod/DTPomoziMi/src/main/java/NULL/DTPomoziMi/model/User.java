@@ -35,8 +35,8 @@ import lombok.ToString;
 @Entity(name = "korisnik")
 @Table(name = "korisnik")
 public class User implements Serializable {
-	private static final long serialVersionUID = -7095903751090463181L;
-
+	private static final long serialVersionUID = 1L;
+	
     @Include
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,14 +1,13 @@
 package NULL.DTPomoziMi.service;
 
-import NULL.DTPomoziMi.model.Rating;
+import java.util.HashMap;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import NULL.DTPomoziMi.model.Request;
 import NULL.DTPomoziMi.web.DTO.RequestDTO;
-
-import java.util.HashMap;
-import java.util.List;
 
 public interface RequestService {
 

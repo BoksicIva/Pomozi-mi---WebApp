@@ -31,7 +31,7 @@ import lombok.ToString;
 @Table(name = "lokacija")
 public class Location implements Serializable {
 
-	private static final long serialVersionUID = -5793615200714679731L;
+	private static final long serialVersionUID = 1L;
 
 	@Include
 	@Id

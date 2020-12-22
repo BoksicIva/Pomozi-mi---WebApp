@@ -1,8 +1,9 @@
 package NULL.DTPomoziMi.service.impl;
 
-import NULL.DTPomoziMi.model.Rating;
-import NULL.DTPomoziMi.model.RequestStatus;
-import NULL.DTPomoziMi.web.DTO.RatingDTO;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,11 +12,10 @@ import org.springframework.stereotype.Service;
 
 import NULL.DTPomoziMi.exception.EntityMissingException;
 import NULL.DTPomoziMi.model.Request;
+import NULL.DTPomoziMi.model.RequestStatus;
 import NULL.DTPomoziMi.repository.RequestRepo;
 import NULL.DTPomoziMi.service.RequestService;
 import NULL.DTPomoziMi.web.DTO.RequestDTO;
-
-import java.util.*;
 
 @Service
 public class RequestServiceImpl implements RequestService {

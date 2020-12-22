@@ -7,13 +7,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import NULL.DTPomoziMi.model.User;
-import NULL.DTPomoziMi.web.DTO.UserDTO;
+import NULL.DTPomoziMi.web.DTO.UserRegisterDTO;
 
 import java.util.Set;
 
 public interface UserService {
 
-    User registerUser(UserDTO user);
+    User registerUser(UserRegisterDTO user);
 
     User getUserByEmail(String email);
 

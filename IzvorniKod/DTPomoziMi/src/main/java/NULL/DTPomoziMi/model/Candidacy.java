@@ -31,8 +31,7 @@ import lombok.ToString;
 @Entity(name = "kandidatura")
 @Table(name = "kandidatura")
 public class Candidacy implements Serializable {
-
-	private static final long serialVersionUID = -363733843956508119L;
+	private static final long serialVersionUID = 1L;
 
 	@Include
 	@Id
