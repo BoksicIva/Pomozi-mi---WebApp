@@ -36,11 +36,7 @@ export const Registration = (props) => (
             data.append("secondPassword", values.secondPassword);
             data.append("email", values.email);
 
-            RegService.getCSRF()
-              .then((response) => {
-                console.log(response);
-                console.log(response.data);
-                console.log(response.headers);
+
 
                 RegService.register(data)
                   .then((response1) => {
@@ -74,10 +70,7 @@ export const Registration = (props) => (
                   
                     }
                   });
-              })
-              .catch((error) => {
-                console.log(error);
-              });
+
           }}
           validationSchema={Yup.object().shape({
             email: Yup.string()

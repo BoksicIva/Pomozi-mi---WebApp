@@ -22,49 +22,24 @@ export const Login = (props) => (
             password: "",
           }}
           onSubmit={async (values) => {
-            await new Promise((resolve) => setTimeout(resolve, 500));
+
 
             let formData = new FormData();
 
             formData.append("email", values.email);
             formData.append("password", values.password);
 
-            LoginService.getCSRF()
+
+
+            LoginService.login(formData)
               .then((response) => {
-                console.log(response);
-                console.log(response.data);
-                console.log(response.headers);
-
-                LoginService.login(formData)
-                  .then((response) => {
-                    //alert(JSON.stringify(response, null, 2));
-
-                    LoginService.notPer()
-                      .then((response2) => {
-                        // alert(JSON.stringify(response2, null, 2));
-                        localStorage.setItem("username", values.email);
-                        props.history.push("/home");
-                      })
-                      .catch((error2) => {
-                        const response = error2.response.data;
-                        let div = document.createElement("div");
-                        div.innerHTML = response;
-                        document.getElementById("uncategorised").append(div);
-                      });
-                  })
-                  .catch((error) => {
-                    console.log(error);
-                    const response = error.response.data;
-                        let div = document.createElement("div");
-                        div.innerHTML = response;
-                        document.getElementById("uncategorised").innerHTML="";
-                        document.getElementById("uncategorised").append(div);
-                  });
+                //alert(JSON.stringify(response, null, 2));
+                props.history.push("/home");
               })
-              .catch((error) => {
-                console.log(error);
-              });
-          }}
+
+
+          }
+          }
           validationSchema={Yup.object().shape({
             email: Yup.string()
               .email("Unesite e-mail ispravnog formata")

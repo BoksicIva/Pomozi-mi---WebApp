@@ -6,11 +6,7 @@ import LogoutService from "../service/login-service";
 export default function home(props) {
     let name = localStorage.getItem("username");
  
-    LogoutService.notPer().then((response) => {
-    }).catch((error) => {
-        props.history.push('/login');
-        console.log(error);
-    });
+
  
     const handleLogOut = () => {
         localStorage.removeItem("username");

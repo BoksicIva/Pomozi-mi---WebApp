@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Card } from "react-bootstrap";
+import {  Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style/page.css";
 import { Formik } from "formik";
@@ -44,7 +44,7 @@ export const Dash = props => {
 
     return (
         <>
-            <Sidebar />
+           
             <div className="empthy1">            </div>
             <div className="container">
                 <Card className="crd col-lg-10 mx-auto">
@@ -84,7 +84,6 @@ export const Dash = props => {
                                 values,
                                 touched,
                                 errors,
-                                dirty,
                                 isSubmitting,
                                 handleChange,
                                 handleBlur,
@@ -177,7 +176,7 @@ export const Dash = props => {
                     </Formik>
                 </Card>
             </div>
-
+            <Sidebar />
         </>
     );
 };
