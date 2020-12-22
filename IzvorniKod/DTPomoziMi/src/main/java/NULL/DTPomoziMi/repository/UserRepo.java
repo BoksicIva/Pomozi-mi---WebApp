@@ -22,7 +22,12 @@ public interface UserRepo extends PagingAndSortingRepository<User, Long> {
 	
 	@Query(nativeQuery = false, value = "SELECT token FROM korisnik WHERE EMAIL = :email AND enabled = TRUE")
 	String getTokenByEmail(@Param(value = "email") String email);
-
+	
+	@Transactional
+	@Modifying
+	@Query(nativeQuery = false, value="UPDATE korisnik u SET u.enabled = FALSE where u.IdUser = :IdUser")
+	void updateEnabled(@Param(value = "IdUser") long userID); 
+	
 	//https://stackoverflow.com/questions/39036771/how-to-map-pageobjectentity-to-pageobjectdto-in-spring-data-rest
 	//https://bezkoder.com/spring-boot-pagination-filter-jpa-pageable/
 	//So when we want to get pagination (with or without filter) in the results, we just add Pageable to the definition of the method as a parameter.

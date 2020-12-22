@@ -26,7 +26,9 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import NULL.DTPomoziMi.model.Rating;
@@ -82,8 +84,6 @@ public class UsersController {
 
 	@GetMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> getUser(@PathVariable("id") long userID) {
-		userService.getUserByID(userID);
-
 		UserDTO user = userDTOModelAssembler.toModel(userService.getUserByID(userID));
 		return new ResponseEntity<UserDTO>(user, HttpStatus.OK);
 	}
@@ -142,5 +142,11 @@ public class UsersController {
 			.created(URI.create("/api/rating/" + rating.getIdRating()))
 			.body(ratingDTOAssembler.toModel(rating));
 	}
-
+	
+	@Secured("ROLE_ADMIN")
+	@ResponseStatus(code = HttpStatus.NO_CONTENT)
+	@PostMapping(value = "/block/{id}", produces = { "application/json; charset=UTF-8" })
+	public void blockUser(@PathVariable(name="id") long IdUser){
+		userService.blockUser(IdUser);
+	}
 }

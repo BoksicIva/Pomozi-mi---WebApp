@@ -68,7 +68,7 @@ public class RequestController { // TODO linkovi...
 			= assembler
 				.toModel(
 					page, requestDTOassembler,
-					linkTo(methodOn(RequestController.class).getAll(null, null)).withSelfRel()
+					linkTo(methodOn(RequestController.class).getAll(null, null,null)).withSelfRel()
 				);
 
 		return new ResponseEntity<>(pagedModel, HttpStatus.OK);
@@ -159,7 +159,7 @@ public class RequestController { // TODO linkovi...
 	@Secured("ROLE_USER")
 	@DeleteMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" }) // TODO DA JE ONAJ KOJI BRISE REQUEST I AUTOR TOG REQUESTA...
 	public ResponseEntity<?> deleteRequest(
-		@PathVariable("id") long requestId, @RequestBody RequestDTO requestDTO,
+		@PathVariable("id") long requestId, UserRegisterDTO user,@RequestBody RequestDTO requestDTO,
 		BindingResult bindingResult, HttpServletRequest request
 	) {
 		if (bindingResult.hasErrors()) {

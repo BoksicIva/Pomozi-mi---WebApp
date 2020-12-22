@@ -1,15 +1,5 @@
 package NULL.DTPomoziMi.service.impl;
 
-import java.util.Set;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import NULL.DTPomoziMi.exception.EntityMissingException;
 import NULL.DTPomoziMi.model.Rating;
 import NULL.DTPomoziMi.model.Role;
@@ -23,6 +13,15 @@ import NULL.DTPomoziMi.service.UserService;
 import NULL.DTPomoziMi.util.UserPrincipalGetter;
 import NULL.DTPomoziMi.web.DTO.RatingDTO;
 import NULL.DTPomoziMi.web.DTO.UserRegisterDTO;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+//import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -75,41 +74,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User fetch(long id) {
+    	
         return userRepo.findById(id).orElseThrow(() -> new EntityMissingException(User.class, id));
     }
 
-    
-    
     @Override
     public User getUserByID(long ID) {
     	UserPrincipal userPrincipal = UserPrincipalGetter.getPrincipal();
-    	
-    	if(userPrincipal.getUser().getIdUser().equals(ID)) {
-    		getUserWithIdEquals(ID);
-    	}else if(userPrincipal.getUser().getEnumRoles().contains(Role.ROLE_ADMIN)){
-    		getUserForAdminView(ID);
-    	}else {
-    		getUserForOtherUser(ID);
-    	}
-    	
-        return fetch(ID);
+        User user = fetch(ID);
+        
+        if(!userPrincipal.getUser().getIdUser().equals(ID) && 
+           !userPrincipal.getUser().getEnumRoles().contains(Role.ROLE_ADMIN)) 
+        	user.setLocation(null);
+        
+        return user;        
     }
-
-    private void getUserForOtherUser(long iD) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Secured("ROLE_ADMIN")
-    private void getUserForAdminView(long iD) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void getUserWithIdEquals(long iD) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
     public Page<User> findUsers(Pageable pageable) {
@@ -126,4 +105,11 @@ public class UserServiceImpl implements UserService {
         Rating saved = ratingRepo.save(modelMapper.map(ratingDTO, Rating.class));
         return saved;
     }
+
+	@Override
+	public void blockUser(long userID) {
+		 userRepo.updateEnabled(userID);
+	}
+    
+    
 }

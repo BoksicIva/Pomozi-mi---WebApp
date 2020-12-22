@@ -35,4 +35,6 @@ public interface UserService {
     Set<Rating> findRatings(long id);
 
     Rating createRating(RatingDTO ratingDTO);
+    
+    void blockUser(long id);
 }
