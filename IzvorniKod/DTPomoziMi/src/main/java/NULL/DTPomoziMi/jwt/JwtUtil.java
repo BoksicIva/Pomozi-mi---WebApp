@@ -1,95 +1,101 @@
 package NULL.DTPomoziMi.jwt;
 
-import NULL.DTPomoziMi.properties.JwtConstants;
-import NULL.DTPomoziMi.service.TokenService;
-import NULL.DTPomoziMi.util.MyCollectors;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
+import NULL.DTPomoziMi.properties.JwtConstants;
+import NULL.DTPomoziMi.service.TokenService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class JwtUtil {
 
-    @Autowired
-    private TokenService tokenService;
+	public static String CLAIM_ROLES = "roles";
 
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
+	@Autowired
+	private TokenService tokenService;
 
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
+	public String extractUsername(String token) {
+		return extractClaim(token, Claims::getSubject);
+	}
 
-    public String extractRole(String token) { return extractClaim(token, claims -> claims.get("role", String.class));}
+	public Date extractExpiration(String token) {
+		return extractClaim(token, Claims::getExpiration);
+	}
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
+	@SuppressWarnings("unchecked")
+	public List<String> extractRoles(String token) {
+		return (List<String>) extractClaim(token, claims -> claims.get(CLAIM_ROLES));
+	}
 
-    private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(JwtConstants.SECRET_KEY).parseClaimsJws(token).getBody();
-    }
+	public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+		Claims claims = extractAllClaims(token);
+		return claimsResolver.apply(claims);
+	}
 
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
+	private Claims extractAllClaims(String token) {
+		return Jwts.parser().setSigningKey(JwtConstants.SECRET_KEY).parseClaimsJws(token).getBody();
+	}
 
-    public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role",
-                    userDetails.getAuthorities()
-                    .stream()
-                    .map(grantedAuthority -> grantedAuthority.getAuthority())
-                    .collect(MyCollectors.toSingleton()
-                ));
-        return createToken(claims, userDetails.getUsername(), JwtConstants.JWT_EXPIRATION);
-    }
+	private boolean isTokenExpired(String token) {
+		return extractExpiration(token).before(new Date());
+	}
 
-    public String generateToken(Map<String, Object> claims, String username) {
-        return createToken(claims, username, JwtConstants.JWT_EXPIRATION);
-    }
+	public String generateToken(UserDetails userDetails) {
+		Map<String, Object> claims = new HashMap<>();
+		claims
+			.put(
+				CLAIM_ROLES,
+				userDetails
+					.getAuthorities().stream().map(ga -> ga.getAuthority().toString())
+					.collect(Collectors.toList())
+			);
+		return createToken(claims, userDetails.getUsername(), JwtConstants.JWT_EXPIRATION);
+	}
 
-    public String generateRefreshToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>(); // payload ... za sada prazno... moze ic sta god hoces spremit
-        return createToken(claims, userDetails.getUsername(), JwtConstants.JWT_REFRESH_EXPIRATION);
-    }
+	public String generateToken(Map<String, Object> claims, String username) {
+		return createToken(claims, username, JwtConstants.JWT_EXPIRATION);
+	}
 
-    private String createToken(Map<String, Object> claims, String subject, Long expiration) {
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS384, JwtConstants.SECRET_KEY)
-                .compact();
-    }
+	public String generateRefreshToken(UserDetails userDetails) {
+		Map<String, Object> claims = new HashMap<>(); // payload ... za sada prazno... moze ic sta god hoces spremit
+		return createToken(claims, userDetails.getUsername(), JwtConstants.JWT_REFRESH_EXPIRATION);
+	}
 
-    public boolean validateToken(String token) {
-        try {
-            return !isTokenExpired(token);
-        }catch (JwtException e){
-            return false;
-        }
-    }
+	private String createToken(Map<String, Object> claims, String subject, Long expiration) {
+		return Jwts
+			.builder().setClaims(claims).setSubject(subject)
+			.setIssuedAt(new Date(System.currentTimeMillis()))
+			.setExpiration(new Date(System.currentTimeMillis() + expiration))
+			.signWith(SignatureAlgorithm.HS384, JwtConstants.SECRET_KEY).compact();
+	}
 
-    public boolean validateRefreshToken(String token) {
-        try{
-            String username = extractUsername(token);
-            return (!isTokenExpired(token) && token.equals(tokenService.getTokenByEmail(username)));
-        }catch (JwtException e){
-            return false;
-        }
-    }
+	public boolean validateToken(String token) {
+		try {
+			return !isTokenExpired(token);
+		} catch (JwtException e) {
+			return false;
+		}
+	}
+
+	public boolean validateRefreshToken(String token) {
+		try {
+			String username = extractUsername(token);
+			return (!isTokenExpired(token) && token.equals(tokenService.getTokenByEmail(username)));
+		} catch (JwtException e) {
+			return false;
+		}
+	}
 
 }

@@ -1,26 +1,29 @@
 package NULL.DTPomoziMi.web.filters;
 
-import NULL.DTPomoziMi.jwt.JwtUtil;
-import NULL.DTPomoziMi.properties.JwtConstants;
-import NULL.DTPomoziMi.util.CookieUtil;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.SignatureException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import NULL.DTPomoziMi.jwt.JwtUtil;
+import NULL.DTPomoziMi.properties.JwtConstants;
+import NULL.DTPomoziMi.util.CookieUtil;
+import NULL.DTPomoziMi.util.UserPrincipalGetter;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.SignatureException;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -56,30 +59,23 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 			} catch (JwtException ex) {
 				deleteCookies(response);
-
 			}
 		}
 
 		boolean valid = false;
-		if (
-			emailFromToken != null && SecurityContextHolder.getContext().getAuthentication() == null
-		) {
+		if (emailFromToken != null && UserPrincipalGetter.getPrincipal() == null) {
 			if (jwtUtil.validateToken(token)) {
 				setAuth(token);
 				valid = true;
 			}
 		}
 
-		if (
-			!valid
-				&& emailFromRefreshToken != null
-				&& SecurityContextHolder.getContext().getAuthentication() == null
-		) {
+		if (!valid && emailFromRefreshToken != null && UserPrincipalGetter.getPrincipal() == null) {
 			if (jwtUtil.validateRefreshToken(emailFromRefreshToken)) {
 				setAuth(refreshToken);
 
 				Map<String, Object> claims = new HashMap<>();
-				claims.put("role", jwtUtil.extractRole(refreshToken));
+				claims.put(JwtUtil.CLAIM_ROLES, jwtUtil.extractRoles(refreshToken));
 
 				String newtoken = jwtUtil.generateToken(claims, emailFromRefreshToken);
 				CookieUtil.create(response, JwtConstants.JWT_COOKIE_NAME, newtoken, false, -1);
@@ -93,11 +89,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	}
 
 	private void setAuth(String token) {
+		UserDetails user;
+		try {
+			user = userDetailsService.loadUserByUsername(jwtUtil.extractUsername(token));
+		} catch (UsernameNotFoundException e) {
+			logger.debug(e.getMessage());
+			return;
+		}
+
 		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-			= new UsernamePasswordAuthenticationToken(
-				userDetailsService.loadUserByUsername(jwtUtil.extractUsername(token)), null,
-				Arrays.asList(new SimpleGrantedAuthority(jwtUtil.extractRole(token)))
-			);
+			= new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
 		SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 	}

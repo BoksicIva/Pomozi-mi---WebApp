@@ -8,11 +8,14 @@ import org.springframework.data.repository.CrudRepository;
 
 import NULL.DTPomoziMi.model.Request;
 import NULL.DTPomoziMi.model.RequestStatus;
+import NULL.DTPomoziMi.model.User;
 
 public interface RequestRepo extends CrudRepository<Request, Long> {
 
     Page<Request> findAll(Pageable pageable);
 
-    List<Request> findByStatus(RequestStatus status);
+    List<Request> findByStatusOrderByIdRequest(RequestStatus status);
+    
+    List<Request> findByStatusAndAuthor(RequestStatus status, User author);
     
 }

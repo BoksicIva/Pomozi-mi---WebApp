@@ -37,6 +37,7 @@ CREATE TABLE Korisnik
   email VARCHAR(250) NOT NULL,
   aktivan BOOLEAN NOT NULL,
   token VARCHAR(500),
+  slika VARCHAR(500),
   ID_Lokacija BIGINT,
   PRIMARY KEY (ID_Korisnik),
   FOREIGN KEY (ID_Lokacija) REFERENCES Lokacija(ID_Lokacija),
@@ -54,7 +55,6 @@ CREATE TABLE Zahtjev
   ID_Lokacija BIGINT,
   ID_Autor BIGINT NOT NULL,
   ID_Izvrsitelj BIGINT, -- ako nije null, a izvrsen false, onda odabran...
-  izvrsen BOOLEAN NOT NULL,
   primljenaNotif BOOLEAN NOT NULL,
   PRIMARY KEY (ID_Zahtjev),
   FOREIGN KEY (ID_Autor) REFERENCES Korisnik(ID_Korisnik),

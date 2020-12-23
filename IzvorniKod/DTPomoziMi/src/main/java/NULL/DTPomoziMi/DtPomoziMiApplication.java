@@ -1,5 +1,6 @@
 package NULL.DTPomoziMi;
 
+import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,8 +14,10 @@ public class DtPomoziMiApplication {
 	}
 
 	@Bean
-	public ModelMapper modelMapper(){
-		return new ModelMapper();
+	public ModelMapper modelMapper() {
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+		return modelMapper;
 	}
 
 }

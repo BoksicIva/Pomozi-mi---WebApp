@@ -34,8 +34,6 @@ public class RequestDTO extends RepresentationModel<RequestDTO> { // TODO valida
 
 	private Date date;
 
-	private Boolean executed;
-
 	private String description;
 
 	private Boolean recivedNotif;

@@ -1,7 +1,5 @@
 package NULL.DTPomoziMi.security.config;
 
-import NULL.DTPomoziMi.web.filters.CsrfTokenRequestFilter;
-import NULL.DTPomoziMi.web.filters.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfFilter;
+
+import NULL.DTPomoziMi.web.filters.JwtRequestFilter;
 
 @Profile("prod")
 @Configuration
@@ -34,9 +33,6 @@ public class ProdSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
-
-    @Autowired
-    private CsrfTokenRequestFilter csrfTokenRequestFilter;
 
     @Autowired
     private LogoutSuccessHandler myLogoutHandler;
@@ -72,7 +68,6 @@ public class ProdSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessHandler(myLogoutHandler);
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(csrfTokenRequestFilter, CsrfFilter.class);
 
     }
 

@@ -2,7 +2,6 @@ package NULL.DTPomoziMi.web.controller;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -26,18 +25,15 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import NULL.DTPomoziMi.model.Rating;
-import NULL.DTPomoziMi.model.Request;
 import NULL.DTPomoziMi.model.User;
 import NULL.DTPomoziMi.service.RequestService;
 import NULL.DTPomoziMi.service.UserService;
 import NULL.DTPomoziMi.web.DTO.RatingDTO;
-import NULL.DTPomoziMi.web.DTO.RequestDTO;
 import NULL.DTPomoziMi.web.DTO.UserDTO;
 import NULL.DTPomoziMi.web.assemblers.RatingDTOAssembler;
 import NULL.DTPomoziMi.web.assemblers.RequestDTOAssembler;
@@ -88,26 +84,6 @@ public class UsersController {
 		return new ResponseEntity<UserDTO>(user, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/{id}/myRequest", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> getmyRequests(
-		@PathVariable("id") long userID, @PageableDefault Pageable pageable,
-		PagedResourcesAssembler<Request> assembler
-	) {
-		try {
-			HashMap<String, List<Request>> l = requestService.getMyReq(userID); // mapa sa zahtjevima
-			List<Request> l_active = l.get("aktivni"); //lista aktivnih
-			List<Request> l_done = l.get("izvrseni"); // lista izvrsenih
-			Page<Request> pageMyRequests
-				= new PageImpl<Request>(l_active, pageable, l_active.size()); //treba vracat oba?
-			PagedModel<RequestDTO> pagedModel
-				= assembler.toModel(pageMyRequests, requestDTOAssembler);
-			return new ResponseEntity<>(pagedModel, HttpStatus.OK);
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-
 	@GetMapping(value = "/{id}/rating", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> getRatings(
 		@PathVariable("id") long userID, @PageableDefault Pageable pageable,
@@ -138,15 +114,12 @@ public class UsersController {
 
 		Rating rating = userService.createRating(ratingDTO);
 
-		return ResponseEntity
-			.created(URI.create("/api/rating/" + rating.getIdRating()))
+		return ResponseEntity.created(URI.create("/api/rating/" + rating.getIdRating()))
 			.body(ratingDTOAssembler.toModel(rating));
 	}
-	
+
 	@Secured("ROLE_ADMIN")
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@PostMapping(value = "/block/{id}", produces = { "application/json; charset=UTF-8" })
-	public void blockUser(@PathVariable(name="id") long IdUser){
-		userService.blockUser(IdUser);
-	}
+	public void blockUser(@PathVariable(name = "id") long IdUser) { userService.blockUser(IdUser); }
 }

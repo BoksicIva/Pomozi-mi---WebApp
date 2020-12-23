@@ -50,9 +50,6 @@ public class Request implements Serializable {
 	@Column(name = "datum")
 	private Date date;
 
-	@Column(name = "izvrsen")
-	private Boolean executed;
-
 	@Column(name = "opis")
 	private String description;
 

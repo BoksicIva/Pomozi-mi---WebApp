@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,8 +37,8 @@ import lombok.ToString;
 @Table(name = "korisnik")
 public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
-    @Include
+
+	@Include
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_korisnik")
@@ -59,14 +60,17 @@ public class User implements Serializable {
 
 	private String token;
 
+	@Column(name = "slika")
+	private String picture;
+
 	@ManyToOne
 	@JoinColumn(name = "id_lokacija")
 	private Location location;
 
 	@ManyToMany
 	@JoinTable(
-			name = "kandidiranje", joinColumns = { @JoinColumn(name = "id_korisnik") },
-			inverseJoinColumns = { @JoinColumn(name = "id_kandidatura") }
+		name = "kandidiranje", joinColumns = { @JoinColumn(name = "id_korisnik") },
+		inverseJoinColumns = { @JoinColumn(name = "id_kandidatura") }
 	)
 	private Set<Candidacy> candidacies = new HashSet<>();
 
@@ -76,7 +80,7 @@ public class User implements Serializable {
 	@OneToMany(mappedBy = "rator")
 	private Set<Rating> ratedOthers = new HashSet<>();
 
-	@ManyToMany(mappedBy = "users")
+	@ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
 	private Set<RoleEntity> roles = new HashSet<>();
 
 	@OneToMany(mappedBy = "author")
