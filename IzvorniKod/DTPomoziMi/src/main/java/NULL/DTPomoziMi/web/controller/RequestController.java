@@ -26,7 +26,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,8 +37,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import NULL.DTPomoziMi.exception.BindingException;
 import NULL.DTPomoziMi.model.Request;
 import NULL.DTPomoziMi.service.RequestService;
+import NULL.DTPomoziMi.util.Common;
 import NULL.DTPomoziMi.web.DTO.CreateRequestDTO;
 import NULL.DTPomoziMi.web.DTO.RequestDTO;
 import NULL.DTPomoziMi.web.assemblers.RequestDTOAssembler;
@@ -84,17 +86,12 @@ public class RequestController { // TODO linkovi...
 		@RequestBody @Valid CreateRequestDTO requestDTO, BindingResult bindingResult,
 		HttpServletRequest request
 	) {
-		if (bindingResult.hasErrors()) {
-			List<ObjectError> errors = bindingResult.getAllErrors();
-
-			logger.debug("Binding errors {}", errors);
-
-			return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-		}
+		if (bindingResult.hasErrors()) hasErrors(bindingResult);
 
 		Request saved = requestService.createRequest(requestDTO);
 
-		return ResponseEntity.created(URI.create("/api/requests/" + saved.getIdRequest()))
+		return ResponseEntity
+			.created(URI.create("/api/requests/" + saved.getIdRequest()))
 			.body(requestDTOassembler.toModel(saved));
 	}
 
@@ -128,11 +125,12 @@ public class RequestController { // TODO linkovi...
 
 		Page<Request> page = requestService.getAllActiveRequests(pageable, radius);
 
-		PagedModel<RequestDTO> pagedModel = assembler.toModel(
-			page, requestDTOassembler,
-			linkTo(methodOn(RequestController.class).getActive(pageable, null, radius))
-				.withSelfRel()
-		);
+		PagedModel<RequestDTO> pagedModel = assembler
+			.toModel(
+				page, requestDTOassembler,
+				linkTo(methodOn(RequestController.class).getActive(pageable, null, radius))
+					.withSelfRel()
+			);
 
 		return new ResponseEntity<>(pagedModel, HttpStatus.OK);
 	}
@@ -209,8 +207,11 @@ public class RequestController { // TODO linkovi...
 	 */
 	@PutMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> updateRequest(
-		@PathVariable("id") long id, @RequestBody RequestDTO requestDTO
+		@PathVariable("id") long id, @RequestBody @Valid RequestDTO requestDTO,
+		BindingResult bindingResult
 	) {
+		if (bindingResult.hasErrors()) hasErrors(bindingResult);
+
 		try {
 			RequestDTO updated
 				= requestDTOassembler.toModel(requestService.updateRequest(id, requestDTO));
@@ -219,5 +220,14 @@ public class RequestController { // TODO linkovi...
 			logger.debug("Exception {} while updating rating", e.getMessage());
 			throw e;
 		}
+	}
+
+	private void hasErrors(BindingResult bindingResult) {
+		List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+
+		String errors = Common.stringifyErrors(fieldErrors);
+		logger.debug("Binding field errors {}", errors);
+
+		throw new BindingException(errors, fieldErrors);
 	}
 }

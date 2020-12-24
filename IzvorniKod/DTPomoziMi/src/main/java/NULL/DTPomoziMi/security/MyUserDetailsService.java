@@ -19,10 +19,11 @@ public class MyUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
 		try {
 			User user = userRepo.findByEmail(email);
-			if (user == null)
-				throw new UsernameNotFoundException(
-					"User with username: " + email + " was not found."
-				);
+			if (
+				user == null
+			) throw new UsernameNotFoundException(
+				"User with username: " + email + " was not found."
+			);
 
 			return new UserPrincipal(user);
 		} catch (Exception e) {

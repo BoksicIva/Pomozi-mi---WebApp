@@ -29,78 +29,86 @@ import org.springframework.security.web.csrf.CsrfFilter;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class DevSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserDetailsService myUserDetailsService;
+	@Autowired
+	private UserDetailsService myUserDetailsService;
 
-    @Autowired
-    private JwtRequestFilter jwtRequestFilter;
+	@Autowired
+	private JwtRequestFilter jwtRequestFilter;
 
-    @Autowired
-    private CsrfTokenRequestFilter csrfTokenRequestFilter;
+	@Autowired
+	private CsrfTokenRequestFilter csrfTokenRequestFilter;
 
-    @Autowired
-    private LogoutSuccessHandler myLogoutHandler;
+	@Autowired
+	private LogoutSuccessHandler myLogoutHandler;
 
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+	@Bean
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .userDetailsService(myUserDetailsService)
-                .passwordEncoder(passwordEncoder());
-    }
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(myUserDetailsService).passwordEncoder(passwordEncoder());
+	}
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .cors()
-                .and()
-                .csrf().csrfTokenRepository(cookieCsrfTokenRepository()).ignoringAntMatchers("/h2/**");
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http
+			.sessionManagement()
+			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			.and()
+			.cors()
+			.and()
+			.csrf()
+			.csrfTokenRepository(cookieCsrfTokenRepository())
+			.ignoringAntMatchers("/h2/**");
 
-        http.authorizeRequests()
-                .antMatchers("/h2/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/getCsrf").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/auth/*").permitAll()
-                .anyRequest().authenticated();
+		http
+			.authorizeRequests()
+			.antMatchers("/h2/**")
+			.permitAll()
+			.antMatchers(HttpMethod.GET, "/api/getCsrf")
+			.permitAll()
+			.antMatchers(HttpMethod.POST, "/api/auth/*")
+			.permitAll()
+			.anyRequest()
+			.authenticated();
 
-        http.headers().frameOptions().disable();
+		http.headers().frameOptions().disable();
 
-        http.formLogin().disable()
-                .logout().logoutUrl("/logout")
-                .logoutSuccessHandler(myLogoutHandler);
+		http
+			.formLogin()
+			.disable()
+			.logout()
+			.logoutUrl("/logout")
+			.logoutSuccessHandler(myLogoutHandler);
 
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(csrfTokenRequestFilter, CsrfFilter.class);
+		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(csrfTokenRequestFilter, CsrfFilter.class);
 
-    }
+	}
 
-    CookieCsrfTokenRepository cookieCsrfTokenRepository(){
-        CookieCsrfTokenRepository repo = new CookieCsrfTokenRepository();
-        repo.setCookieHttpOnly(false);
-        repo.setCookieName("X-CSRF-COOKIE"); //TODO constants
-        repo.setHeaderName("X-CSRF-TOKEN");
+	CookieCsrfTokenRepository cookieCsrfTokenRepository() {
+		CookieCsrfTokenRepository repo = new CookieCsrfTokenRepository();
+		repo.setCookieHttpOnly(false);
+		repo.setCookieName("X-CSRF-COOKIE"); //TODO constants
+		repo.setHeaderName("X-CSRF-TOKEN");
 
-        return repo;
-    }
+		return repo;
+	}
 
-    @Override
-    public void configure(WebSecurity web){
-        web.ignoring().antMatchers("/*");
-        web.ignoring().antMatchers("/*.ico");
-        web.ignoring().antMatchers("/*.js");
-        web.ignoring().antMatchers("/*.json");
-        web.ignoring().antMatchers("/*.png");
-        web.ignoring().antMatchers("/static/**");
-    }
+	@Override
+	public void configure(WebSecurity web) {
+		web.ignoring().antMatchers("/*");
+		web.ignoring().antMatchers("/*.ico");
+		web.ignoring().antMatchers("/*.js");
+		web.ignoring().antMatchers("/*.json");
+		web.ignoring().antMatchers("/*.png");
+		web.ignoring().antMatchers("/static/**");
+	}
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(11);
-    }
+	@Bean
+	public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(11); }
 
 }

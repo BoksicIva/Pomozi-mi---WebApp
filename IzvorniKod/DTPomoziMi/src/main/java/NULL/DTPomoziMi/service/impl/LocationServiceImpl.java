@@ -8,6 +8,7 @@ import java.util.stream.StreamSupport;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import NULL.DTPomoziMi.exception.EntityMissingException;
@@ -17,6 +18,7 @@ import NULL.DTPomoziMi.service.LocationService;
 import NULL.DTPomoziMi.web.DTO.LocationDTO;
 
 @Service
+@PreAuthorize("isAuthenticated()")
 public class LocationServiceImpl implements LocationService {
 
 	@Autowired
@@ -40,25 +42,20 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	public Optional<Location> findById(Long id) {
-		return locationRepo.findById(id);
-	}
+	public Optional<Location> findById(Long id) { return locationRepo.findById(id); }
 
 	@Override
 	public Location fetch(Long id) {
 		return locationRepo
-			.findById(id).orElseThrow(() -> new EntityMissingException(Location.class, id));
+			.findById(id)
+			.orElseThrow(() -> new EntityMissingException(Location.class, id));
 	}
 
 	@Override
-	public boolean existsById(Long id) {
-		return locationRepo.existsById(id);
-	}
+	public boolean existsById(Long id) { return locationRepo.existsById(id); }
 
 	@Override
-	public Iterable<Location> findAll() {
-		return locationRepo.findAll();
-	}
+	public Iterable<Location> findAll() { return locationRepo.findAll(); }
 
 	@Override
 	public Iterable<Location> findAllById(Iterable<Long> ids) {
@@ -66,9 +63,7 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	public long count() {
-		return locationRepo.count();
-	}
+	public long count() { return locationRepo.count(); }
 
 	@Override
 	public Location deleteById(Long id) {
@@ -80,9 +75,8 @@ public class LocationServiceImpl implements LocationService {
 	@Override
 	public Iterable<Location> deleteAll(Iterable<LocationDTO> entities) {
 		Stream<LocationDTO> stream = StreamSupport.stream(entities.spliterator(), false);
-		Iterable<Location> iterable
-			= locationRepo
-				.findAllById(stream.map(l -> l.getIdLocation()).collect(Collectors.toList()));
+		Iterable<Location> iterable = locationRepo
+			.findAllById(stream.map(l -> l.getIdLocation()).collect(Collectors.toList()));
 		locationRepo.deleteAll(iterable);
 		return iterable;
 	}
@@ -93,7 +87,7 @@ public class LocationServiceImpl implements LocationService {
 		locationRepo.deleteAll();
 		return iterable;
 	}
-	
+
 	@Override
 	public Location findByLatitudeAndLongitude(BigDecimal latitude, BigDecimal longitude) {
 		return locationRepo.findByLatitudeAndLongitude(latitude, longitude);

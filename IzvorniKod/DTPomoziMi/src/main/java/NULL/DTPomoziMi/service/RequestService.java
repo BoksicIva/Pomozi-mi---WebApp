@@ -122,13 +122,13 @@ public interface RequestService {
 	/**
 	 * Update request.
 	 *
-	 * @param idRequest the id request
+	 * @param idRequest  the id request
 	 * @param requestDTO the request DTO
 	 * @return the request
-	 * @throws NullPointerException              if given {@literal request} is
-	 *                                           {@literal null} reference
-	 * @throws EntityMissingException            - if element with given
-	 *                                           <code>id</code> does not exist
+	 * @throws NullPointerException   if given {@literal request} is {@literal null}
+	 *                                reference
+	 * @throws EntityMissingException - if element with given <code>id</code> does
+	 *                                not exist
 	 */
 	Request updateRequest(long idRequest, RequestDTO requestDTO);
 

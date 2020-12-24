@@ -19,12 +19,16 @@ public class DevWebConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/**").allowedOrigins("http://localhost:3000").allowedHeaders("*")
+		registry
+			.addMapping("/**")
+			.allowedOrigins("http://localhost:3000")
+			.allowedHeaders("*")
 			.allowedMethods(
 				HttpMethod.GET.toString(), HttpMethod.POST.toString(),
 				HttpMethod.OPTIONS.toString(), HttpMethod.PATCH.toString(),
 				HttpMethod.PUT.toString(), HttpMethod.DELETE.toString()
-			).allowCredentials(true);
+			)
+			.allowCredentials(true);
 	}
 
 	@Override

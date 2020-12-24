@@ -25,13 +25,14 @@ import lombok.Setter;
 public class CreateRequestDTO {
 
 	@Pattern(regexp = "^[0-9]+$")
+	@NotNull
 	private String phone;
 
 	@Valid
 	private LocationDTO location;
 
 	@Future
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime tstmp;
 
 	@NotNull

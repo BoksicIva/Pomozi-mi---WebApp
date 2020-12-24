@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import NULL.DTPomoziMi.exception.BindingException;
 import NULL.DTPomoziMi.exception.EntityMissingException;
 import NULL.DTPomoziMi.exception.IllegalAccessException;
 import NULL.DTPomoziMi.exception.IllegalActionException;
@@ -71,7 +72,7 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
 		return new ResponseEntity<>(createProps(e, HttpStatus.FORBIDDEN), HttpStatus.FORBIDDEN);
 	}
-	
+
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException e) {
 		e.printStackTrace();
@@ -79,8 +80,17 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<>(createProps(e, HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
 	}
 
-	private Map<String, String> createProps(Exception e, HttpStatus status) {
-		Map<String, String> props = new HashMap<>();
+	@ExceptionHandler(BindingException.class)
+	public ResponseEntity<?> handleIllegalArgumentException(BindingException e) {
+		e.printStackTrace();
+
+		Map<String, Object> map = createProps(e, HttpStatus.BAD_REQUEST);
+		map.put("errors", e.getFieldErrors());
+		return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+	}
+
+	private Map<String, Object> createProps(Exception e, HttpStatus status) {
+		Map<String, Object> props = new HashMap<>();
 		props.put("message", e.getMessage());
 		props.put("status", status.getReasonPhrase());
 		props.put("code", String.valueOf(status.value()));

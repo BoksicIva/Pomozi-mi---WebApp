@@ -9,16 +9,16 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Target({ TYPE, ANNOTATION_TYPE})
+@Target({ TYPE, ANNOTATION_TYPE })
 @Retention(RUNTIME)
 @Constraint(validatedBy = MatchPasswordValidator.class)
 @Documented
 public @interface MatchPassword {
 
-    String message() default  "Passwords don't match";
+	String message() default "Passwords don't match";
 
-    Class<?>[] groups() default {};
+	Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default {};
+	Class<? extends Payload>[] payload() default {};
 
 }

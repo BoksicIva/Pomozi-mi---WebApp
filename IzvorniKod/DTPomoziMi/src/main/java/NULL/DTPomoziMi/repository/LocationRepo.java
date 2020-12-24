@@ -9,5 +9,5 @@ import NULL.DTPomoziMi.model.Location;
 public interface LocationRepo extends CrudRepository<Location, Long> {
 
 	Location findByLatitudeAndLongitude(BigDecimal latitude, BigDecimal longitude);
-	
+
 }

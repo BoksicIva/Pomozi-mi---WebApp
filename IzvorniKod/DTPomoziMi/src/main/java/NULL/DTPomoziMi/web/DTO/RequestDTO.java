@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
@@ -31,6 +32,8 @@ public class RequestDTO extends RepresentationModel<RequestDTO> {
 	@NotNull
 	private Long IdRequest;
 
+	@Pattern(regexp = "^[0-9]+$")
+	@NotNull
 	private String phone;
 
 	private LocalDateTime tstmp;
@@ -43,10 +46,10 @@ public class RequestDTO extends RepresentationModel<RequestDTO> {
 	@NotNull
 	@Valid
 	private UserDTO author;
-	
+
 	@Valid
 	private UserDTO executor;
-	
+
 	@Valid
 	private LocationDTO location;
 }

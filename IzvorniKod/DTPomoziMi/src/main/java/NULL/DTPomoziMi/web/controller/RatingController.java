@@ -3,6 +3,8 @@ package NULL.DTPomoziMi.web.controller;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,8 +26,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import NULL.DTPomoziMi.exception.BindingException;
 import NULL.DTPomoziMi.model.Rating;
 import NULL.DTPomoziMi.service.RatingService;
+import NULL.DTPomoziMi.util.Common;
 import NULL.DTPomoziMi.web.DTO.RatingDTO;
 import NULL.DTPomoziMi.web.assemblers.RatingDTOAssembler;
 
@@ -37,7 +40,7 @@ import NULL.DTPomoziMi.web.assemblers.RatingDTOAssembler;
 @RestController
 @RequestMapping("/api/ratings")
 public class RatingController {
-	
+
 	/** The logger. */
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -96,21 +99,14 @@ public class RatingController {
 	 */
 	@PostMapping(value = "", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> createRating(
-		@ModelAttribute RatingDTO rating, BindingResult bindingResult
+		@RequestBody @Valid RatingDTO rating, BindingResult bindingResult
 	) {
-		if (bindingResult.hasErrors()) {
-			List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-
-			String errors = stringifyErrors(fieldErrors);
-
-			logger.debug("Binding errors {}", errors);
-
-			throw new IllegalArgumentException(errors);
-		}
+		if (bindingResult.hasErrors()) hasErrors(bindingResult);
 
 		try {
 			Rating saved = ratingService.create(rating);
-			return ResponseEntity.created(URI.create("/api/ratings" + saved.getIdRating()))
+			return ResponseEntity
+				.created(URI.create("/api/ratings" + saved.getIdRating()))
 				.body(ratingDTOAssembler.toModel(saved));
 		} catch (Exception e) {
 			logger.debug("Exception {} while creating rating", e.getMessage());
@@ -121,15 +117,18 @@ public class RatingController {
 	/**
 	 * Update rating.
 	 *
-	 * @param idRating the id rating
+	 * @param idRating  the id rating
 	 * @param ratingDTO the rating DTO
 	 * @return the response entity
 	 */
 
 	@PutMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> updateRating(
-		@PathVariable("id") long idRating, @RequestBody RatingDTO ratingDTO // TODO binding result... model attr? 
+		@PathVariable("id") long idRating, @RequestBody @Valid RatingDTO ratingDTO,
+		BindingResult bindingResult
 	) {
+		if (bindingResult.hasErrors()) hasErrors(bindingResult);
+
 		try {
 			return ResponseEntity
 				.ok(ratingDTOAssembler.toModel(ratingService.update(ratingDTO, idRating)));
@@ -139,7 +138,7 @@ public class RatingController {
 		}
 
 	}
-	
+
 	/**
 	 * Delete rating.
 	 *
@@ -147,40 +146,17 @@ public class RatingController {
 	 * @return the response entity
 	 */
 	@DeleteMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> deleteRating(@PathVariable("id") long idRating){
+	public ResponseEntity<?> deleteRating(@PathVariable("id") long idRating) {
 		return ResponseEntity.ok(ratingDTOAssembler.toModel(ratingService.deleteById(idRating)));
 	}
 
-	/**
-	 * The Class Counter.
-	 */
-	class Counter {
-		
-		/** The c. */
-		public int c;
+	private void hasErrors(BindingResult bindingResult) {
+		List<FieldError> fieldErrors = bindingResult.getFieldErrors();
 
-		/**
-		 * Instantiates a new counter.
-		 *
-		 * @param c the c
-		 */
-		public Counter(int c) { this.c = c; }
+		String errors = Common.stringifyErrors(fieldErrors);
+		logger.debug("Binding field errors {}", errors);
+
+		throw new BindingException(errors, fieldErrors);
 	}
 
-	/**
-	 * Stringify errors.
-	 *
-	 * @param list the list
-	 * @return the string
-	 */
-	private String stringifyErrors(List<FieldError> list) {
-		Counter c = new Counter(0);
-		return list.stream().reduce(
-			"[",
-			(partialRes, e) -> {
-				c.c++;
-				return partialRes + (c.c == 1 ? "" : ", ") + e.toString();
-			}, (s1, s2) -> s1 + s2
-		) + "]";
-	}
 }

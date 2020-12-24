@@ -26,16 +26,16 @@ import lombok.Setter;
 public class LocationDTO extends RepresentationModel<LocationDTO> {
 	@Include
 	private Long IdLocation;
-	
+
 	@NotNull
 	private String adress;
-	
+
 	@NotNull
 	private String state;
 
 	@NotNull
 	private BigDecimal longitude;
-	
+
 	@NotNull
 	private String town;
 

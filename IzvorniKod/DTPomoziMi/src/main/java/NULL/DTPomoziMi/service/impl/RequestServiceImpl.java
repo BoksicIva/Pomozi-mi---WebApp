@@ -57,16 +57,13 @@ public class RequestServiceImpl implements RequestService {
 		Request req = modelMapper.map(request, Request.class);
 
 		LocationDTO location = request.getLocation();
-		if (location != null) { // ako je dana lokacija onda provjeri postoji li vec spremljena pa ju dodaj u req ili... ako ne onda spremi i dodaj u req 
-			try {
-				Location loc = locationService
-					.findByLatitudeAndLongitude(location.getLatitude(), location.getLongitude());
 
-				if (loc == null) loc = locationService.save(location);
-
-				req.setLocation(loc);
-			} catch (Exception e) {}
+		Location loc = resolveLocation(location);
+		if (loc == null && location != null) {
+			loc = modelMapper.map(req.getLocation(), Location.class);
+			loc.setIdLocation(null);
 		}
+		req.setLocation(loc);
 
 		req.setAuthor(UserPrincipalGetter.getPrincipal().getUser());
 		req.setRecivedNotif(false);
@@ -77,8 +74,23 @@ public class RequestServiceImpl implements RequestService {
 
 	@Override
 	public Request updateRequest(long idRequest, RequestDTO requestDTO) {
+		if (!requestDTO.getIdRequest().equals(idRequest))
+			throw new IllegalArgumentException("Request id must be preserved!");
+
 		User user = UserPrincipalGetter.getPrincipal().getUser();
 		Request req = fetch(idRequest);
+
+		LocationDTO location = requestDTO.getLocation();
+		Location loc = resolveLocation(location);
+		if (loc == null && location != null) {
+			loc = modelMapper.map(req.getLocation(), Location.class);
+			loc.setIdLocation(null);
+		}
+		req.setLocation(loc);
+
+		req.setDescription(requestDTO.getDescription());
+		req.setPhone(requestDTO.getPhone());
+		req.setTstmp(requestDTO.getTstmp());
 
 		if (!user.getIdUser().equals(req.getAuthor().getIdUser()))
 			throw new IllegalAccessException("Only authors can modify requests!");
@@ -167,7 +179,8 @@ public class RequestServiceImpl implements RequestService {
 
 	@Override
 	public Request fetch(long requestId) {
-		return requestRepo.findById(requestId)
+		return requestRepo
+			.findById(requestId)
 			.orElseThrow(() -> new EntityMissingException(Request.class, requestId));
 	}
 
@@ -186,10 +199,11 @@ public class RequestServiceImpl implements RequestService {
 		if (req.getStatus().equals(RequestStatus.ACTIVE)) {
 			hideInfo(req);
 		} else {
-			logger.debug(
-				"User with id: {} trying to access request with id: {} illegaly", user.getIdUser(),
-				req.getIdRequest()
-			);
+			logger
+				.debug(
+					"User with id: {} trying to access request with id: {} illegaly",
+					user.getIdUser(), req.getIdRequest()
+				);
 			throw new IllegalAccessException("Missing permission to access requested resource!");
 		}
 
@@ -198,12 +212,6 @@ public class RequestServiceImpl implements RequestService {
 
 	private void hideInfo(Request req) { req.setRecivedNotif(null); req.setPhone(null); }
 
-	/*
-	 * @Override public Page<Request> findAll(Pageable pageable) { return
-	 * requestRepo.findAll(pageable); }
-	 */
-
-	//@Transactional
 	@Override
 	public Page<Request> getAllActiveRequests(Pageable pageable, Double radius) {
 		List<Request> actives
@@ -270,12 +278,28 @@ public class RequestServiceImpl implements RequestService {
 		Map<String, CollectionModel<RequestDTO>> map = new HashMap<>();
 
 		map.put(RequestStatus.ACTIVE.toString(), requestDTOAssembler.toCollectionModel(active));
-		map.put(
-			RequestStatus.FINALIZED.toString(), requestDTOAssembler.toCollectionModel(finalized)
-		);
+		map
+			.put(
+				RequestStatus.FINALIZED.toString(), requestDTOAssembler.toCollectionModel(finalized)
+			);
 		map.put(RequestStatus.BLOCKED.toString(), requestDTOAssembler.toCollectionModel(blocked));
 
 		return map;
+	}
+
+	private Location resolveLocation(LocationDTO dto) {
+		if (dto != null) { // ako je dana lokacija onda provjeri postoji li vec spremljena pa ju dodaj u req ili... ako ne onda spremi i dodaj u req 
+			try {
+				Location loc = locationService
+					.findByLatitudeAndLongitude(dto.getLatitude(), dto.getLongitude());
+
+				if (loc == null) loc = locationService.save(dto);
+
+				return loc;
+			} catch (Exception e) {}
+		}
+
+		return null;
 	}
 
 }

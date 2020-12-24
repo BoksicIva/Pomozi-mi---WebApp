@@ -123,11 +123,11 @@ public interface LocationService {
 	 * Deletes all entities managed by the repository.
 	 */
 	Iterable<Location> deleteAll();
-	
+
 	/**
 	 * Find by latitude and longitude.
 	 *
-	 * @param latitude the latitude
+	 * @param latitude  the latitude
 	 * @param longitude the longitude
 	 * @return the location
 	 */

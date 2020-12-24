@@ -8,15 +8,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class HomeController {
 
-    @GetMapping("/")
-    public String getHome(){
-        return "index";
-    }
+	@GetMapping("/")
+	public String getHome() { return "index"; }
 
-    @ResponseBody
-    @GetMapping("/api/getCsrf")
-    public ResponseEntity<?> get(){
-        return ResponseEntity.ok("");
-    }
+	@ResponseBody
+	@GetMapping("/api/getCsrf")
+	public ResponseEntity<?> get() { return ResponseEntity.ok(""); }
 
 }

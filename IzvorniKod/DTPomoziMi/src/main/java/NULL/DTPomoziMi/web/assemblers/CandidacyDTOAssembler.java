@@ -10,15 +10,13 @@ import NULL.DTPomoziMi.web.DTO.CandidacyDTO;
 import NULL.DTPomoziMi.web.controller.CandidacyController;
 
 @Component
-public class CandidacyDTOAssembler
-	extends RepresentationModelAssemblerSupport<Candidacy, CandidacyDTO> {
+public class CandidacyDTOAssembler extends RepresentationModelAssemblerSupport<
+	Candidacy, CandidacyDTO> {
 
 	@Autowired
 	private ModelMapper modelMapper;
 
-	public CandidacyDTOAssembler() {
-		super(CandidacyController.class, CandidacyDTO.class);
-	}
+	public CandidacyDTOAssembler() { super(CandidacyController.class, CandidacyDTO.class); }
 
 	@Override
 	public CandidacyDTO toModel(Candidacy entity) {

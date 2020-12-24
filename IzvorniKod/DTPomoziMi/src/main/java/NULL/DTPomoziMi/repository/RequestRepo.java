@@ -12,10 +12,10 @@ import NULL.DTPomoziMi.model.User;
 
 public interface RequestRepo extends CrudRepository<Request, Long> {
 
-    Page<Request> findAll(Pageable pageable);
+	Page<Request> findAll(Pageable pageable);
 
-    List<Request> findByStatusOrderByIdRequest(RequestStatus status);
-    
-    List<Request> findByStatusAndAuthor(RequestStatus status, User author);
-    
+	List<Request> findByStatusOrderByIdRequest(RequestStatus status);
+
+	List<Request> findByStatusAndAuthor(RequestStatus status, User author);
+
 }

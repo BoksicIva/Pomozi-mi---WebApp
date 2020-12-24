@@ -7,6 +7,8 @@ import java.util.stream.StreamSupport;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
 
 import NULL.DTPomoziMi.exception.EntityMissingException;
 import NULL.DTPomoziMi.model.Candidacy;
@@ -14,8 +16,10 @@ import NULL.DTPomoziMi.repository.CandidacyRepo;
 import NULL.DTPomoziMi.service.CandidacyService;
 import NULL.DTPomoziMi.web.DTO.CandidacyDTO;
 
+@Service
+@PreAuthorize("isAuthenticated()")
 public class CandidacyServiceImpl implements CandidacyService {
-	
+
 	@Autowired
 	private ModelMapper modelMapper;
 
@@ -37,25 +41,20 @@ public class CandidacyServiceImpl implements CandidacyService {
 	}
 
 	@Override
-	public Optional<Candidacy> findById(Long id) {
-		return candidacyRepo.findById(id);
-	}
+	public Optional<Candidacy> findById(Long id) { return candidacyRepo.findById(id); }
 
 	@Override
 	public Candidacy fetch(Long id) {
 		return candidacyRepo
-			.findById(id).orElseThrow(() -> new EntityMissingException(Candidacy.class, id));
+			.findById(id)
+			.orElseThrow(() -> new EntityMissingException(Candidacy.class, id));
 	}
 
 	@Override
-	public boolean existsById(Long id) {
-		return candidacyRepo.existsById(id);
-	}
+	public boolean existsById(Long id) { return candidacyRepo.existsById(id); }
 
 	@Override
-	public Iterable<Candidacy> findAll() {
-		return candidacyRepo.findAll();
-	}
+	public Iterable<Candidacy> findAll() { return candidacyRepo.findAll(); }
 
 	@Override
 	public Iterable<Candidacy> findAllById(Iterable<Long> ids) {
@@ -63,9 +62,7 @@ public class CandidacyServiceImpl implements CandidacyService {
 	}
 
 	@Override
-	public long count() {
-		return candidacyRepo.count();
-	}
+	public long count() { return candidacyRepo.count(); }
 
 	@Override
 	public Candidacy deleteById(Long id) {
@@ -77,9 +74,8 @@ public class CandidacyServiceImpl implements CandidacyService {
 	@Override
 	public Iterable<Candidacy> deleteAll(Iterable<CandidacyDTO> entities) {
 		Stream<CandidacyDTO> stream = StreamSupport.stream(entities.spliterator(), false);
-		Iterable<Candidacy> iterable
-			= candidacyRepo
-				.findAllById(stream.map(l -> l.getIdCandidacy()).collect(Collectors.toList()));
+		Iterable<Candidacy> iterable = candidacyRepo
+			.findAllById(stream.map(l -> l.getIdCandidacy()).collect(Collectors.toList()));
 		candidacyRepo.deleteAll(iterable);
 		return iterable;
 	}

@@ -34,7 +34,7 @@ import lombok.ToString;
 @Table(name = "uloga")
 public class RoleEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	@Include
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,11 +45,10 @@ public class RoleEntity implements Serializable {
 	@Column(name = "naziv")
 	private Role role;
 
-	
 	@ManyToMany
 	@JoinTable(
-			name = "imaulogu", joinColumns = { @JoinColumn(name = "id_uloga") },
-			inverseJoinColumns = { @JoinColumn(name = "id_korisnik") }
+		name = "imaulogu", joinColumns = { @JoinColumn(name = "id_uloga") },
+		inverseJoinColumns = { @JoinColumn(name = "id_korisnik") }
 	)
 	private Set<User> users = new HashSet<>();
 

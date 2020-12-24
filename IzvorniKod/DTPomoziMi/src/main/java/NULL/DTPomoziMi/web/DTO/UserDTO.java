@@ -1,5 +1,6 @@
 package NULL.DTPomoziMi.web.DTO;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.hateoas.RepresentationModel;
@@ -7,7 +8,6 @@ import org.springframework.hateoas.server.core.Relation;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import NULL.DTPomoziMi.model.Location;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -35,6 +35,7 @@ public class UserDTO extends RepresentationModel<UserDTO> {
 	@NotNull
 	private String email;
 
-	private Location location;
+	@Valid
+	private LocationDTO location;
 
 }

@@ -26,9 +26,7 @@ public class JwtUtil {
 	@Autowired
 	private TokenService tokenService;
 
-	public String extractUsername(String token) {
-		return extractClaim(token, Claims::getSubject);
-	}
+	public String extractUsername(String token) { return extractClaim(token, Claims::getSubject); }
 
 	public Date extractExpiration(String token) {
 		return extractClaim(token, Claims::getExpiration);
@@ -58,7 +56,9 @@ public class JwtUtil {
 			.put(
 				CLAIM_ROLES,
 				userDetails
-					.getAuthorities().stream().map(ga -> ga.getAuthority().toString())
+					.getAuthorities()
+					.stream()
+					.map(ga -> ga.getAuthority().toString())
 					.collect(Collectors.toList())
 			);
 		return createToken(claims, userDetails.getUsername(), JwtConstants.JWT_EXPIRATION);
@@ -75,10 +75,13 @@ public class JwtUtil {
 
 	private String createToken(Map<String, Object> claims, String subject, Long expiration) {
 		return Jwts
-			.builder().setClaims(claims).setSubject(subject)
+			.builder()
+			.setClaims(claims)
+			.setSubject(subject)
 			.setIssuedAt(new Date(System.currentTimeMillis()))
 			.setExpiration(new Date(System.currentTimeMillis() + expiration))
-			.signWith(SignatureAlgorithm.HS384, JwtConstants.SECRET_KEY).compact();
+			.signWith(SignatureAlgorithm.HS384, JwtConstants.SECRET_KEY)
+			.compact();
 	}
 
 	public boolean validateToken(String token) {

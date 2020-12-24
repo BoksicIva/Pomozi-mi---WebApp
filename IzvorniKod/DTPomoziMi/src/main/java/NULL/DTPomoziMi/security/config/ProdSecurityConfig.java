@@ -28,74 +28,80 @@ import NULL.DTPomoziMi.web.filters.JwtRequestFilter;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class ProdSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserDetailsService myUserDetailsService;
+	@Autowired
+	private UserDetailsService myUserDetailsService;
 
-    @Autowired
-    private JwtRequestFilter jwtRequestFilter;
+	@Autowired
+	private JwtRequestFilter jwtRequestFilter;
 
-    @Autowired
-    private LogoutSuccessHandler myLogoutHandler;
+	@Autowired
+	private LogoutSuccessHandler myLogoutHandler;
 
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+	@Bean
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .userDetailsService(myUserDetailsService)
-                .passwordEncoder(passwordEncoder());
-    }
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(myUserDetailsService).passwordEncoder(passwordEncoder());
+	}
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .cors()
-                .and()
-                .csrf().csrfTokenRepository(cookieCsrfTokenRepository());
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http
+			.sessionManagement()
+			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			.and()
+			.cors()
+			.and()
+			.csrf()
+			.csrfTokenRepository(cookieCsrfTokenRepository());
 
-        http.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/getCsrf").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/auth/*").permitAll()
-                .anyRequest().authenticated();
+		http
+			.authorizeRequests()
+			.antMatchers(HttpMethod.GET, "/api/getCsrf")
+			.permitAll()
+			.antMatchers(HttpMethod.POST, "/api/auth/*")
+			.permitAll()
+			.anyRequest()
+			.authenticated();
 
-        http.formLogin().disable()
-                .logout().logoutUrl("/logout")
-                .logoutSuccessHandler(myLogoutHandler);
+		http
+			.formLogin()
+			.disable()
+			.logout()
+			.logoutUrl("/logout")
+			.logoutSuccessHandler(myLogoutHandler);
 
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-    }
+	}
 
-    CookieCsrfTokenRepository cookieCsrfTokenRepository() {
-        CookieCsrfTokenRepository repo = new CookieCsrfTokenRepository();
-        repo.setCookieHttpOnly(false);
-        repo.setCookieName("X-CSRF-COOKIE"); //TODO constants
-        repo.setHeaderName("X-CSRF-TOKEN");
+	CookieCsrfTokenRepository cookieCsrfTokenRepository() {
+		CookieCsrfTokenRepository repo = new CookieCsrfTokenRepository();
+		repo.setCookieHttpOnly(false);
+		repo.setCookieName("X-CSRF-COOKIE"); //TODO constants
+		repo.setHeaderName("X-CSRF-TOKEN");
 
-        return repo;
-    }
+		return repo;
+	}
 
-    @Override
-    public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/");
-        web.ignoring().antMatchers("/*.ico");
-        web.ignoring().antMatchers("/*.js");
-        web.ignoring().antMatchers("/*.json");
-        web.ignoring().antMatchers("/*.png");
-        web.ignoring().antMatchers("/static/**");
-        web.ignoring().antMatchers("/register");
-        web.ignoring().antMatchers("/login");
-        web.ignoring().antMatchers("/home");
-    }
+	@Override
+	public void configure(WebSecurity web) {
+		web.ignoring().antMatchers("/");
+		web.ignoring().antMatchers("/*.ico");
+		web.ignoring().antMatchers("/*.js");
+		web.ignoring().antMatchers("/*.json");
+		web.ignoring().antMatchers("/*.png");
+		web.ignoring().antMatchers("/static/**");
+		web.ignoring().antMatchers("/register");
+		web.ignoring().antMatchers("/login");
+		web.ignoring().antMatchers("/home");
+	}
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(11);
-    }
+	@Bean
+	public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(11); }
 
 }

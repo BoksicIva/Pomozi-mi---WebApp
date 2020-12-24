@@ -19,26 +19,28 @@ import java.io.IOException;
 
 @Component
 public class MyLogoutHandler implements LogoutSuccessHandler {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private JwtUtil jwtUtil;
+	@Autowired
+	private JwtUtil jwtUtil;
 
-    @Autowired
-    private TokenService tokenService;
+	@Autowired
+	private TokenService tokenService;
 
-    @Override
-    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-            String token = CookieUtil.getValue(request, JwtConstants.JWT_COOKIE_NAME);
-            String username = null;
-            try {
-                username = jwtUtil.extractUsername(token);
-                tokenService.updateToken(username, null);
+	@Override
+	public void onLogoutSuccess(
+		HttpServletRequest request, HttpServletResponse response, Authentication authentication
+	) throws IOException, ServletException {
+		String token = CookieUtil.getValue(request, JwtConstants.JWT_COOKIE_NAME);
+		String username = null;
+		try {
+			username = jwtUtil.extractUsername(token);
+			tokenService.updateToken(username, null);
 
-            }catch(JwtException e){
-                logger.debug("Problems while deleting token: {} for username: {}", token, username);
-            }
-            CookieUtil.clear(response, JwtConstants.JWT_COOKIE_NAME);
-            CookieUtil.clear(response, JwtConstants.JWT_REFRESH_COOKIE_NAME);
-    }
+		} catch (JwtException e) {
+			logger.debug("Problems while deleting token: {} for username: {}", token, username);
+		}
+		CookieUtil.clear(response, JwtConstants.JWT_COOKIE_NAME);
+		CookieUtil.clear(response, JwtConstants.JWT_REFRESH_COOKIE_NAME);
+	}
 }

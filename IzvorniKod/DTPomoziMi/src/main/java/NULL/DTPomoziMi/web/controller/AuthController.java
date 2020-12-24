@@ -84,35 +84,40 @@ public class AuthController {
 			.ok(messageSource.getMessage("auth.registration.success", null, request.getLocale()));
 	}
 
-	@PostMapping(value = "/login", produces = {"application/json; charset=UTF-8"})
-    public ResponseEntity<?> login(@RequestParam("email") String email, @RequestParam("password") String password,
-								   HttpServletResponse response) throws Exception {
-		
-        logger.debug("Login with username: {}", email);
-        email = email == null ? null : email.trim();
+	@PostMapping(value = "/login", produces = { "application/json; charset=UTF-8" })
+	public ResponseEntity<?> login(
+		@RequestParam("email") String email, @RequestParam("password") String password,
+		HttpServletResponse response
+	) throws Exception {
 
-        Authentication auth;
-        try {
-           auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-        } catch (AuthenticationException e) {
-            logger.debug("Incorect username: {} or password", email);
-            return new ResponseEntity<String>("Incorect username or password", HttpStatus.UNAUTHORIZED); // TODO promjeni
-        }
+		logger.debug("Login with username: {}", email);
+		email = email == null ? null : email.trim();
 
-        UserPrincipal user = (UserPrincipal) auth.getPrincipal();
-        
-        String refreshToken = user.getUser().getToken();
-        if(refreshToken == null) {
-        	refreshToken = jwtUtil.generateRefreshToken(user);
-        	tokenService.updateToken(user.getUsername(), refreshToken);
-        }
-        
-        String token = jwtUtil.generateToken(user);
+		Authentication auth;
+		try {
+			auth = authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+		} catch (AuthenticationException e) {
+			logger.debug("Incorect username: {} or password", email);
+			return new ResponseEntity<String>(
+				"Incorect username or password", HttpStatus.UNAUTHORIZED
+			); // TODO promjeni
+		}
 
-        CookieUtil.create(response, JwtConstants.JWT_COOKIE_NAME, token, false, -1);
-        CookieUtil.create(response, JwtConstants.JWT_REFRESH_COOKIE_NAME, refreshToken, false, -1);
+		UserPrincipal user = (UserPrincipal) auth.getPrincipal();
 
-        return ResponseEntity.ok("User login successful!");
-    }
+		String refreshToken = user.getUser().getToken();
+		if (refreshToken == null) {
+			refreshToken = jwtUtil.generateRefreshToken(user);
+			tokenService.updateToken(user.getUsername(), refreshToken);
+		}
+
+		String token = jwtUtil.generateToken(user);
+
+		CookieUtil.create(response, JwtConstants.JWT_COOKIE_NAME, token, false, -1);
+		CookieUtil.create(response, JwtConstants.JWT_REFRESH_COOKIE_NAME, refreshToken, false, -1);
+
+		return ResponseEntity.ok("User login successful!");
+	}
 
 }

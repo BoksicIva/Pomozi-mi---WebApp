@@ -10,15 +10,13 @@ import NULL.DTPomoziMi.web.DTO.LocationDTO;
 import NULL.DTPomoziMi.web.controller.LocationController;
 
 @Component
-public class LocationDTOAssembler
-	extends RepresentationModelAssemblerSupport<Location, LocationDTO> {
-	
+public class LocationDTOAssembler extends RepresentationModelAssemblerSupport<
+	Location, LocationDTO> {
+
 	@Autowired
 	private ModelMapper modelMapper;
 
-	public LocationDTOAssembler() {
-		super(LocationController.class, LocationDTO.class);
-	}
+	public LocationDTOAssembler() { super(LocationController.class, LocationDTO.class); }
 
 	@Override
 	public LocationDTO toModel(Location entity) {
@@ -27,5 +25,5 @@ public class LocationDTOAssembler
 
 		return locationDTO;
 	}
-	
+
 }

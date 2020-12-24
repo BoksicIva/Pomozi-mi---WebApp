@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import NULL.DTPomoziMi.exception.EntityMissingException;
@@ -21,6 +22,7 @@ import NULL.DTPomoziMi.util.UserPrincipalGetter;
 import NULL.DTPomoziMi.web.DTO.RatingDTO;
 
 @Service
+@PreAuthorize("isAuthenticated()")
 public class RatingServiceImpl implements RatingService {
 	@Autowired
 	private ModelMapper modelMapper;
@@ -39,14 +41,16 @@ public class RatingServiceImpl implements RatingService {
 	@Override
 	public Iterable<Rating> saveAll(Iterable<RatingDTO> entities) {
 		Stream<RatingDTO> stream = StreamSupport.stream(entities.spliterator(), false);
-		return ratingRepo.saveAll(
-			stream.map(r -> modelMapper.map(r, Rating.class)).collect(Collectors.toList())
-		);
+		return ratingRepo
+			.saveAll(
+				stream.map(r -> modelMapper.map(r, Rating.class)).collect(Collectors.toList())
+			);
 	}
 
 	@Override
 	public Rating fetch(Long id) {
-		return ratingRepo.findById(id)
+		return ratingRepo
+			.findById(id)
 			.orElseThrow(() -> new EntityMissingException(Rating.class, id));
 	}
 

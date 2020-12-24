@@ -10,18 +10,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RatingDTOAssembler extends RepresentationModelAssemblerSupport<Rating, RatingDTO> {
-    @Autowired
-    private ModelMapper modelMapper;
+	@Autowired
+	private ModelMapper modelMapper;
 
-    public RatingDTOAssembler() {
-        super(UsersController.class, RatingDTO.class);
-    }
+	public RatingDTOAssembler() { super(UsersController.class, RatingDTO.class); }
 
-    @Override
-    public RatingDTO toModel(Rating entity) {
-        RatingDTO ratingDTO = createModelWithId(entity.getIdRating(), entity);
-        modelMapper.map(entity, ratingDTO);
+	@Override
+	public RatingDTO toModel(Rating entity) {
+		RatingDTO ratingDTO = createModelWithId(entity.getIdRating(), entity);
+		modelMapper.map(entity, ratingDTO);
 
-        return ratingDTO;
-    }
+		return ratingDTO;
+	}
 }
