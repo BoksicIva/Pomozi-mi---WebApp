@@ -43,8 +43,8 @@ export const Registration = (props) => (
                     props.history.push("/login");
                   })
                   .catch((error1) => {
-                    const code = error1.response.status;
-                    const response = error1.response.data;
+                    const code = error1.status;
+                    const response = error1.data;
 
                     if (code === 400) {
                       for (let obj of response) {

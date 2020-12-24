@@ -36,6 +36,10 @@ class LoginService {
     getUsers(){
       return http.get("/users" , {});
     }
+
+    getSortedUsers(condition){
+      return http.get("/users?sort=" + condition + ",desc" , {});
+    }
   
   }
   
