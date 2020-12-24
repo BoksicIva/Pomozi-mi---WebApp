@@ -10,6 +10,7 @@ import java.net.URI;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import NULL.DTPomoziMi.model.Request;
 import NULL.DTPomoziMi.service.RequestService;
+import NULL.DTPomoziMi.web.DTO.CreateRequestDTO;
 import NULL.DTPomoziMi.web.DTO.RequestDTO;
 import NULL.DTPomoziMi.web.assemblers.RequestDTOAssembler;
 
@@ -79,7 +81,8 @@ public class RequestController { // TODO linkovi...
 	 */
 	@PostMapping(value = "", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> createRequest(
-		RequestDTO requestDTO, BindingResult bindingResult, HttpServletRequest request
+		@RequestBody @Valid CreateRequestDTO requestDTO, BindingResult bindingResult,
+		HttpServletRequest request
 	) {
 		if (bindingResult.hasErrors()) {
 			List<ObjectError> errors = bindingResult.getAllErrors();
@@ -187,6 +190,16 @@ public class RequestController { // TODO linkovi...
 		return new ResponseEntity<>(executed, HttpStatus.OK);
 	}
 
+	@PutMapping(value = "backOff/{id}", produces = { "application/json; charset=UTF-8" })
+	public ResponseEntity<?> backOff(@PathVariable("id") long id) {
+		try {
+			return ResponseEntity.ok(requestDTOassembler.toModel(requestService.backOff(id)));
+		} catch (Exception e) {
+			logger.debug("Exception {} while updating rating", e.getMessage());
+			throw e;
+		}
+	}
+
 	/**
 	 * Update request.
 	 *
@@ -198,10 +211,13 @@ public class RequestController { // TODO linkovi...
 	public ResponseEntity<?> updateRequest(
 		@PathVariable("id") long id, @RequestBody RequestDTO requestDTO
 	) {
-		if (!requestDTO.getIdRequest().equals(id))
-			throw new IllegalArgumentException("Request ID must be preserved");
-
-		RequestDTO updated = requestDTOassembler.toModel(requestService.updateRequest(requestDTO));
-		return new ResponseEntity<>(updated, HttpStatus.OK);
+		try {
+			RequestDTO updated
+				= requestDTOassembler.toModel(requestService.updateRequest(id, requestDTO));
+			return new ResponseEntity<>(updated, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.debug("Exception {} while updating rating", e.getMessage());
+			throw e;
+		}
 	}
 }

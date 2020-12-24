@@ -34,7 +34,6 @@ public class UserRegisterDTO {
 
 	@NotNull
 	@Email(message = "{UserDTO.email}")
-
 	private String email;
 
 }

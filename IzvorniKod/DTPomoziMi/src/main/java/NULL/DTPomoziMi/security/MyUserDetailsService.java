@@ -1,14 +1,13 @@
 package NULL.DTPomoziMi.security;
 
-import NULL.DTPomoziMi.model.User;
-import NULL.DTPomoziMi.repository.UserRepo;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import NULL.DTPomoziMi.model.User;
+import NULL.DTPomoziMi.repository.UserRepo;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {

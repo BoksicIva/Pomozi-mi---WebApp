@@ -1,8 +1,7 @@
 package NULL.DTPomoziMi.model;
 
 import java.io.Serializable;
-import java.sql.Date;
-import java.sql.Time;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,18 +36,15 @@ import lombok.ToString;
 public class Request implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	@Include
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_zahtjev")
-	private Long IdRequest;
+	private Long idRequest;
 
 	@Column(name = "brojmobitela")
 	private String phone;
-
-	@Column(name = "datum")
-	private Date date;
 
 	@Column(name = "opis")
 	private String description;
@@ -59,8 +55,7 @@ public class Request implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private RequestStatus status;
 
-	@Column(name = "vrijeme")
-	private Time time;
+	private LocalDateTime tstmp;
 
 	@OneToMany(mappedBy = "request")
 	private Set<Rating> ratings = new HashSet<>();

@@ -8,7 +8,9 @@ import org.springframework.data.mapping.MappingException;
 import org.springframework.hateoas.CollectionModel;
 
 import NULL.DTPomoziMi.exception.EntityMissingException;
+import NULL.DTPomoziMi.exception.IllegalActionException;
 import NULL.DTPomoziMi.model.Request;
+import NULL.DTPomoziMi.web.DTO.CreateRequestDTO;
 import NULL.DTPomoziMi.web.DTO.RequestDTO;
 
 public interface RequestService {
@@ -36,7 +38,7 @@ public interface RequestService {
 	 * @throws NullPointerException if given {@literal request} is {@literal null}
 	 *                              reference
 	 */
-	Request createRequest(RequestDTO request);
+	Request createRequest(CreateRequestDTO request);
 
 	/**
 	 * Delete request.
@@ -118,12 +120,26 @@ public interface RequestService {
 	Request pickForExecution(long idRequest);
 
 	/**
+	 * Update request.
 	 *
-	 * @throws java.util.EntityNotFoundException
+	 * @param idRequest the id request
+	 * @param requestDTO the request DTO
+	 * @return the request
 	 * @throws NullPointerException              if given {@literal request} is
 	 *                                           {@literal null} reference
 	 * @throws EntityMissingException            - if element with given
 	 *                                           <code>id</code> does not exist
 	 */
-	Request updateRequest(RequestDTO request);
+	Request updateRequest(long idRequest, RequestDTO requestDTO);
+
+	/**
+	 * Back off from execution.
+	 *
+	 * @param id the id
+	 * @return the request
+	 * 
+	 * @throws EntityMissingException - if element with given <code>id</code> does
+	 *                                not exist
+	 */
+	Request backOff(long id);
 }

@@ -2,6 +2,8 @@ package NULL.DTPomoziMi.web.DTO;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
@@ -21,17 +23,22 @@ import lombok.Setter;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Relation(collectionRelation = "locations", itemRelation = "location")
-public class LocationDTO extends RepresentationModel<LocationDTO> { // TODO validacija
+public class LocationDTO extends RepresentationModel<LocationDTO> {
 	@Include
 	private Long IdLocation;
-
+	
+	@NotNull
 	private String adress;
-
+	
+	@NotNull
 	private String state;
 
+	@NotNull
 	private BigDecimal longitude;
-
+	
+	@NotNull
 	private String town;
 
+	@NotNull
 	private BigDecimal latitude;
 }

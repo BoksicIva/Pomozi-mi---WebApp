@@ -48,8 +48,7 @@ CREATE TABLE Zahtjev
 (
   ID_Zahtjev BIGINT AUTO_INCREMENT NOT NULL,
   opis VARCHAR(500) NOT NULL,
-  datum DATE,
-  vrijeme TIME,
+  tstmp TIMESTAMP,
   status VARCHAR(15) NOT NULL,
   brojMobitela VARCHAR(15),
   ID_Lokacija BIGINT,

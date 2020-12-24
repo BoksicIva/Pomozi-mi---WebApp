@@ -15,9 +15,8 @@ public class RequestDTOAssembler extends RepresentationModelAssemblerSupport<Req
 	@Autowired
 	private ModelMapper modelMapper;
 
-	public RequestDTOAssembler() {
-		super(RequestController.class, RequestDTO.class);
-	}
+	@Autowired
+	public RequestDTOAssembler() { super(RequestController.class, RequestDTO.class); }
 
 	@Override
 	public RequestDTO toModel(Request entity) {
@@ -26,4 +25,5 @@ public class RequestDTOAssembler extends RepresentationModelAssemblerSupport<Req
 
 		return requestDTO;
 	}
+
 }

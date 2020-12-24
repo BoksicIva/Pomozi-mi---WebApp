@@ -27,8 +27,11 @@ import NULL.DTPomoziMi.model.Role;
 import NULL.DTPomoziMi.model.User;
 import NULL.DTPomoziMi.repository.RequestRepo;
 import NULL.DTPomoziMi.security.UserPrincipal;
+import NULL.DTPomoziMi.service.LocationService;
 import NULL.DTPomoziMi.service.RequestService;
 import NULL.DTPomoziMi.util.UserPrincipalGetter;
+import NULL.DTPomoziMi.web.DTO.CreateRequestDTO;
+import NULL.DTPomoziMi.web.DTO.LocationDTO;
 import NULL.DTPomoziMi.web.DTO.RequestDTO;
 import NULL.DTPomoziMi.web.assemblers.RequestDTOAssembler;
 
@@ -44,25 +47,41 @@ public class RequestServiceImpl implements RequestService {
 	private RequestRepo requestRepo;
 
 	@Autowired
+	private LocationService locationService;
+
+	@Autowired
 	private RequestDTOAssembler requestDTOAssembler;
 
 	@Override
-	public Request createRequest(RequestDTO request) {
-		request.setAuthor(UserPrincipalGetter.getPrincipal().getUser());
-		request.setRecivedNotif(false);
-		request.setStatus(RequestStatus.ACTIVE);
+	public Request createRequest(CreateRequestDTO request) {
+		Request req = modelMapper.map(request, Request.class);
 
-		return requestRepo.save(modelMapper.map(request, Request.class));
+		LocationDTO location = request.getLocation();
+		if (location != null) { // ako je dana lokacija onda provjeri postoji li vec spremljena pa ju dodaj u req ili... ako ne onda spremi i dodaj u req 
+			try {
+				Location loc = locationService
+					.findByLatitudeAndLongitude(location.getLatitude(), location.getLongitude());
+
+				if (loc == null) loc = locationService.save(location);
+
+				req.setLocation(loc);
+			} catch (Exception e) {}
+		}
+
+		req.setAuthor(UserPrincipalGetter.getPrincipal().getUser());
+		req.setRecivedNotif(false);
+		req.setStatus(RequestStatus.ACTIVE);
+
+		return requestRepo.save(req);
 	}
 
 	@Override
-	public Request updateRequest(RequestDTO requestDTO) { // TODO validation on requestDTO
+	public Request updateRequest(long idRequest, RequestDTO requestDTO) {
 		User user = UserPrincipalGetter.getPrincipal().getUser();
-		if (!user.getIdUser().equals(requestDTO.getAuthor().getIdUser()))
-			throw new IllegalAccessException("Only authors can modify requests!");
+		Request req = fetch(idRequest);
 
-		Request req = fetch(requestDTO.getIdRequest());
-		modelMapper.map(requestDTO, req);
+		if (!user.getIdUser().equals(req.getAuthor().getIdUser()))
+			throw new IllegalAccessException("Only authors can modify requests!");
 
 		return requestRepo.save(req);
 	}
@@ -77,7 +96,7 @@ public class RequestServiceImpl implements RequestService {
 				&& !user.getEnumRoles().contains(Role.ROLE_ADMIN)
 		) throw new IllegalAccessException("Missing permissions to delete the request!");
 
-		if (req.getExecutor() != null)
+		if (req.getExecutor() != null) // samo aktivni se smiju obrisati samo tako...
 			throw new IllegalActionException("Cannot delete request that has an executor!");
 
 		requestRepo.deleteById(idRequest);
@@ -117,13 +136,33 @@ public class RequestServiceImpl implements RequestService {
 
 		if (!user.getIdUser().equals(r.getAuthor().getIdUser()))
 			throw new IllegalAccessException("Only author can mark request as executed!");
-		
-		if(!r.getStatus().equals(RequestStatus.EXECUTING))
-			throw new IllegalActionException("Cannot mark a request without an executor as executed!");
+
+		if (
+			!r.getStatus().equals(RequestStatus.EXECUTING)
+		) throw new IllegalActionException(
+			"Cannot mark a request without an executor as executed!"
+		);
 
 		r.setStatus(RequestStatus.FINALIZED);
 
 		return requestRepo.save(r);
+	}
+
+	@Override
+	public Request backOff(long id) {
+		User user = UserPrincipalGetter.getPrincipal().getUser();
+		Request req = fetch(id);
+
+		if (req.getExecutor() == null || !user.getIdUser().equals(req.getExecutor().getIdUser()))
+			throw new IllegalAccessException("Missing permission to change request status");
+
+		if (!req.getStatus().equals(RequestStatus.EXECUTING))
+			throw new IllegalActionException("Cannot backoff from request!");
+
+		req.setStatus(RequestStatus.ACTIVE);
+		req.setExecutor(null);
+
+		return requestRepo.save(req);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package NULL.DTPomoziMi.service.impl;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -7,6 +8,7 @@ import java.util.stream.StreamSupport;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import NULL.DTPomoziMi.exception.EntityMissingException;
 import NULL.DTPomoziMi.model.Location;
@@ -14,6 +16,7 @@ import NULL.DTPomoziMi.repository.LocationRepo;
 import NULL.DTPomoziMi.service.LocationService;
 import NULL.DTPomoziMi.web.DTO.LocationDTO;
 
+@Service
 public class LocationServiceImpl implements LocationService {
 
 	@Autowired
@@ -89,6 +92,11 @@ public class LocationServiceImpl implements LocationService {
 		Iterable<Location> iterable = locationRepo.findAll();
 		locationRepo.deleteAll();
 		return iterable;
+	}
+	
+	@Override
+	public Location findByLatitudeAndLongitude(BigDecimal latitude, BigDecimal longitude) {
+		return locationRepo.findByLatitudeAndLongitude(latitude, longitude);
 	}
 
 }

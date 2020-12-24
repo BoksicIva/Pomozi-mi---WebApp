@@ -37,8 +37,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(
 		HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
-	)
-		throws ServletException, IOException {
+	) throws ServletException, IOException {
 
 		String token = CookieUtil.getValue(request, JwtConstants.JWT_COOKIE_NAME);
 		String refreshToken = CookieUtil.getValue(request, JwtConstants.JWT_REFRESH_COOKIE_NAME);
@@ -64,10 +63,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 		boolean valid = false;
 		if (emailFromToken != null && UserPrincipalGetter.getPrincipal() == null) {
-			if (jwtUtil.validateToken(token)) {
-				setAuth(token);
-				valid = true;
-			}
+			if (jwtUtil.validateToken(token)) { setAuth(token); valid = true; }
 		}
 
 		if (!valid && emailFromRefreshToken != null && UserPrincipalGetter.getPrincipal() == null) {
@@ -89,18 +85,20 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	}
 
 	private void setAuth(String token) {
-		UserDetails user;
+		UserDetails user = null;
 		try {
 			user = userDetailsService.loadUserByUsername(jwtUtil.extractUsername(token));
 		} catch (UsernameNotFoundException e) {
 			logger.debug(e.getMessage());
-			return;
 		}
 
-		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-			= new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+		if (user != null) {
+			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+				= new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
-		SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+			SecurityContextHolder.getContext()
+				.setAuthentication(usernamePasswordAuthenticationToken);
+		}
 	}
 
 	private void deleteCookies(HttpServletResponse response) {

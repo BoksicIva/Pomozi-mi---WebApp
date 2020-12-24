@@ -127,4 +127,24 @@ public interface RatingService {
 	 * @throws IllegalArgumentException - if id is null.
 	 */
 	Rating fetch(Long id);
+
+	/**
+	 * Creates the rating.
+	 *
+	 * @param rating the rating
+	 * @return the rating
+	 * @throws MappingException - if a runtime error occurs while mapping
+	 */
+	Rating create(RatingDTO rating);
+
+	/**
+	 * Update rating.
+	 *
+	 * @param rating   the rating
+	 * @param ratingId the rating id
+	 * @return the rating
+	 * 
+	 * @throws MappingException - if a runtime error occurs while mapping
+	 */
+	Rating update(RatingDTO rating, long ratingId);
 }

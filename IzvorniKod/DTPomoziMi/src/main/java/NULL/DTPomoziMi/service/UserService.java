@@ -13,28 +13,38 @@ import java.util.Set;
 
 public interface UserService {
 
-    User registerUser(UserRegisterDTO user);
+	User registerUser(UserRegisterDTO user);
 
-    User getUserByEmail(String email);
+	User getUserByEmail(String email);
 
-    /**
-     *
-     * @param id
-     * @return
-     * @throws EntityMissingException
-     */
-    User fetch(long id);
+	/**
+	 * Fetch.
+	 *
+	 * @param id the id
+	 * @return the user
+	 * @throws EntityMissingException - if element with given <code>id</code> does
+	 *                                not exist
+	 */
+	User fetch(long id);
 
-    /**
-     * @throws EntityMissingException
-     */
-    User getUserByID(long ID);
+	/**
+	 * @throws EntityMissingException
+	 */
+	User getUserByID(long ID);
 
-    Page<User> findUsers(Pageable pageable); // TODO prosiri parametre svime sta zelis... a ne to u controlleru radit
+	Page<User> findUsers(Pageable pageable); // TODO prosiri parametre svime sta zelis... a ne to u controlleru radit
 
-    Set<Rating> findRatings(long id);
+	Set<Rating> findRatings(long id);
 
-    Rating createRating(RatingDTO ratingDTO);
-    
-    void blockUser(long id);
+	Rating createRating(RatingDTO ratingDTO);
+
+	/**
+	 * Block user.
+	 *
+	 * @param id the id
+	 * @return the user
+	 * @throws EntityMissingException - if element with given <code>id</code> does
+	 *                                not exist
+	 */
+	User blockUser(long id);
 }

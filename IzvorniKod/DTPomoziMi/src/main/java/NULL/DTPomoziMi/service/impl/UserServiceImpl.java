@@ -107,8 +107,9 @@ public class UserServiceImpl implements UserService {
     }
 
 	@Override
-	public void blockUser(long userID) {
+	public User blockUser(long userID) {
 		 userRepo.updateEnabled(userID);
+		 return fetch(userID);
 	}
     
     

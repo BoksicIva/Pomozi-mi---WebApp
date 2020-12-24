@@ -1,5 +1,6 @@
 package NULL.DTPomoziMi.service;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.modelmapper.MappingException;
@@ -122,5 +123,14 @@ public interface LocationService {
 	 * Deletes all entities managed by the repository.
 	 */
 	Iterable<Location> deleteAll();
+	
+	/**
+	 * Find by latitude and longitude.
+	 *
+	 * @param latitude the latitude
+	 * @param longitude the longitude
+	 * @return the location
+	 */
+	Location findByLatitudeAndLongitude(BigDecimal latitude, BigDecimal longitude);
 
 }
