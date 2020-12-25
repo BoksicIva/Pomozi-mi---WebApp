@@ -1,5 +1,6 @@
 package NULL.DTPomoziMi.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +28,6 @@ import NULL.DTPomoziMi.repository.RequestRepo;
 import NULL.DTPomoziMi.security.UserPrincipal;
 import NULL.DTPomoziMi.service.LocationService;
 import NULL.DTPomoziMi.service.RequestService;
-import NULL.DTPomoziMi.util.UserPrincipalGetter;
 import NULL.DTPomoziMi.web.DTO.CreateRequestDTO;
 import NULL.DTPomoziMi.web.DTO.LocationDTO;
 import NULL.DTPomoziMi.web.DTO.RequestDTO;
@@ -49,7 +49,7 @@ public class RequestServiceImpl implements RequestService {
 	private RequestDTOAssembler requestDTOAssembler;
 
 	@Override
-	public Request createRequest(CreateRequestDTO request) {
+	public Request createRequest(CreateRequestDTO request, UserPrincipal principal) {
 		Request req = modelMapper.map(request, Request.class);
 
 		LocationDTO location = request.getLocation();
@@ -61,7 +61,7 @@ public class RequestServiceImpl implements RequestService {
 		}
 		req.setLocation(loc);
 
-		req.setAuthor(UserPrincipalGetter.getPrincipal().getUser());
+		req.setAuthor(principal.getUser());
 		req.setRecivedNotif(false);
 		req.setStatus(RequestStatus.ACTIVE);
 
@@ -69,11 +69,11 @@ public class RequestServiceImpl implements RequestService {
 	}
 
 	@Override
-	public Request updateRequest(long idRequest, RequestDTO requestDTO) {
+	public Request updateRequest(long idRequest, RequestDTO requestDTO, UserPrincipal principal) {
 		if (!requestDTO.getIdRequest().equals(idRequest))
 			throw new IllegalArgumentException("Request id must be preserved!");
 
-		User user = UserPrincipalGetter.getPrincipal().getUser();
+		User user = principal.getUser();
 		Request req = fetch(idRequest);
 
 		LocationDTO location = requestDTO.getLocation();
@@ -95,9 +95,9 @@ public class RequestServiceImpl implements RequestService {
 	}
 
 	@Override
-	public Request deleteRequest(long idRequest) {
+	public Request deleteRequest(long idRequest, UserPrincipal principal) {
 		Request req = fetch(idRequest);
-		User user = UserPrincipalGetter.getPrincipal().getUser();
+		User user = principal.getUser();
 
 		if (
 			!user.getIdUser().equals(req.getAuthor().getIdUser())
@@ -113,9 +113,9 @@ public class RequestServiceImpl implements RequestService {
 	}
 
 	@Override
-	public Request blockRequest(long idRequest) {
+	public Request blockRequest(long idRequest, UserPrincipal principal) {
 		Request r = fetch(idRequest);
-		User user = UserPrincipalGetter.getPrincipal().getUser();
+		User user = principal.getUser();
 
 		if (
 			!user.getIdUser().equals(r.getAuthor().getIdUser())
@@ -128,8 +128,8 @@ public class RequestServiceImpl implements RequestService {
 	}
 
 	@Override
-	public Request pickForExecution(long idRequest) { // TODO ide notifikacija!! ... sto ako... autor ne zeli da mu ovaj izvede..?
-		User user = UserPrincipalGetter.getPrincipal().getUser();
+	public Request pickForExecution(long idRequest, UserPrincipal principal) { // TODO ide notifikacija!! ... sto ako... autor ne zeli da mu ovaj izvede..?
+		User user = principal.getUser();
 		Request r = fetch(idRequest);
 
 		if (!r.getStatus().equals(RequestStatus.ACTIVE))
@@ -142,8 +142,8 @@ public class RequestServiceImpl implements RequestService {
 	}
 
 	@Override
-	public Request markExecuted(long idRequest) { // TODO ide ocjenjivanje
-		User user = UserPrincipalGetter.getPrincipal().getUser();
+	public Request markExecuted(long idRequest, UserPrincipal principal) { // TODO ide ocjenjivanje
+		User user = principal.getUser();
 		Request r = fetch(idRequest);
 
 		if (!user.getIdUser().equals(r.getAuthor().getIdUser()))
@@ -156,13 +156,14 @@ public class RequestServiceImpl implements RequestService {
 		);
 
 		r.setStatus(RequestStatus.FINALIZED);
+		r.setExecTstmp(LocalDateTime.now());
 
 		return requestRepo.save(r);
 	}
 
 	@Override
-	public Request backOff(long id) {
-		User user = UserPrincipalGetter.getPrincipal().getUser();
+	public Request backOff(long id, UserPrincipal principal) {
+		User user = principal.getUser();
 		Request req = fetch(id);
 
 		if (req.getExecutor() == null || !user.getIdUser().equals(req.getExecutor().getIdUser()))
@@ -185,9 +186,9 @@ public class RequestServiceImpl implements RequestService {
 	}
 
 	@Override
-	public Request getRequestbyId(long idRequest) {
+	public Request getRequestbyId(long idRequest, UserPrincipal principal) {
 		Request req = fetch(idRequest);
-		User user = UserPrincipalGetter.getPrincipal().getUser();
+		User user = principal.getUser();
 
 		if (
 			user.getIdUser().equals(req.getAuthor().getIdUser())
@@ -211,10 +212,12 @@ public class RequestServiceImpl implements RequestService {
 	private void hideInfo(Request req) { req.setRecivedNotif(null); req.setPhone(null); }
 
 	@Override
-	public Page<Request> getAllActiveRequests(Pageable pageable, Double radius) {
+	public Page<Request> getAllActiveRequests(
+		Pageable pageable, Double radius, UserPrincipal principal
+	) {
 		List<Request> actives
 			= requestRepo.findByStatusOrderByIdRequest(RequestStatus.ACTIVE).stream().filter(r -> {
-				UserPrincipal user = UserPrincipalGetter.getPrincipal();
+				UserPrincipal user = principal;
 
 				boolean in = false;
 				if (r.getLocation() == null) // ako zahtjev nema lokaciju... moze
@@ -231,7 +234,7 @@ public class RequestServiceImpl implements RequestService {
 		long end = (start + pageable.getPageSize()) > actives.size() ? actives.size()
 			: (start + pageable.getPageSize());
 
-		if (start >= end) return new PageImpl<>(new ArrayList<Request>(), pageable, 0);
+		if (start >= end) return new PageImpl<>(new ArrayList<>(), pageable, 0);
 
 		return new PageImpl<>(actives.subList((int) start, (int) end), pageable, actives.size());
 	}
@@ -258,17 +261,17 @@ public class RequestServiceImpl implements RequestService {
 	}
 
 	@Override
-	public Map<String, CollectionModel<RequestDTO>> getAuthoredRequests(long userID) {
-		UserPrincipal user = UserPrincipalGetter.getPrincipal(); // principal exists in the context because user has to be authenticated before accessing this poin
-		if (!user.getUser().getIdUser().equals(userID))
-			throw new IllegalAccessException("ID of logged in user is not the same as given userID!");
+	public Map<String, CollectionModel<RequestDTO>> getAuthoredRequests(
+		long userID, UserPrincipal principal
+	) {
+		User user = principal.getUser(); // principal exists in the context because user has to be authenticated before accessing this point
+		if (
+			!user.getIdUser().equals(userID)
+		) throw new IllegalAccessException("ID of logged in user is not the same as given userID!");
 
-		List<Request> active
-			= requestRepo.findByStatusAndAuthor(RequestStatus.ACTIVE, user.getUser());
-		List<Request> finalized
-			= requestRepo.findByStatusAndAuthor(RequestStatus.FINALIZED, user.getUser());
-		List<Request> blocked
-			= requestRepo.findByStatusAndAuthor(RequestStatus.BLOCKED, user.getUser());
+		List<Request> active = requestRepo.findByStatusAndAuthor(RequestStatus.ACTIVE, user);
+		List<Request> finalized = requestRepo.findByStatusAndAuthor(RequestStatus.FINALIZED, user);
+		List<Request> blocked = requestRepo.findByStatusAndAuthor(RequestStatus.BLOCKED, user);
 
 		Map<String, CollectionModel<RequestDTO>> map = new HashMap<>();
 

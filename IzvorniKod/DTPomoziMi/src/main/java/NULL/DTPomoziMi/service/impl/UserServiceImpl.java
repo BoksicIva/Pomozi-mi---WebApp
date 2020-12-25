@@ -1,8 +1,12 @@
 package NULL.DTPomoziMi.service.impl;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -19,18 +23,20 @@ import org.springframework.stereotype.Service;
 
 import NULL.DTPomoziMi.exception.EntityMissingException;
 import NULL.DTPomoziMi.exception.IllegalAccessException;
+import NULL.DTPomoziMi.model.Candidacy;
 import NULL.DTPomoziMi.model.Location;
 import NULL.DTPomoziMi.model.Rating;
 import NULL.DTPomoziMi.model.RequestStatus;
 import NULL.DTPomoziMi.model.Role;
 import NULL.DTPomoziMi.model.RoleEntity;
 import NULL.DTPomoziMi.model.User;
+import NULL.DTPomoziMi.model.specification.CandidacySpecs;
+import NULL.DTPomoziMi.repository.CandidacyRepo;
 import NULL.DTPomoziMi.repository.RoleRepo;
 import NULL.DTPomoziMi.repository.UserRepo;
 import NULL.DTPomoziMi.security.UserPrincipal;
 import NULL.DTPomoziMi.service.LocationService;
 import NULL.DTPomoziMi.service.UserService;
-import NULL.DTPomoziMi.util.UserPrincipalGetter;
 import NULL.DTPomoziMi.web.DTO.LocationDTO;
 import NULL.DTPomoziMi.web.DTO.RatingDTO;
 import NULL.DTPomoziMi.web.DTO.UserDTO;
@@ -44,6 +50,8 @@ public class UserServiceImpl implements UserService {
 	private static String numAuthoredRequests = "numAuthoredR";
 	private static String numFinalizedAuthoredRequests = "numFinalizedAR";
 	private static String numBlockedRequests = "numBlockedR";
+	private static String AVG_GRADE = "avgGrade";
+	private static String RANK = "rank";
 
 	@Autowired
 	private UserRepo userRepo;
@@ -56,6 +64,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private LocationService locationService;
+
+	@Autowired
+	private CandidacyRepo CandidacyRepo;
 
 	@Autowired
 	private RatingDTOAssembler ratingDTOAssembler;
@@ -100,8 +111,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@PreAuthorize("isAuthenticated()")
-	public User getUserByID(long ID) {
-		UserPrincipal userPrincipal = UserPrincipalGetter.getPrincipal();
+	public User getUserByID(long ID, UserPrincipal principal) {
+		UserPrincipal userPrincipal = principal;
 
 		User user = fetch(ID);
 		if (
@@ -114,8 +125,10 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@PreAuthorize("isAuthenticated()")
-	public Page<User> findUsers(Pageable pageable, Specification<User> specification) {
-		User user = UserPrincipalGetter.getPrincipal().getUser();
+	public Page<User> findUsers(
+		Pageable pageable, Specification<User> specification, UserPrincipal principal
+	) {
+		User user = principal.getUser();
 
 		Page<User> page = userRepo.findAll(specification, pageable);
 		if (!user.getEnumRoles().contains(Role.ROLE_ADMIN)) page.forEach(u -> u.setLocation(null));
@@ -154,14 +167,59 @@ public class UserServiceImpl implements UserService {
 					.filter(r -> r.getStatus().equals(RequestStatus.BLOCKED))
 					.count()
 			);
+
+		List<Candidacy> candidacies
+			= CandidacyRepo.findAll(CandidacySpecs.yearEqual(LocalDate.now().getYear()));
+		Integer rank = calculateRank(candidacies, user);
+		statistics.put(RANK, rank);
+
 		double avgGrade = user.getRatedBy().stream().mapToInt(Rating::getRate).average().orElse(-1);
-		statistics.put("avgGrade", (avgGrade == -1 ? null : avgGrade));
+		statistics.put(AVG_GRADE, (avgGrade == -1 ? null : avgGrade));
 		return statistics;
 	}
 
+	private Integer calculateRank(List<Candidacy> candidacies, User user) {
+		if (candidacies == null || candidacies.size() == 0) return null;
+
+		int year = LocalDate.now().getYear();
+		if (candidacies.size() > 1)
+			throw new RuntimeException("Too many candidacies for year: " + year);
+
+		Set<User> users = candidacies.get(0).getUsers();
+		if (!users.contains(user)) return null;
+
+		Comparator<User> comp = (u1, u2) -> {
+			double avgGrade1
+				= u1.getRatedBy().stream().mapToInt(r -> r.getRate()).average().orElse(-1);
+			double avgGrade2
+				= u2.getRatedBy().stream().mapToInt(r -> r.getRate()).average().orElse(-1);
+			long numExecuted1 = u1
+				.getExecutedReqs()
+				.stream()
+				.filter(r -> r.getExecTstmp().getYear() == year)
+				.count();
+			long numExecuted2 = u2
+				.getExecutedReqs()
+				.stream()
+				.filter(r -> r.getExecTstmp().getYear() == year)
+				.count();
+
+			if (numExecuted1 > numExecuted2) return 1;
+			if (numExecuted1 < numExecuted2) return -1;
+			if (avgGrade1 > avgGrade2) return 1;
+			if (avgGrade1 < avgGrade2) return -1;
+			return 0;
+		};
+
+		List<User> list = new ArrayList<>(users);
+		list.sort(comp);
+
+		return list.indexOf(user);
+	}
+
 	@Override
-	public User updateUser(UserDTO userDTO, long id) {
-		User user = UserPrincipalGetter.getPrincipal().getUser();
+	public User updateUser(UserDTO userDTO, long id, UserPrincipal principal) {
+		User user = principal.getUser();
 
 		if (!userDTO.getIdUser().equals(id))
 			throw new IllegalArgumentException("User id must be preserved!");
@@ -184,8 +242,8 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional
 	@Override
-	public List<RatingDTO> getChainOfTrust(long id) {
-		User user = UserPrincipalGetter.getPrincipal().getUser(); // TODO ovo treba debelo testirat
+	public List<RatingDTO> getChainOfTrust(long id, UserPrincipal principal) {
+		User user = principal.getUser(); // TODO ovo treba debelo testirat
 		//da je korisnik kojeg ste vi visoko ocjenili ocijenio korisnika čiji profil gledate.
 		return user
 			.getRatedOthers()
@@ -193,7 +251,7 @@ public class UserServiceImpl implements UserService {
 			.filter(r -> r.getRate() > 3)
 			.flatMap(
 				r -> r
-					.getRated()	
+					.getRated()
 					.getRatedOthers()
 					.stream()
 					.filter(o -> o.getRated().getIdUser().equals(id))

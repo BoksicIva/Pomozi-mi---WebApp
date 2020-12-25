@@ -25,6 +25,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,6 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import NULL.DTPomoziMi.exception.BindingException;
 import NULL.DTPomoziMi.model.Request;
+import NULL.DTPomoziMi.security.UserPrincipal;
 import NULL.DTPomoziMi.service.RequestService;
 import NULL.DTPomoziMi.util.Common;
 import NULL.DTPomoziMi.web.DTO.CreateRequestDTO;
@@ -68,12 +70,15 @@ public class RequestController { // TODO linkovi...
 	 * @return the response entity
 	 */
 	@PatchMapping(value = "/block/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> blockRequest(@PathVariable("id") long id) {
+	public ResponseEntity<?> blockRequest(
+		@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal
+	) {
 		try {
-			RequestDTO blocked = requestDTOassembler.toModel(requestService.blockRequest(id));
+			RequestDTO blocked
+				= requestDTOassembler.toModel(requestService.blockRequest(id, principal));
 			return new ResponseEntity<>(blocked, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.debug("Exception {} while updating rating", e.getMessage());
+			logger.debug(e.getMessage());
 			throw e;
 		}
 	}
@@ -89,18 +94,18 @@ public class RequestController { // TODO linkovi...
 	@PostMapping(value = "", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> createRequest(
 		@RequestBody @Valid CreateRequestDTO requestDTO, BindingResult bindingResult,
-		HttpServletRequest request
+		HttpServletRequest request, @AuthenticationPrincipal UserPrincipal principal
 	) {
 		if (bindingResult.hasErrors()) hasErrors(bindingResult);
 
 		try {
-			Request saved = requestService.createRequest(requestDTO);
+			Request saved = requestService.createRequest(requestDTO, principal);
 
 			return ResponseEntity
 				.created(URI.create("/api/requests/" + saved.getIdRequest()))
 				.body(requestDTOassembler.toModel(saved));
 		} catch (Exception e) {
-			logger.debug("Exception {} while updating rating", e.getMessage());
+			logger.debug(e.getMessage());
 			throw e;
 		}
 	}
@@ -116,9 +121,16 @@ public class RequestController { // TODO linkovi...
 	 * @return the response entity
 	 */
 	@DeleteMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> deleteRequest(@PathVariable("id") long requestId) {
-		Request deleted = requestService.deleteRequest(requestId);
-		return ResponseEntity.ok(requestDTOassembler.toModel(deleted));
+	public ResponseEntity<?> deleteRequest(
+		@PathVariable("id") long requestId, @AuthenticationPrincipal UserPrincipal principal
+	) {
+		try {
+			Request deleted = requestService.deleteRequest(requestId, principal);
+			return ResponseEntity.ok(requestDTOassembler.toModel(deleted));
+		} catch (Exception e) {
+			logger.debug(e.getMessage());
+			throw e;
+		}
 	}
 
 	/**
@@ -135,21 +147,24 @@ public class RequestController { // TODO linkovi...
 	@GetMapping(value = "/active", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> getActive(
 		@PageableDefault Pageable pageable, PagedResourcesAssembler<Request> assembler,
-		@RequestParam(name = "radius", required = false) Double radius
+		@RequestParam(name = "radius", required = false) Double radius,
+		@AuthenticationPrincipal UserPrincipal principal
 	) {
 		try {
-			Page<Request> page = requestService.getAllActiveRequests(pageable, radius);
+			Page<Request> page = requestService.getAllActiveRequests(pageable, radius, principal);
 
 			PagedModel<RequestDTO> pagedModel = assembler
 				.toModel(
 					page, requestDTOassembler,
-					linkTo(methodOn(RequestController.class).getActive(pageable, null, radius))
-						.withSelfRel()
+					linkTo(
+						methodOn(RequestController.class)
+							.getActive(pageable, null, radius, principal)
+					).withSelfRel()
 				);
 
 			return new ResponseEntity<>(pagedModel, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.debug("Exception {} while updating rating", e.getMessage());
+			logger.debug(e.getMessage());
 			throw e;
 		}
 	}
@@ -162,14 +177,21 @@ public class RequestController { // TODO linkovi...
 	 * @return the authored requests
 	 */
 	@GetMapping(value = "/authored/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> getAuthoredRequests(@PathVariable(name = "id") Long userId) {
+	public ResponseEntity<?> getAuthoredRequests(
+		@PathVariable(name = "id") Long userId, @AuthenticationPrincipal UserPrincipal principal
+	) {
 		try {
-			EntityModel<?> model = EntityModel.of(requestService.getAuthoredRequests(userId));
-			model.add(linkTo(methodOn(getClass()).getAuthoredRequests(userId)).withSelfRel());
+			EntityModel<?> model
+				= EntityModel.of(requestService.getAuthoredRequests(userId, principal));
+			model
+				.add(
+					linkTo(methodOn(getClass()).getAuthoredRequests(userId, principal))
+						.withSelfRel()
+				);
 
 			return ResponseEntity.ok(model);
 		} catch (Exception e) {
-			logger.debug("Exception {} while updating rating", e.getMessage());
+			logger.debug(e.getMessage());
 			throw e;
 		}
 	}
@@ -181,13 +203,16 @@ public class RequestController { // TODO linkovi...
 	 * @return the request
 	 */
 	@GetMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<RequestDTO> getRequest(@PathVariable("id") long id) {
+	public ResponseEntity<RequestDTO> getRequest(
+		@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal
+	) {
 		try {
-			RequestDTO req = requestDTOassembler.toModel(requestService.getRequestbyId(id));
+			RequestDTO req
+				= requestDTOassembler.toModel(requestService.getRequestbyId(id, principal));
 
 			return new ResponseEntity<>(req, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.debug("Exception {} while updating rating", e.getMessage());
+			logger.debug(e.getMessage());
 			throw e;
 		}
 	}
@@ -199,12 +224,15 @@ public class RequestController { // TODO linkovi...
 	 * @return the response entity
 	 */
 	@PatchMapping(value = "/markExecuted/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> markExecuted(@PathVariable("id") long id) {
+	public ResponseEntity<?> markExecuted(
+		@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal
+	) {
 		try {
-			RequestDTO req = requestDTOassembler.toModel(requestService.markExecuted(id));
+			RequestDTO req
+				= requestDTOassembler.toModel(requestService.markExecuted(id, principal));
 			return ResponseEntity.ok(req);
 		} catch (Exception e) {
-			logger.debug("Exception {} while updating rating", e.getMessage());
+			logger.debug(e.getMessage());
 			throw e;
 		}
 	}
@@ -218,22 +246,28 @@ public class RequestController { // TODO linkovi...
 	 * @return the response entity
 	 */
 	@PatchMapping(value = "pickForExecution/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> pickForExecution(@PathVariable("id") long id) {
+	public ResponseEntity<?> pickForExecution(
+		@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal
+	) {
 		try {
-			RequestDTO executed = requestDTOassembler.toModel(requestService.pickForExecution(id));
+			RequestDTO executed
+				= requestDTOassembler.toModel(requestService.pickForExecution(id, principal));
 			return new ResponseEntity<>(executed, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.debug("Exception {} while updating rating", e.getMessage());
+			logger.debug(e.getMessage());
 			throw e;
 		}
 	}
 
 	@PatchMapping(value = "backOff/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> backOff(@PathVariable("id") long id) {
+	public ResponseEntity<?> backOff(
+		@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal
+	) {
 		try {
-			return ResponseEntity.ok(requestDTOassembler.toModel(requestService.backOff(id)));
+			return ResponseEntity
+				.ok(requestDTOassembler.toModel(requestService.backOff(id, principal)));
 		} catch (Exception e) {
-			logger.debug("Exception {} while updating rating", e.getMessage());
+			logger.debug(e.getMessage());
 			throw e;
 		}
 	}
@@ -248,16 +282,16 @@ public class RequestController { // TODO linkovi...
 	@PutMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> updateRequest(
 		@PathVariable("id") long id, @RequestBody @Valid RequestDTO requestDTO,
-		BindingResult bindingResult
+		BindingResult bindingResult, @AuthenticationPrincipal UserPrincipal principal
 	) {
 		if (bindingResult.hasErrors()) hasErrors(bindingResult);
 
 		try {
-			RequestDTO updated
-				= requestDTOassembler.toModel(requestService.updateRequest(id, requestDTO));
+			RequestDTO updated = requestDTOassembler
+				.toModel(requestService.updateRequest(id, requestDTO, principal));
 			return new ResponseEntity<>(updated, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.debug("Exception {} while updating rating", e.getMessage());
+			logger.debug(e.getMessage());
 			throw e;
 		}
 	}

@@ -1,9 +1,14 @@
 package NULL.DTPomoziMi.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import NULL.DTPomoziMi.model.Candidacy;
 
-public interface CandidacyRepo extends CrudRepository<Candidacy, Long> {
+public interface CandidacyRepo extends PagingAndSortingRepository<Candidacy, Long>, JpaSpecificationExecutor<Candidacy> {
 
+	List<Candidacy> findByYear(int year);
+	
 }

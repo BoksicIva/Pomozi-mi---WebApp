@@ -15,6 +15,7 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import NULL.DTPomoziMi.exception.BindingException;
 import NULL.DTPomoziMi.model.Rating;
+import NULL.DTPomoziMi.security.UserPrincipal;
 import NULL.DTPomoziMi.service.RatingService;
 import NULL.DTPomoziMi.util.Common;
 import NULL.DTPomoziMi.web.DTO.RatingDTO;
@@ -62,7 +64,8 @@ public class RatingController {
 	 */
 	@GetMapping(value = "/user/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> getUsersRatings(
-		@PathVariable("id") long userID, @PageableDefault Pageable pageable, PagedResourcesAssembler<Rating> assembler
+		@PathVariable("id") long userID, @PageableDefault Pageable pageable,
+		PagedResourcesAssembler<Rating> assembler
 	) {
 		try {
 			Page<Rating> ratingsPage = ratingService.findByRated(pageable, userID);
@@ -82,9 +85,12 @@ public class RatingController {
 	 * @return the rating by id
 	 */
 	@GetMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> getRatingById(@PathVariable("id") Long id) {
+	public ResponseEntity<?> getRatingById(
+		@PathVariable("id") Long id, @AuthenticationPrincipal UserPrincipal principal
+	) {
 		try {
-			return ResponseEntity.ok(ratingDTOAssembler.toModel(ratingService.getRatingById(id)));
+			return ResponseEntity
+				.ok(ratingDTOAssembler.toModel(ratingService.getRatingById(id, principal)));
 		} catch (Exception e) {
 			logger.debug("Exception {} while fetching rating by id", e.getMessage());
 			throw e;
@@ -104,12 +110,13 @@ public class RatingController {
 	public ResponseEntity<?> createRating(
 		@PathVariable("id") long idUser,
 		@RequestParam(value = "idReq", required = false) Long idReq,
-		@RequestBody @Valid RatingDTO rating, BindingResult bindingResult
+		@RequestBody @Valid RatingDTO rating, BindingResult bindingResult,
+		@AuthenticationPrincipal UserPrincipal principal
 	) {
 		if (bindingResult.hasErrors()) hasErrors(bindingResult);
 
 		try {
-			Rating saved = ratingService.create(rating, idUser, idReq);
+			Rating saved = ratingService.create(rating, idUser, idReq, principal);
 			return ResponseEntity
 				.created(URI.create("/api/ratings" + saved.getIdRating()))
 				.body(ratingDTOAssembler.toModel(saved));
@@ -130,13 +137,15 @@ public class RatingController {
 	@PutMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> updateRating(
 		@PathVariable("id") long idRating, @RequestBody @Valid RatingDTO ratingDTO,
-		BindingResult bindingResult
+		BindingResult bindingResult, @AuthenticationPrincipal UserPrincipal principal
 	) {
 		if (bindingResult.hasErrors()) hasErrors(bindingResult);
 
 		try {
 			return ResponseEntity
-				.ok(ratingDTOAssembler.toModel(ratingService.update(ratingDTO, idRating)));
+				.ok(
+					ratingDTOAssembler.toModel(ratingService.update(ratingDTO, idRating, principal))
+				);
 		} catch (Exception e) {
 			logger.debug("Exception {} while updating rating", e.getMessage());
 			throw e;
@@ -151,9 +160,12 @@ public class RatingController {
 	 * @return the response entity
 	 */
 	@DeleteMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> deleteRating(@PathVariable("id") long idRating) {
+	public ResponseEntity<?> deleteRating(
+		@PathVariable("id") long idRating, @AuthenticationPrincipal UserPrincipal principal
+	) {
 		try {
-			return ResponseEntity.ok(ratingDTOAssembler.toModel(ratingService.deleteById(idRating)));
+			return ResponseEntity
+				.ok(ratingDTOAssembler.toModel(ratingService.deleteById(idRating, principal)));
 		} catch (Exception e) {
 			logger.debug("Exception {} while updating rating", e.getMessage());
 			throw e;

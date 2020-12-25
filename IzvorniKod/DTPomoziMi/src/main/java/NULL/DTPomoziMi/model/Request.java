@@ -72,6 +72,9 @@ public class Request implements Serializable {
 	@JoinColumn(name = "id_lokacija")
 	private Location location;
 
+	@Column(name = "exectstmp")
+	private LocalDateTime execTstmp;
+
 	public Rating addRating(Rating rating) {
 		getRatings().add(rating);
 		rating.setRequest(this);

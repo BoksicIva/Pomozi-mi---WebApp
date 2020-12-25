@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 
 import org.springframework.hateoas.RepresentationModel;
@@ -56,4 +57,8 @@ public class RequestDTO extends RepresentationModel<RequestDTO> {
 
 	@Valid
 	private LocationDTO location;
+	
+	@Past
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+	private LocalDateTime execTstmp;
 }

@@ -3,6 +3,7 @@ package NULL.DTPomoziMi.web.DTO;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
@@ -32,4 +33,6 @@ public class CandidacyDTO extends RepresentationModel<CandidacyDTO> {
 
 	@Valid
 	private LocationDTO location;
+
+	CollectionModel<UserDTO> users;
 }

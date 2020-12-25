@@ -5,10 +5,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import NULL.DTPomoziMi.security.UserPrincipal;
 
-/**
- * @author janroker
- *
- */
 public class UserPrincipalGetter {
 
 	/**

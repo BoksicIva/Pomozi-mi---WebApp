@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import NULL.DTPomoziMi.exception.EntityMissingException;
 import NULL.DTPomoziMi.model.User;
+import NULL.DTPomoziMi.security.UserPrincipal;
 import NULL.DTPomoziMi.web.DTO.RatingDTO;
 import NULL.DTPomoziMi.web.DTO.UserDTO;
 import NULL.DTPomoziMi.web.DTO.UserRegisterDTO;
@@ -48,20 +49,22 @@ public interface UserService {
 	 *
 	 * @param ID the id
 	 * @return the user by ID
-	 * @throws EntityMissingException if element with given <code>id</code> does
-	 *                                not exist
+	 * @throws EntityMissingException if element with given <code>id</code> does not
+	 *                                exist
 	 */
-	User getUserByID(long ID);
+	User getUserByID(long ID, UserPrincipal principal);
 
 	/**
 	 * Find users.
 	 *
-	 * @param pageable the pageable
+	 * @param pageable      the pageable
 	 * @param specification the specification
 	 * @return the page
 	 */
-	Page<User> findUsers(Pageable pageable,  Specification<User> specification);
-	
+	Page<User> findUsers(
+		Pageable pageable, Specification<User> specification, UserPrincipal principal
+	);
+
 	/**
 	 * Block user.
 	 *
@@ -77,23 +80,24 @@ public interface UserService {
 	 *
 	 * @param idUser the id user
 	 * @return the statistics
+	 * @throws RuntimeException if too many candidacies for a year
 	 */
-	Map<String, Object>  getStatistics(long idUser);
+	Map<String, Object> getStatistics(long idUser);
 
 	/**
 	 * Update user.
 	 *
 	 * @param userDTO the user DTO
-	 * @param id the id
+	 * @param id      the id
 	 * @return the user
 	 */
-	User updateUser(@Valid UserDTO userDTO, long id);
-	
+	User updateUser(@Valid UserDTO userDTO, long id, UserPrincipal principal);
+
 	/**
 	 * Gets the chain of trust.
 	 *
 	 * @param id the id
 	 * @return the chain of trust
 	 */
-	List<RatingDTO> getChainOfTrust(long id);
+	List<RatingDTO> getChainOfTrust(long id, UserPrincipal principal);
 }

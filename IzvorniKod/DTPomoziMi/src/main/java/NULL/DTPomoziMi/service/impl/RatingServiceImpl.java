@@ -1,7 +1,5 @@
 package NULL.DTPomoziMi.service.impl;
 
-import java.util.Optional;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,10 +17,10 @@ import NULL.DTPomoziMi.model.RequestStatus;
 import NULL.DTPomoziMi.model.Role;
 import NULL.DTPomoziMi.model.User;
 import NULL.DTPomoziMi.repository.RatingRepo;
+import NULL.DTPomoziMi.security.UserPrincipal;
 import NULL.DTPomoziMi.service.RatingService;
 import NULL.DTPomoziMi.service.RequestService;
 import NULL.DTPomoziMi.service.UserService;
-import NULL.DTPomoziMi.util.UserPrincipalGetter;
 import NULL.DTPomoziMi.web.DTO.RatingDTO;
 
 @Service
@@ -41,11 +39,6 @@ public class RatingServiceImpl implements RatingService {
 	private RequestService requestService;
 
 	@Override
-	public Rating save(RatingDTO entity) {
-		return ratingRepo.save(modelMapper.map(entity, Rating.class));
-	}
-
-	@Override
 	public Rating fetch(Long id) {
 		return ratingRepo
 			.findById(id)
@@ -53,8 +46,8 @@ public class RatingServiceImpl implements RatingService {
 	}
 
 	@Override
-	public Rating getRatingById(Long id) {
-		User user = UserPrincipalGetter.getPrincipal().getUser();
+	public Rating getRatingById(Long id, UserPrincipal principal) {
+		User user = principal.getUser();
 
 		Rating r = fetch(id);
 
@@ -68,11 +61,8 @@ public class RatingServiceImpl implements RatingService {
 	}
 
 	@Override
-	public Optional<Rating> findById(Long id) { return ratingRepo.findById(id); }
-
-	@Override
-	public Rating deleteById(Long id) {
-		User user = UserPrincipalGetter.getPrincipal().getUser();
+	public Rating deleteById(Long id, UserPrincipal principal) {
+		User user = principal.getUser();
 		Rating rating = fetch(id);
 
 		if (!user.getIdUser().equals(rating.getRator().getIdUser()))
@@ -83,8 +73,8 @@ public class RatingServiceImpl implements RatingService {
 	}
 
 	@Override
-	public Rating create(RatingDTO rating, long idUser, Long idRequest) {
-		User user = UserPrincipalGetter.getPrincipal().getUser();
+	public Rating create(RatingDTO rating, long idUser, Long idRequest, UserPrincipal principal) {
+		User user = principal.getUser();
 		User rated = userService.fetch(idUser);
 
 		Request req = null;
@@ -109,13 +99,13 @@ public class RatingServiceImpl implements RatingService {
 	}
 
 	@Override
-	public Rating update(RatingDTO rating, long ratingId) { // ne moze se updateat req, i ne mogu se mijenjat useri...
+	public Rating update(RatingDTO rating, long ratingId, UserPrincipal principal) { // ne moze se updateat req, i ne mogu se mijenjat useri...
 		if (rating.getIdRating() == null || !rating.getIdRating().equals(rating))
 			throw new IllegalArgumentException("Rating id must be preserved!");
 
 		Assert.notNull(rating.getRator(), "Rator must not be null!");
 
-		User user = UserPrincipalGetter.getPrincipal().getUser();
+		User user = principal.getUser();
 		if (!user.getIdUser().equals(rating.getRator().getIdUser()))
 			throw new IllegalAccessException("Missing permission to update request!");
 

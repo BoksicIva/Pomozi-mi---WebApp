@@ -25,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import NULL.DTPomoziMi.exception.BindingException;
 import NULL.DTPomoziMi.model.User;
+import NULL.DTPomoziMi.security.UserPrincipal;
 import NULL.DTPomoziMi.service.UserService;
 import NULL.DTPomoziMi.util.Common;
 import NULL.DTPomoziMi.web.DTO.UserDTO;
@@ -75,7 +77,8 @@ public class UsersController {
 		@RequestParam(value = "lastName", required = false) String lastName,
 		@RequestParam(value = "email", required = false) String email,
 		@RequestParam(value = "phone", required = false) String phone,
-		@RequestParam(value = "generalSearch", required = false) String generalSearch
+		@RequestParam(value = "generalSearch", required = false) String generalSearch,
+		@AuthenticationPrincipal UserPrincipal principal
 	) {
 		try {
 			Specification<User> specs = firstNameLike(firstName)
@@ -87,7 +90,7 @@ public class UsersController {
 						.or(emailLike(generalSearch).or(phoneLike(generalSearch)))
 				);
 
-			Page<User> pageUser = userService.findUsers(pageable, specs);
+			Page<User> pageUser = userService.findUsers(pageable, specs, principal);
 
 			PagedModel<UserDTO> pagedModel = assembler.toModel(pageUser, userDTOModelAssembler);
 			return new ResponseEntity<>(pagedModel, HttpStatus.OK);
@@ -105,9 +108,12 @@ public class UsersController {
 	 * @return the user
 	 */
 	@GetMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> getUser(@PathVariable("id") long userID) {
+	public ResponseEntity<?> getUser(
+		@PathVariable("id") long userID, @AuthenticationPrincipal UserPrincipal principal
+	) {
 		try {
-			UserDTO user = userDTOModelAssembler.toModel(userService.getUserByID(userID));
+			UserDTO user
+				= userDTOModelAssembler.toModel(userService.getUserByID(userID, principal));
 			return new ResponseEntity<UserDTO>(user, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
@@ -153,13 +159,13 @@ public class UsersController {
 	@PutMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> updateUser(
 		@PathVariable("id") long id, @RequestBody @Valid UserDTO userDTO,
-		BindingResult bindingResult
+		BindingResult bindingResult, @AuthenticationPrincipal UserPrincipal principal
 	) {
 		if (bindingResult.hasErrors()) hasErrors(bindingResult);
 
 		try {
 			return ResponseEntity
-				.ok(userDTOModelAssembler.toModel(userService.updateUser(userDTO, id)));
+				.ok(userDTOModelAssembler.toModel(userService.updateUser(userDTO, id, principal)));
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
 			throw e;
@@ -167,10 +173,12 @@ public class UsersController {
 	}
 
 	@GetMapping(value = "chainOfTrust/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> getChainOfTrust(@PathVariable long id) {
+	public ResponseEntity<?> getChainOfTrust(
+		@PathVariable long id, @AuthenticationPrincipal UserPrincipal principal
+	) {
 		try {
-			EntityModel<?> model = EntityModel.of(userService.getChainOfTrust(id));
-			model.add(linkTo(methodOn(getClass()).getChainOfTrust(id)).withSelfRel());
+			EntityModel<?> model = EntityModel.of(userService.getChainOfTrust(id, principal));
+			model.add(linkTo(methodOn(getClass()).getChainOfTrust(id, principal)).withSelfRel());
 			return ResponseEntity.ok(model);
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
