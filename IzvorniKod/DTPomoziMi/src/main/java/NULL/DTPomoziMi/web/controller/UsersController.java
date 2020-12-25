@@ -7,6 +7,10 @@ import static NULL.DTPomoziMi.model.specification.UserSpecs.phoneLike;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import java.util.List;
+
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +25,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import NULL.DTPomoziMi.exception.BindingException;
 import NULL.DTPomoziMi.model.User;
 import NULL.DTPomoziMi.service.UserService;
+import NULL.DTPomoziMi.util.Common;
 import NULL.DTPomoziMi.web.DTO.UserDTO;
 import NULL.DTPomoziMi.web.assemblers.UserDTOModelAssembler;
 
@@ -49,12 +59,12 @@ public class UsersController {
 	/**
 	 * Gets the users.
 	 *
-	 * @param pageable the pageable
-	 * @param assembler the assembler
-	 * @param firstName the first name
-	 * @param lastName the last name
-	 * @param email the email
-	 * @param phone the phone
+	 * @param pageable      the pageable
+	 * @param assembler     the assembler
+	 * @param firstName     the first name
+	 * @param lastName      the last name
+	 * @param email         the email
+	 * @param phone         the phone
 	 * @param generalSearch the general search
 	 * @return the users
 	 */
@@ -138,6 +148,43 @@ public class UsersController {
 			logger.debug(e.getMessage());
 			throw e;
 		}
+	}
+
+	@PutMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
+	public ResponseEntity<?> updateUser(
+		@PathVariable("id") long id, @RequestBody @Valid UserDTO userDTO,
+		BindingResult bindingResult
+	) {
+		if (bindingResult.hasErrors()) hasErrors(bindingResult);
+
+		try {
+			return ResponseEntity
+				.ok(userDTOModelAssembler.toModel(userService.updateUser(userDTO, id)));
+		} catch (Exception e) {
+			logger.debug(e.getMessage());
+			throw e;
+		}
+	}
+
+	@GetMapping(value = "chainOfTrust/{id}", produces = { "application/json; charset=UTF-8" })
+	public ResponseEntity<?> getChainOfTrust(@PathVariable long id) {
+		try {
+			EntityModel<?> model = EntityModel.of(userService.getChainOfTrust(id));
+			model.add(linkTo(methodOn(getClass()).getChainOfTrust(id)).withSelfRel());
+			return ResponseEntity.ok(model);
+		} catch (Exception e) {
+			logger.debug(e.getMessage());
+			throw e;
+		}
+	}
+
+	private void hasErrors(BindingResult bindingResult) {
+		List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+
+		String errors = Common.stringifyErrors(fieldErrors);
+		logger.debug("Binding field errors {}", errors);
+
+		throw new BindingException(errors, fieldErrors);
 	}
 
 }

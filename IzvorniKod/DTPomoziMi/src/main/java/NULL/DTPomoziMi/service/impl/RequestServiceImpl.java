@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -38,8 +36,6 @@ import NULL.DTPomoziMi.web.assemblers.RequestDTOAssembler;
 @PreAuthorize(value = "isAuthenticated()")
 @Service
 public class RequestServiceImpl implements RequestService {
-	private Logger logger = LoggerFactory.getLogger(getClass());
-
 	@Autowired
 	private ModelMapper modelMapper;
 
@@ -83,7 +79,7 @@ public class RequestServiceImpl implements RequestService {
 		LocationDTO location = requestDTO.getLocation();
 		Location loc = resolveLocation(location);
 		if (loc == null && location != null) {
-			loc = modelMapper.map(req.getLocation(), Location.class);
+			loc = modelMapper.map(location, Location.class);
 			loc.setIdLocation(null);
 		}
 		req.setLocation(loc);
@@ -112,6 +108,7 @@ public class RequestServiceImpl implements RequestService {
 			throw new IllegalActionException("Cannot delete request that has an executor!");
 
 		requestRepo.deleteById(idRequest);
+		req.setStatus(RequestStatus.DELETED);
 		return req;
 	}
 
@@ -134,6 +131,9 @@ public class RequestServiceImpl implements RequestService {
 	public Request pickForExecution(long idRequest) { // TODO ide notifikacija!! ... sto ako... autor ne zeli da mu ovaj izvede..?
 		User user = UserPrincipalGetter.getPrincipal().getUser();
 		Request r = fetch(idRequest);
+
+		if (!r.getStatus().equals(RequestStatus.ACTIVE))
+			throw new IllegalActionException("Cannot pick non active request for execution!");
 
 		r.setExecutor(user);
 		r.setStatus(RequestStatus.EXECUTING);
@@ -199,12 +199,10 @@ public class RequestServiceImpl implements RequestService {
 		if (req.getStatus().equals(RequestStatus.ACTIVE)) {
 			hideInfo(req);
 		} else {
-			logger
-				.debug(
-					"User with id: {} trying to access request with id: {} illegaly",
-					user.getIdUser(), req.getIdRequest()
-				);
-			throw new IllegalAccessException("Missing permission to access requested resource!");
+			throw new IllegalAccessException(
+				"User with id: " + user.getIdUser() + "is trying to access request with id: "
+					+ req.getIdRequest() + " without permission."
+			);
 		}
 
 		return req;
@@ -262,11 +260,8 @@ public class RequestServiceImpl implements RequestService {
 	@Override
 	public Map<String, CollectionModel<RequestDTO>> getAuthoredRequests(long userID) {
 		UserPrincipal user = UserPrincipalGetter.getPrincipal(); // principal exists in the context because user has to be authenticated before accessing this poin
-		if (
-			!user.getUser().getIdUser().equals(userID)
-		) throw new IllegalAccessException(
-			"id prijavljenog korisnika nije isti kao id korisnika ciji se zahtjevi pokusavaju pregledati"
-		);
+		if (!user.getUser().getIdUser().equals(userID))
+			throw new IllegalAccessException("ID of logged in user is not the same as given userID!");
 
 		List<Request> active
 			= requestRepo.findByStatusAndAuthor(RequestStatus.ACTIVE, user.getUser());

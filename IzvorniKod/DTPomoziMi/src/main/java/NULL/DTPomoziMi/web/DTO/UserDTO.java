@@ -1,7 +1,9 @@
 package NULL.DTPomoziMi.web.DTO;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
@@ -27,12 +29,15 @@ public class UserDTO extends RepresentationModel<UserDTO> {
 	private Long IdUser;
 
 	@NotNull
+	@Size(min = 1, message = "{Size.UserDTO.firstName}")
 	private String firstName;
 
 	@NotNull
+	@Size(message = "{Size.UserDTO.lastName}", min = 1)
 	private String lastName;
 
 	@NotNull
+	@Email(message = "{UserDTO.email}")
 	private String email;
 
 	@Valid

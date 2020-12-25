@@ -3,12 +3,14 @@ package NULL.DTPomoziMi.web.DTO;
 import java.time.LocalDateTime;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import NULL.DTPomoziMi.model.RequestStatus;
@@ -36,6 +38,8 @@ public class RequestDTO extends RepresentationModel<RequestDTO> {
 	@NotNull
 	private String phone;
 
+	@Future
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime tstmp;
 
 	@NotNull

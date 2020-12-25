@@ -29,6 +29,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -66,11 +67,15 @@ public class RequestController { // TODO linkovi...
 	 * @param id the id
 	 * @return the response entity
 	 */
-	@PutMapping(value = "/block/{id}", produces = { "application/json; charset=UTF-8" })
+	@PatchMapping(value = "/block/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> blockRequest(@PathVariable("id") long id) {
-
-		RequestDTO blocked = requestDTOassembler.toModel(requestService.blockRequest(id));
-		return new ResponseEntity<>(blocked, HttpStatus.OK);
+		try {
+			RequestDTO blocked = requestDTOassembler.toModel(requestService.blockRequest(id));
+			return new ResponseEntity<>(blocked, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.debug("Exception {} while updating rating", e.getMessage());
+			throw e;
+		}
 	}
 
 	/**
@@ -88,11 +93,16 @@ public class RequestController { // TODO linkovi...
 	) {
 		if (bindingResult.hasErrors()) hasErrors(bindingResult);
 
-		Request saved = requestService.createRequest(requestDTO);
+		try {
+			Request saved = requestService.createRequest(requestDTO);
 
-		return ResponseEntity
-			.created(URI.create("/api/requests/" + saved.getIdRequest()))
-			.body(requestDTOassembler.toModel(saved));
+			return ResponseEntity
+				.created(URI.create("/api/requests/" + saved.getIdRequest()))
+				.body(requestDTOassembler.toModel(saved));
+		} catch (Exception e) {
+			logger.debug("Exception {} while updating rating", e.getMessage());
+			throw e;
+		}
 	}
 
 	/**
@@ -116,49 +126,70 @@ public class RequestController { // TODO linkovi...
 	 * The radius is optional and if not set, 0 is treated as default value. If the
 	 * logged in user hasn't set his/her location then only requests without
 	 * location are returned.
+	 *
+	 * @param pageable  the pageable
+	 * @param assembler the assembler
+	 * @param radius    the radius
+	 * @return the active
 	 */
 	@GetMapping(value = "/active", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> getActive(
 		@PageableDefault Pageable pageable, PagedResourcesAssembler<Request> assembler,
 		@RequestParam(name = "radius", required = false) Double radius
 	) {
+		try {
+			Page<Request> page = requestService.getAllActiveRequests(pageable, radius);
 
-		Page<Request> page = requestService.getAllActiveRequests(pageable, radius);
+			PagedModel<RequestDTO> pagedModel = assembler
+				.toModel(
+					page, requestDTOassembler,
+					linkTo(methodOn(RequestController.class).getActive(pageable, null, radius))
+						.withSelfRel()
+				);
 
-		PagedModel<RequestDTO> pagedModel = assembler
-			.toModel(
-				page, requestDTOassembler,
-				linkTo(methodOn(RequestController.class).getActive(pageable, null, radius))
-					.withSelfRel()
-			);
-
-		return new ResponseEntity<>(pagedModel, HttpStatus.OK);
+			return new ResponseEntity<>(pagedModel, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.debug("Exception {} while updating rating", e.getMessage());
+			throw e;
+		}
 	}
 
 	/**
 	 * Returns all authored requests by author's id as a map of finalized, blocked
-	 * and active requests
+	 * and active requests.
+	 *
+	 * @param userId the user id
+	 * @return the authored requests
 	 */
 	@GetMapping(value = "/authored/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> getAuthoredRequests(@PathVariable(name = "id") Long userId) {
-		EntityModel<?> model = EntityModel.of(requestService.getAuthoredRequests(userId));
-		model.add(linkTo(methodOn(getClass()).getAuthoredRequests(userId)).withSelfRel());
+		try {
+			EntityModel<?> model = EntityModel.of(requestService.getAuthoredRequests(userId));
+			model.add(linkTo(methodOn(getClass()).getAuthoredRequests(userId)).withSelfRel());
 
-		return ResponseEntity.ok(model);
+			return ResponseEntity.ok(model);
+		} catch (Exception e) {
+			logger.debug("Exception {} while updating rating", e.getMessage());
+			throw e;
+		}
 	}
 
 	/**
-	 * Gets the request by id
+	 * Gets the request by id.
 	 *
 	 * @param id the id
 	 * @return the request
 	 */
 	@GetMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<RequestDTO> getRequest(@PathVariable("id") long id) {
+		try {
+			RequestDTO req = requestDTOassembler.toModel(requestService.getRequestbyId(id));
 
-		RequestDTO req = requestDTOassembler.toModel(requestService.getRequestbyId(id));
-
-		return new ResponseEntity<>(req, HttpStatus.OK);
+			return new ResponseEntity<>(req, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.debug("Exception {} while updating rating", e.getMessage());
+			throw e;
+		}
 	}
 
 	/**
@@ -167,10 +198,15 @@ public class RequestController { // TODO linkovi...
 	 * @param id the id
 	 * @return the response entity
 	 */
-	@PutMapping(value = "/markExecuted/{id}", produces = { "application/json; charset=UTF-8" })
+	@PatchMapping(value = "/markExecuted/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> markExecuted(@PathVariable("id") long id) {
-		RequestDTO req = requestDTOassembler.toModel(requestService.markExecuted(id));
-		return ResponseEntity.ok(req);
+		try {
+			RequestDTO req = requestDTOassembler.toModel(requestService.markExecuted(id));
+			return ResponseEntity.ok(req);
+		} catch (Exception e) {
+			logger.debug("Exception {} while updating rating", e.getMessage());
+			throw e;
+		}
 	}
 
 	/**
@@ -181,14 +217,18 @@ public class RequestController { // TODO linkovi...
 	 * @param requestDTO the request DTO
 	 * @return the response entity
 	 */
-	@PutMapping(value = "pickForExecution/{id}", produces = { "application/json; charset=UTF-8" })
+	@PatchMapping(value = "pickForExecution/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> pickForExecution(@PathVariable("id") long id) {
-
-		RequestDTO executed = requestDTOassembler.toModel(requestService.pickForExecution(id));
-		return new ResponseEntity<>(executed, HttpStatus.OK);
+		try {
+			RequestDTO executed = requestDTOassembler.toModel(requestService.pickForExecution(id));
+			return new ResponseEntity<>(executed, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.debug("Exception {} while updating rating", e.getMessage());
+			throw e;
+		}
 	}
 
-	@PutMapping(value = "backOff/{id}", produces = { "application/json; charset=UTF-8" })
+	@PatchMapping(value = "backOff/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> backOff(@PathVariable("id") long id) {
 		try {
 			return ResponseEntity.ok(requestDTOassembler.toModel(requestService.backOff(id)));

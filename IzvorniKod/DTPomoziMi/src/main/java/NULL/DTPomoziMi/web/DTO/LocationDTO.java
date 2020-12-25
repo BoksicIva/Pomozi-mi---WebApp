@@ -2,6 +2,8 @@ package NULL.DTPomoziMi.web.DTO;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.hateoas.RepresentationModel;
@@ -34,11 +36,15 @@ public class LocationDTO extends RepresentationModel<LocationDTO> {
 	private String state;
 
 	@NotNull
-	private BigDecimal longitude;
-
-	@NotNull
 	private String town;
 
 	@NotNull
+	@Max(180)
+	@Min(-180)
+	private BigDecimal longitude;
+
+	@NotNull
+	@Max(90)
+	@Min(-90)
 	private BigDecimal latitude;
 }

@@ -1,6 +1,9 @@
 package NULL.DTPomoziMi.service;
 
+import java.util.List;
 import java.util.Map;
+
+import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +11,8 @@ import org.springframework.data.jpa.domain.Specification;
 
 import NULL.DTPomoziMi.exception.EntityMissingException;
 import NULL.DTPomoziMi.model.User;
+import NULL.DTPomoziMi.web.DTO.RatingDTO;
+import NULL.DTPomoziMi.web.DTO.UserDTO;
 import NULL.DTPomoziMi.web.DTO.UserRegisterDTO;
 
 public interface UserService {
@@ -74,4 +79,21 @@ public interface UserService {
 	 * @return the statistics
 	 */
 	Map<String, Object>  getStatistics(long idUser);
+
+	/**
+	 * Update user.
+	 *
+	 * @param userDTO the user DTO
+	 * @param id the id
+	 * @return the user
+	 */
+	User updateUser(@Valid UserDTO userDTO, long id);
+	
+	/**
+	 * Gets the chain of trust.
+	 *
+	 * @param id the id
+	 * @return the chain of trust
+	 */
+	List<RatingDTO> getChainOfTrust(long id);
 }

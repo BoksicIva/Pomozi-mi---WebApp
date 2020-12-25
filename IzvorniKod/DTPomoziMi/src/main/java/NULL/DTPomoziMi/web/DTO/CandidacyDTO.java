@@ -1,11 +1,13 @@
 package NULL.DTPomoziMi.web.DTO;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import NULL.DTPomoziMi.model.Location;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.EqualsAndHashCode.Include;
@@ -20,12 +22,14 @@ import lombok.Setter;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Relation(collectionRelation = "candidacies", itemRelation = "candidacy")
-public class CandidacyDTO extends RepresentationModel<CandidacyDTO> { // TODO validacija
+public class CandidacyDTO extends RepresentationModel<CandidacyDTO> {
 
 	@Include
 	private Long IdCandidacy;
 
+	@NotNull
 	private Integer year;
 
-	private Location location;
+	@Valid
+	private LocationDTO location;
 }

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import NULL.DTPomoziMi.exception.BindingException;
@@ -59,12 +60,12 @@ public class RatingController {
 	 * @param assembler the assembler
 	 * @return the ratings
 	 */
-	@GetMapping(value = "", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> getRatings(
-		@PageableDefault Pageable pageable, PagedResourcesAssembler<Rating> assembler
+	@GetMapping(value = "/user/{id}", produces = { "application/json; charset=UTF-8" })
+	public ResponseEntity<?> getUsersRatings(
+		@PathVariable("id") long userID, @PageableDefault Pageable pageable, PagedResourcesAssembler<Rating> assembler
 	) {
 		try {
-			Page<Rating> ratingsPage = ratingService.findAll(pageable);
+			Page<Rating> ratingsPage = ratingService.findByRated(pageable, userID);
 			PagedModel<RatingDTO> pm = assembler.toModel(ratingsPage, ratingDTOAssembler);
 			return ResponseEntity.ok(pm);
 
@@ -83,7 +84,7 @@ public class RatingController {
 	@GetMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> getRatingById(@PathVariable("id") Long id) {
 		try {
-			return ResponseEntity.ok(ratingDTOAssembler.toModel(ratingService.fetch(id)));
+			return ResponseEntity.ok(ratingDTOAssembler.toModel(ratingService.getRatingById(id)));
 		} catch (Exception e) {
 			logger.debug("Exception {} while fetching rating by id", e.getMessage());
 			throw e;
@@ -93,18 +94,22 @@ public class RatingController {
 	/**
 	 * Creates the rating.
 	 *
+	 * @param idUser        the id user to be rated
+	 * @param idReq         the id of the request - optional
 	 * @param rating        the rating
 	 * @param bindingResult the binding result
 	 * @return the response entity
 	 */
-	@PostMapping(value = "", produces = { "application/json; charset=UTF-8" })
+	@PostMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> createRating(
+		@PathVariable("id") long idUser,
+		@RequestParam(value = "idReq", required = false) Long idReq,
 		@RequestBody @Valid RatingDTO rating, BindingResult bindingResult
 	) {
 		if (bindingResult.hasErrors()) hasErrors(bindingResult);
 
 		try {
-			Rating saved = ratingService.create(rating);
+			Rating saved = ratingService.create(rating, idUser, idReq);
 			return ResponseEntity
 				.created(URI.create("/api/ratings" + saved.getIdRating()))
 				.body(ratingDTOAssembler.toModel(saved));
@@ -147,7 +152,12 @@ public class RatingController {
 	 */
 	@DeleteMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> deleteRating(@PathVariable("id") long idRating) {
-		return ResponseEntity.ok(ratingDTOAssembler.toModel(ratingService.deleteById(idRating)));
+		try {
+			return ResponseEntity.ok(ratingDTOAssembler.toModel(ratingService.deleteById(idRating)));
+		} catch (Exception e) {
+			logger.debug("Exception {} while updating rating", e.getMessage());
+			throw e;
+		}
 	}
 
 	private void hasErrors(BindingResult bindingResult) {
