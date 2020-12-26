@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import NULL.DTPomoziMi.exception.BindingException;
 import NULL.DTPomoziMi.model.User;
+import NULL.DTPomoziMi.model.specification.UserSpecs;
 import NULL.DTPomoziMi.security.UserPrincipal;
 import NULL.DTPomoziMi.service.UserService;
 import NULL.DTPomoziMi.util.Common;
@@ -85,11 +86,7 @@ public class UsersController {
 			Specification<User> specs = firstNameLike(firstName)
 				.and(lastNameLike(lastName))
 				.and(emailLike(email).and(phoneLike(phone)))
-				.and(
-					firstNameLike(generalSearch)
-						.or(lastNameLike(generalSearch))
-						.or(emailLike(generalSearch).or(phoneLike(generalSearch)))
-				);
+				.and(createGeneralSpecs(generalSearch));
 
 			Page<User> pageUser = userService.findUsers(pageable, specs, principal);
 
@@ -104,11 +101,8 @@ public class UsersController {
 							)
 					).withSelfRel()
 				);
-			pagedModel
-				.add(
-					linkGetUser(0), linkUpdateUser(0), linkBlockUser(0), linkGetStatistics(0),
-					linkChainOfTrust(0)
-				);
+			pagedModel.add(getLinks(0));
+
 			return new ResponseEntity<>(pagedModel, HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -130,6 +124,8 @@ public class UsersController {
 		try {
 			UserDTO user
 				= userDTOModelAssembler.toModel(userService.getUserByID(userID, principal));
+			user.add(getLinks(userID));
+
 			return new ResponseEntity<UserDTO>(user, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
@@ -147,7 +143,9 @@ public class UsersController {
 	@PostMapping(value = "/block/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> blockUser(@PathVariable(name = "id") long IdUser) {
 		try {
-			return ResponseEntity.ok(userDTOModelAssembler.toModel(userService.blockUser(IdUser)));
+			UserDTO user = userDTOModelAssembler.toModel(userService.blockUser(IdUser));
+			user.add(getLinks(IdUser));
+			return ResponseEntity.ok(user);
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
 			throw e;
@@ -165,6 +163,7 @@ public class UsersController {
 		try {
 			EntityModel<?> entityModel = EntityModel.of(userService.getStatistics(IdUser));
 			entityModel.add(linkTo(methodOn(getClass()).getStatistics(IdUser)).withSelfRel());
+			entityModel.add(getLinks(IdUser));
 			return ResponseEntity.ok(entityModel);
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
@@ -180,8 +179,10 @@ public class UsersController {
 		if (bindingResult.hasErrors()) hasErrors(bindingResult);
 
 		try {
-			return ResponseEntity
-				.ok(userDTOModelAssembler.toModel(userService.updateUser(userDTO, id, principal)));
+			UserDTO user
+				= userDTOModelAssembler.toModel(userService.updateUser(userDTO, id, principal));
+			user.add(getLinks(id));
+			return ResponseEntity.ok(user);
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
 			throw e;
@@ -195,6 +196,7 @@ public class UsersController {
 		try {
 			EntityModel<?> model = EntityModel.of(userService.getChainOfTrust(id, principal));
 			model.add(linkTo(methodOn(getClass()).getChainOfTrust(id, principal)).withSelfRel());
+			model.add(getLinks(id));
 			return ResponseEntity.ok(model);
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
@@ -211,7 +213,29 @@ public class UsersController {
 		throw new BindingException(errors, fieldErrors);
 	}
 
-	private Link affordanceGetUsers() {
+	private Specification<User> createGeneralSpecs(String str) {
+		Specification<User> spec = UserSpecs.firstNameLike(null); // ovaj je always true;
+		if (str == null) return spec; // nije bitno ak je null
+
+		String[] parts = str.split("\s+");
+
+		for (String part : parts) {
+			spec = spec
+				.and(
+					firstNameLike(part)
+						.or(lastNameLike(part))
+						.or(emailLike(part).or(phoneLike(part)))
+				);
+		}
+		return spec;
+	}
+
+	private Link[] getLinks(long id) {
+		return new Link[] { linkGetUser(id), linkGetUsers(), linkUpdateUser(id), linkBlockUser(id),
+			linkGetStatistics(id), linkChainOfTrust(id) };
+	}
+
+	private Link linkGetUsers() {
 		return linkTo(methodOn(getClass()).getUsers(null, null, null, null, null, null, null, null))
 			.withRel("users")
 			.withType("get");

@@ -10,7 +10,11 @@ public class UserSpecs {
 		return (root, query, builder) -> {
 			if (firstName == null) return builder.conjunction();// nemoj filtrirat ak je null
 
-			return builder.like(root.<String>get("firstName"), "%" + firstName + "%");
+			return builder
+				.like(
+					builder.lower(root.<String>get("firstName")),
+					"%" + firstName.toLowerCase() + "%"
+				);
 		};
 	}
 
@@ -18,7 +22,10 @@ public class UserSpecs {
 		return (root, query, builder) -> {
 			if (lastName == null) return builder.conjunction();// nemoj filtrirat ak je null
 
-			return builder.like(root.<String>get("lastName"), "%" + lastName + "%");
+			return builder
+				.like(
+					builder.lower(root.<String>get("lastName")), "%" + lastName.toLowerCase() + "%"
+				);
 		};
 	}
 
@@ -26,7 +33,8 @@ public class UserSpecs {
 		return (root, query, builder) -> {
 			if (email == null) return builder.conjunction();// nemoj filtrirat ak je null
 
-			return builder.like(root.<String>get("email"), "%" + email + "%");
+			return builder
+				.like(builder.lower(root.<String>get("email")), "%" + email.toLowerCase() + "%");
 		};
 	}
 
@@ -34,7 +42,8 @@ public class UserSpecs {
 		return (root, query, builder) -> {
 			if (phone == null) return builder.conjunction();// nemoj filtrirat ak je null
 
-			return builder.like(root.<String>get("email"), "%" + phone + "%");
+			return builder
+				.like(builder.lower(root.<String>get("email")), "%" + phone.toLowerCase() + "%");
 		};
 	}
 

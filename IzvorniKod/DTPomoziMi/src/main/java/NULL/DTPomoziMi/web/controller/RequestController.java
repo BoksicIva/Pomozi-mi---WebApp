@@ -15,12 +15,14 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,9 +60,6 @@ public class RequestController { // TODO linkovi...
 	private RequestService requestService;
 
 	@Autowired
-	private MessageSource messageSource;
-
-	@Autowired
 	private RequestDTOAssembler requestDTOassembler;
 
 	/**
@@ -76,6 +75,7 @@ public class RequestController { // TODO linkovi...
 		try {
 			RequestDTO blocked
 				= requestDTOassembler.toModel(requestService.blockRequest(id, principal));
+			blocked.add(getLinks(id));
 			return new ResponseEntity<>(blocked, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
@@ -100,10 +100,11 @@ public class RequestController { // TODO linkovi...
 
 		try {
 			Request saved = requestService.createRequest(requestDTO, principal);
-
+			RequestDTO dto = requestDTOassembler.toModel(saved);
+			dto.add(getLinks(saved.getIdRequest()));
 			return ResponseEntity
 				.created(URI.create("/api/requests/" + saved.getIdRequest()))
-				.body(requestDTOassembler.toModel(saved));
+				.body(dto);
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
 			throw e;
@@ -126,7 +127,9 @@ public class RequestController { // TODO linkovi...
 	) {
 		try {
 			Request deleted = requestService.deleteRequest(requestId, principal);
-			return ResponseEntity.ok(requestDTOassembler.toModel(deleted));
+			RequestDTO dto = requestDTOassembler.toModel(deleted);
+			dto.add(getLinks(requestId));
+			return ResponseEntity.ok(dto);
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
 			throw e;
@@ -162,6 +165,8 @@ public class RequestController { // TODO linkovi...
 					).withSelfRel()
 				);
 
+			pagedModel.add(getLinks(0));
+
 			return new ResponseEntity<>(pagedModel, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
@@ -188,6 +193,7 @@ public class RequestController { // TODO linkovi...
 					linkTo(methodOn(getClass()).getAuthoredRequests(userId, principal))
 						.withSelfRel()
 				);
+			model.add(getLinks(0));
 
 			return ResponseEntity.ok(model);
 		} catch (Exception e) {
@@ -210,6 +216,8 @@ public class RequestController { // TODO linkovi...
 			RequestDTO req
 				= requestDTOassembler.toModel(requestService.getRequestbyId(id, principal));
 
+			req.add(getLinks(id));
+
 			return new ResponseEntity<>(req, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
@@ -230,6 +238,7 @@ public class RequestController { // TODO linkovi...
 		try {
 			RequestDTO req
 				= requestDTOassembler.toModel(requestService.markExecuted(id, principal));
+			req.add(getLinks(id));
 			return ResponseEntity.ok(req);
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
@@ -252,6 +261,7 @@ public class RequestController { // TODO linkovi...
 		try {
 			RequestDTO executed
 				= requestDTOassembler.toModel(requestService.pickForExecution(id, principal));
+			executed.add(getLinks(id));
 			return new ResponseEntity<>(executed, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
@@ -264,8 +274,9 @@ public class RequestController { // TODO linkovi...
 		@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal
 	) {
 		try {
-			return ResponseEntity
-				.ok(requestDTOassembler.toModel(requestService.backOff(id, principal)));
+			RequestDTO dto = requestDTOassembler.toModel(requestService.backOff(id, principal));
+			dto.add(getLinks(id));
+			return ResponseEntity.ok(dto);
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
 			throw e;
@@ -289,6 +300,7 @@ public class RequestController { // TODO linkovi...
 		try {
 			RequestDTO updated = requestDTOassembler
 				.toModel(requestService.updateRequest(id, requestDTO, principal));
+			updated.add(getLinks(id));
 			return new ResponseEntity<>(updated, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
@@ -303,5 +315,68 @@ public class RequestController { // TODO linkovi...
 		logger.debug("Binding field errors {}", errors);
 
 		throw new BindingException(errors, fieldErrors);
+	}
+
+	private Link[] getLinks(long id) {
+		return new Link[] { linkCreate(), linkOne(id), linkUpdate(id), linkDelete(id),
+			linkBlock(id), linkPick(id), linkExecuted(id), linkBackoff(id), linkActive(id),
+			linkAuthored(id) };
+	}
+
+	private Link linkBlock(long id) {
+		return linkTo(methodOn(getClass()).blockRequest(id, null))
+			.withRel("block")
+			.withType("patch");
+	}
+
+	private Link linkCreate() {
+		return linkTo(methodOn(getClass()).createRequest(null, null, null, null))
+			.withRel("create")
+			.withType("post");
+	}
+
+	private Link linkDelete(long id) {
+		return linkTo(methodOn(getClass()).deleteRequest(id, null))
+			.withRel("delete")
+			.withType("delete");
+	}
+
+	private Link linkActive(long id) {
+		return linkTo(
+			methodOn(getClass())
+				.getActive(PageRequest.of(0, 10, Sort.DEFAULT_DIRECTION), null, null, null)
+		).withRel("active").withType("get");
+	}
+
+	private Link linkAuthored(long id) {
+		return linkTo(methodOn(getClass()).getAuthoredRequests(id, null))
+			.withRel("authored")
+			.withType("get");
+	}
+
+	private Link linkOne(long id) {
+		return linkTo(methodOn(getClass()).getRequest(id, null)).withRel("one").withType("get");
+	}
+
+	private Link linkExecuted(long id) {
+		return linkTo(methodOn(getClass()).markExecuted(id, null))
+			.withRel("markExecuted")
+			.withType("patch");
+	}
+
+	private Link linkPick(long id) {
+		return linkTo(methodOn(getClass()).pickForExecution(id, null))
+			.withRel("pick")
+			.withType("patch");
+	}
+
+	private Link linkBackoff(long id) {
+		return linkTo(methodOn(getClass()).backOff(id, null)).withRel("backoff").withType("patch");
+	}
+
+	private Link linkUpdate(long id) {
+		return linkTo(methodOn(getClass()).updateRequest(id, null, null, null))
+			.withRel("update")
+			.withType("put");
 	}
 }

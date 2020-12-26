@@ -12,7 +12,6 @@ import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import NULL.DTPomoziMi.model.RequestStatus;
 import lombok.AllArgsConstructor;
