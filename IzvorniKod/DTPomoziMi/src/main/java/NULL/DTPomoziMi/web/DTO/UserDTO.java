@@ -21,7 +21,7 @@ import lombok.Setter;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @Getter
 @Setter
-@JsonInclude(JsonInclude.Include.NON_NULL)
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 @Relation(collectionRelation = "users", itemRelation = "user")
 public class UserDTO extends RepresentationModel<UserDTO> {
 

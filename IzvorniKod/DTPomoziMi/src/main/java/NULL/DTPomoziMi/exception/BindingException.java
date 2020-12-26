@@ -7,7 +7,7 @@ import org.springframework.validation.FieldError;
 public class BindingException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
-	private List<FieldError> fieldErrors;
+	private final List<FieldError> fieldErrors;
 
 	public BindingException(List<FieldError> fieldErrors) { this.fieldErrors = fieldErrors; }
 

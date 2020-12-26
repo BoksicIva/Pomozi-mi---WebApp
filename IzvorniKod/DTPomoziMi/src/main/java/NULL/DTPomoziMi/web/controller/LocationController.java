@@ -17,7 +17,7 @@ import NULL.DTPomoziMi.web.assemblers.LocationDTOAssembler;
 @PreAuthorize("isAuthenticated()")
 @RequestMapping("/api/locations")
 public class LocationController {
-	private Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	private LocationService LocationService;

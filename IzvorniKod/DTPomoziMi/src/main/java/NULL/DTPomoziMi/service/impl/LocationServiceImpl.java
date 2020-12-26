@@ -18,7 +18,6 @@ import NULL.DTPomoziMi.service.LocationService;
 import NULL.DTPomoziMi.web.DTO.LocationDTO;
 
 @Service
-@PreAuthorize("isAuthenticated()")
 public class LocationServiceImpl implements LocationService {
 
 	@Autowired
@@ -32,6 +31,7 @@ public class LocationServiceImpl implements LocationService {
 		return locationRepo.save(modelMapper.map(entity, Location.class));
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@Override
 	public Iterable<Location> saveAll(Iterable<LocationDTO> entities) {
 		Stream<LocationDTO> stream = StreamSupport.stream(entities.spliterator(), false);
@@ -41,9 +41,11 @@ public class LocationServiceImpl implements LocationService {
 			);
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@Override
 	public Optional<Location> findById(Long id) { return locationRepo.findById(id); }
 
+	@PreAuthorize("isAuthenticated()")
 	@Override
 	public Location fetch(Long id) {
 		return locationRepo
@@ -51,20 +53,25 @@ public class LocationServiceImpl implements LocationService {
 			.orElseThrow(() -> new EntityMissingException(Location.class, id));
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@Override
 	public boolean existsById(Long id) { return locationRepo.existsById(id); }
 
+	@PreAuthorize("isAuthenticated()")
 	@Override
 	public Iterable<Location> findAll() { return locationRepo.findAll(); }
 
+	@PreAuthorize("isAuthenticated()")
 	@Override
 	public Iterable<Location> findAllById(Iterable<Long> ids) {
 		return locationRepo.findAllById(ids);
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@Override
 	public long count() { return locationRepo.count(); }
 
+	@PreAuthorize("isAuthenticated()")
 	@Override
 	public Location deleteById(Long id) {
 		Location location = fetch(id);
@@ -72,6 +79,7 @@ public class LocationServiceImpl implements LocationService {
 		return location;
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@Override
 	public Iterable<Location> deleteAll(Iterable<LocationDTO> entities) {
 		Stream<LocationDTO> stream = StreamSupport.stream(entities.spliterator(), false);
@@ -81,6 +89,7 @@ public class LocationServiceImpl implements LocationService {
 		return iterable;
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@Override
 	public Iterable<Location> deleteAll() {
 		Iterable<Location> iterable = locationRepo.findAll();

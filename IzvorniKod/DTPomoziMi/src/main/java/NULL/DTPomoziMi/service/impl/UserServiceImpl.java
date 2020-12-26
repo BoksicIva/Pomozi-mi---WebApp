@@ -46,12 +46,12 @@ import NULL.DTPomoziMi.web.assemblers.RatingDTOAssembler;
 @Service
 public class UserServiceImpl implements UserService {
 
-	private static String numExecutedRequests = "numExecutedR";
-	private static String numAuthoredRequests = "numAuthoredR";
-	private static String numFinalizedAuthoredRequests = "numFinalizedAR";
-	private static String numBlockedRequests = "numBlockedR";
-	private static String AVG_GRADE = "avgGrade";
-	private static String RANK = "rank";
+	private static final String numExecutedRequests = "numExecutedR";
+	private static final String numAuthoredRequests = "numAuthoredR";
+	private static final String numFinalizedAuthoredRequests = "numFinalizedAR";
+	private static final String numBlockedRequests = "numBlockedR";
+	private static final String AVG_GRADE = "avgGrade";
+	private static final String RANK = "rank";
 
 	@Autowired
 	private UserRepo userRepo;
@@ -84,10 +84,22 @@ public class UserServiceImpl implements UserService {
 		newUser.setEnabled(true);
 		newUser.setPassword(passwordEncoder.encode(user.getPassword()));
 
+		LocationDTO location = new LocationDTO(
+			null, user.getAdress(), user.getState(), user.getTown(), user.getLongitude(),
+			user.getLatitude()
+		);
+		Location loc = resolveLocation(location);
+		if (loc == null && location != null) {
+			loc = modelMapper.map(location, Location.class);
+			loc.setIdLocation(null);
+		}
+		newUser.setLocation(loc);
+
 		RoleEntity roleEntity = roleRepo.findByRole(Role.ROLE_USER);
 		if (roleEntity == null) {
 			roleEntity = new RoleEntity();
 			roleEntity.setRole(Role.ROLE_USER);
+			roleEntity = roleRepo.save(roleEntity);
 		}
 
 		newUser.addRoleEntity(roleEntity);
@@ -269,7 +281,9 @@ public class UserServiceImpl implements UserService {
 				if (loc == null) loc = locationService.save(dto);
 
 				return loc;
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		return null;

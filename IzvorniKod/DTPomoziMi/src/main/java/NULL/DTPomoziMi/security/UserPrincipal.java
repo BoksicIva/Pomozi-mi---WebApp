@@ -15,7 +15,7 @@ public class UserPrincipal implements UserDetails {
 
 	private static final long serialVersionUID = -6328324723198029932L;
 
-	private User user;
+	private final User user;
 
 	public UserPrincipal(User user) { super(); this.user = user; }
 

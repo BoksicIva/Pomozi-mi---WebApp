@@ -217,13 +217,12 @@ public class RequestServiceImpl implements RequestService {
 	) {
 		List<Request> actives
 			= requestRepo.findByStatusOrderByIdRequest(RequestStatus.ACTIVE).stream().filter(r -> {
-				UserPrincipal user = principal;
-
+				User user = principal.getUser();
 				boolean in = false;
 				if (r.getLocation() == null) // ako zahtjev nema lokaciju... moze
 					in = true;
-				else if (user.getUser().getLocation() != null && radius != null) { // ako user ima lokaciju i radius je dan
-					Location loc = user.getUser().getLocation();
+				else if (user.getLocation() != null && radius != null) { // ako user ima lokaciju i radius je dan
+					Location loc = user.getLocation();
 					double distance = calculateDistanceInKM(loc, r.getLocation());
 					in = distance <= radius;
 				}

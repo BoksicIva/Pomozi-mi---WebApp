@@ -16,7 +16,7 @@ import NULL.DTPomoziMi.web.controller.UsersController;
 @Component
 public class UserDTOModelAssembler extends RepresentationModelAssemblerSupport<User, UserDTO> {
 
-	private ModelMapper modelMapper;
+	private final ModelMapper modelMapper;
 
 	@Autowired
 	public UserDTOModelAssembler(ModelMapper modelMapper, LocationDTOAssembler locationAssembler) {

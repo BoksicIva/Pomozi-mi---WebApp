@@ -77,12 +77,7 @@ public class DevSecurityConfig extends WebSecurityConfigurerAdapter {
 
 		http.headers().frameOptions().disable();
 
-		http
-			.formLogin()
-			.disable()
-			.logout()
-			.logoutUrl("/logout")
-			.logoutSuccessHandler(myLogoutHandler);
+		http.formLogin().disable().logout().logoutSuccessHandler(myLogoutHandler);
 
 		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 		http.addFilterBefore(csrfTokenRequestFilter, CsrfFilter.class);
@@ -100,7 +95,7 @@ public class DevSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(WebSecurity web) {
-		web.ignoring().antMatchers("/*");
+		//web.ignoring().antMatchers("/*");
 		web.ignoring().antMatchers("/*.ico");
 		web.ignoring().antMatchers("/*.js");
 		web.ignoring().antMatchers("/*.json");

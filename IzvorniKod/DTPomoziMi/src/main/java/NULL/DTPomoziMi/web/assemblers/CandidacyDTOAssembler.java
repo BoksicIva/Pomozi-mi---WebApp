@@ -22,7 +22,7 @@ import NULL.DTPomoziMi.web.controller.CandidacyController;
 public class CandidacyDTOAssembler extends RepresentationModelAssemblerSupport<
 	Candidacy, CandidacyDTO> {
 
-	private ModelMapper modelMapper;
+	private final ModelMapper modelMapper;
 
 	@Autowired
 	public CandidacyDTOAssembler(

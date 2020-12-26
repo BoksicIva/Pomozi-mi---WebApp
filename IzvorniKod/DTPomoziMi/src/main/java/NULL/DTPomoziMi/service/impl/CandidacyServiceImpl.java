@@ -66,7 +66,7 @@ public class CandidacyServiceImpl implements CandidacyService {
 			can.setYear(year);
 		}
 
-		if (!can.getUsers().contains(user)) can.getUsers().add(user);
+		can.getUsers().add(user);
 
 		can = candidacyRepo.save(can);
 		can.getUsers().forEach(u -> u.setLocation(null));

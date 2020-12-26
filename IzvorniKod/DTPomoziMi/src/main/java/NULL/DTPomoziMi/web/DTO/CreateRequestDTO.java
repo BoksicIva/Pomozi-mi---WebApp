@@ -21,7 +21,7 @@ import lombok.Setter;
 @EqualsAndHashCode
 @Getter
 @Setter
-@JsonInclude(JsonInclude.Include.NON_NULL)
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CreateRequestDTO {
 
 	@Pattern(regexp = "^[0-9]+$")

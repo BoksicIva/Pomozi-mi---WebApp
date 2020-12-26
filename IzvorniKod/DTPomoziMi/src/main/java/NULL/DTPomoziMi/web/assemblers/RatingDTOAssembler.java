@@ -18,7 +18,7 @@ import NULL.DTPomoziMi.web.controller.UsersController;
 @Component
 public class RatingDTOAssembler extends RepresentationModelAssemblerSupport<Rating, RatingDTO> {
 
-	private ModelMapper modelMapper;
+	private final ModelMapper modelMapper;
 
 	@Autowired
 	public RatingDTOAssembler(

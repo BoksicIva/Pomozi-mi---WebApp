@@ -18,36 +18,36 @@ import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 @EnableWebMvc
 public class ProdWebConfig implements WebMvcConfigurer {
 
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry
-			.addResourceHandler(
-				"**/*.map", "**/*.js", "**/*.css", "**/*.txt", "**/*.json", "**/*.ico", "**/*.png"
-			)
-			.addResourceLocations("classpath:/static/");
-	}
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry
+                .addResourceHandler(
+                        "**/*.map", "**/*.js", "**/*.css", "**/*.txt", "**/*.json", "**/*.ico", "**/*.png"
+                )
+                .addResourceLocations("classpath:/static/");
+    }
 
-	@Override
-	public Validator getValidator() {
-		LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
-		bean.setValidationMessageSource(messageSource());
-		return bean;
-	}
+    @Override
+    public Validator getValidator() {
+        LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
+        bean.setValidationMessageSource(messageSource());
+        return bean;
+    }
 
-	@Bean
-	public MessageSource messageSource() {
-		ReloadableResourceBundleMessageSource messageSource
-			= new ReloadableResourceBundleMessageSource();
+    @Bean
+    public MessageSource messageSource() {
+        ReloadableResourceBundleMessageSource messageSource
+                = new ReloadableResourceBundleMessageSource();
 
-		messageSource.setBasename("classpath:messages");
-		messageSource.setDefaultEncoding("UTF-8");
-		return messageSource;
-	}
+        messageSource.setBasename("classpath:messages");
+        messageSource.setDefaultEncoding("UTF-8");
+        return messageSource;
+    }
 
-	@Bean
-	public LocaleResolver localeResolver() {
-		AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
-		return localeResolver;
-	}
+    @Bean
+    public LocaleResolver localeResolver() {
+        AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
+        return localeResolver;
+    }
 
 }

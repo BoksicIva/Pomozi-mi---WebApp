@@ -18,7 +18,7 @@ import NULL.DTPomoziMi.web.controller.RequestController;
 @Component
 public class RequestDTOAssembler extends RepresentationModelAssemblerSupport<Request, RequestDTO> {
 
-	private ModelMapper modelMapper;
+	private final ModelMapper modelMapper;
 
 	@Autowired
 	public RequestDTOAssembler(

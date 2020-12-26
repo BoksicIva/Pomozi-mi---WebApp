@@ -58,7 +58,7 @@ public class JwtUtil {
 				userDetails
 					.getAuthorities()
 					.stream()
-					.map(ga -> ga.getAuthority().toString())
+					.map(ga -> ga.getAuthority())
 					.collect(Collectors.toList())
 			);
 		return createToken(claims, userDetails.getUsername(), JwtConstants.JWT_EXPIRATION);

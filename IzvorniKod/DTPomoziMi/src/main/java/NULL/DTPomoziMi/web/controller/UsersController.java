@@ -20,6 +20,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -92,7 +93,22 @@ public class UsersController {
 
 			Page<User> pageUser = userService.findUsers(pageable, specs, principal);
 
-			PagedModel<UserDTO> pagedModel = assembler.toModel(pageUser, userDTOModelAssembler);
+			PagedModel<UserDTO> pagedModel = assembler
+				.toModel(
+					pageUser, userDTOModelAssembler,
+					linkTo(
+						methodOn(UsersController.class)
+							.getUsers(
+								null, null, firstName, lastName, email, phone, generalSearch,
+								principal
+							)
+					).withSelfRel()
+				);
+			pagedModel
+				.add(
+					linkGetUser(0), linkUpdateUser(0), linkBlockUser(0), linkGetStatistics(0),
+					linkChainOfTrust(0)
+				);
 			return new ResponseEntity<>(pagedModel, HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -193,6 +209,36 @@ public class UsersController {
 		logger.debug("Binding field errors {}", errors);
 
 		throw new BindingException(errors, fieldErrors);
+	}
+
+	private Link affordanceGetUsers() {
+		return linkTo(methodOn(getClass()).getUsers(null, null, null, null, null, null, null, null))
+			.withRel("users")
+			.withType("get");
+	}
+
+	private Link linkGetUser(long id) {
+		return linkTo(methodOn(getClass()).getUser(id, null)).withRel("one").withType("get");
+	}
+
+	private Link linkBlockUser(long id) {
+		return linkTo(methodOn(getClass()).blockUser(id)).withRel("block").withType("post");
+	}
+
+	private Link linkGetStatistics(long id) {
+		return linkTo(methodOn(getClass()).getStatistics(id)).withRel("statistics").withType("get");
+	}
+
+	private Link linkUpdateUser(long id) {
+		return linkTo(methodOn(getClass()).updateUser(id, null, null, null))
+			.withRel("update")
+			.withType("put");
+	}
+
+	private Link linkChainOfTrust(long id) {
+		return linkTo(methodOn(getClass()).getChainOfTrust(id, null))
+			.withRel("chainOfTrust")
+			.withType("get");
 	}
 
 }

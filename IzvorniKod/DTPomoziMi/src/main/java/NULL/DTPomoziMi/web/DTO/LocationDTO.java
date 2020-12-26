@@ -23,7 +23,7 @@ import lombok.Setter;
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 @Getter
 @Setter
-@JsonInclude(JsonInclude.Include.NON_NULL)
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 @Relation(collectionRelation = "locations", itemRelation = "location")
 public class LocationDTO extends RepresentationModel<LocationDTO> {
 	@Include
