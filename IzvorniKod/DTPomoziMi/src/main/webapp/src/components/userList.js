@@ -17,6 +17,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
+import { Link } from "react-router-dom";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -50,6 +51,7 @@ export default function BasicTable() {
       if (user.lastName.toLowerCase().includes(value.toLowerCase()) ||
         user.firstName.toLowerCase().includes(value.toLowerCase()) ||
         fullName.toLowerCase().includes(value.toLowerCase())) {
+          console.log(user._links.self.href);
         rows.push(user);
       }
     }
@@ -164,7 +166,7 @@ export default function BasicTable() {
               {Users.map((user) => (
                 <TableRow key={user.idUser}>
                   <TableCell component="th" scope="row">
-                    {user.firstName + " " + user.lastName}
+                    <Link to={"/user/" + user.idUser}>{user.firstName + " " + user.lastName}</Link>
                   </TableCell>
                   <TableCell align="right">{user.email}</TableCell>
                   <TableCell align="right">5</TableCell>
