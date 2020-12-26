@@ -4,7 +4,7 @@ import {BrowserRouter, Switch, Route} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Login from './components/login';
 import Registration from './components/registration';
-import Page from './components/page';
+import Page from './components/requestLoader';
 import home from './components/home';
 import BasicTable from './components/userList';
 

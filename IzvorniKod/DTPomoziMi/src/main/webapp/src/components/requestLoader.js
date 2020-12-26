@@ -1,21 +1,66 @@
 import React, { useState } from 'react';
-import {  Card } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style/page.css";
 import { Formik } from "formik";
 import Sidebar from "./sidebar"
 import * as Yup from "yup";
 import "./style/log-reg.css";
+import {
+    GoogleMap,
+    useLoadScript,
+    Marker,
+    InfoWindow,
+} from "@react-google-maps/api";
 
 
+
+const libraries = ["places"];
+const mapContainerStyle = {
+    height: "100vh",
+    width: "60vw",
+};
+const center = {
+    lat: 45.815399,
+    lng: 15.966568,
+};
+const options = {
+    disableDefaultUI: true,
+    zoomControl: true,
+};
 
 
 export const Dash = props => {
-
-    document.body.style = 'background-image: none;';
+    const { isLoaded, loadError } = useLoadScript({
+        googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+        libraries,
+    });
     const [long, setLong] = useState("");
     const [lat, setLat] = useState("");
     const [checked, setchecked] = useState(false);
+
+    const onMapClick = React.useCallback((e) => {
+
+        setLat(e.latLng.lat());
+        setLong(e.latLng.lng());
+
+        console.log(e.latLng.lat());
+        console.log(e.latLng.lng());
+
+    }, []);
+
+    const mapRef = React.useRef();
+    const onMapLoad = React.useCallback((map) => {
+        mapRef.current = map;
+    }, []);
+
+
+
+    if (loadError) return "Error";
+    if (!isLoaded) return "Loading...";
+
+    document.body.style = 'background-image: none;';
+
 
     const handleClick = () => {
         console.log(checked);
@@ -44,7 +89,7 @@ export const Dash = props => {
 
     return (
         <>
-           
+
             <div className="empthy1">            </div>
             <div className="container">
                 <Card className="crd col-lg-10 mx-auto">
@@ -174,6 +219,22 @@ export const Dash = props => {
                             );
                         }}
                     </Formik>
+                    <GoogleMap mapContainerStyle={mapContainerStyle}
+                        zoom={8}
+                        center={center}
+                        options={options}
+                        onClick={(event) => {
+                            console.log("kurac")
+                            setLat(event.latLng.lat())
+                            setLong(event.latLng.lng())
+                        }}
+                    >
+
+                        <Marker
+                            key={16}
+                            position={{ lat: lat, lng: long }}
+                        />
+                    </GoogleMap>
                 </Card>
             </div>
             <Sidebar />
