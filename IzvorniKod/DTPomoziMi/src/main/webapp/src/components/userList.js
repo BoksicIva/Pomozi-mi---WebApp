@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
+let tempUser = [];
 let rows = [];
 
 export default function BasicTable() {
@@ -42,19 +42,24 @@ export default function BasicTable() {
   const [filter, setFilter] = React.useState('');
   const [sort, setSort] = React.useState('');
   const [value, setValue] = React.useState('');
+  const [UsersTemp, setUsersTemp] = useState([]);
 
   const handleSubmit = (event) => {
-      for (let user of Users){
-        if (user.lastName === value){
-          rows.push(user);
-        }
+    for (let user of UsersTemp) {
+      let fullName = user.firstName + " " + user.lastName;
+      if (user.lastName.toLowerCase().includes(value.toLowerCase()) ||
+        user.firstName.toLowerCase().includes(value.toLowerCase()) ||
+        fullName.toLowerCase().includes(value.toLowerCase())) {
+        rows.push(user);
       }
-      setUsers(rows);
-      event.preventDefault();
+    }
+    console.log(rows);
+    setUsers(rows);
+    event.preventDefault();
+    rows = [];
   };
 
   const handleChangeInput = (event) => {
-    console.log(event.target.value);
     setValue(event.target.value);
   };
   const handleChangeSort = (event) => {
@@ -66,7 +71,9 @@ export default function BasicTable() {
       Userservice.getSortedUsers("lastName")
         .then((response) => {
           setUsers(response.data._embedded.users);
+
           console.log(Users);
+
           //rows = response.data._embedded.users;
           //console.log(rows);
           //console.log(rows[0]);
@@ -75,12 +82,27 @@ export default function BasicTable() {
           alert(error);
         })
     }
+    else {
+      Userservice.getSortedUsers("firstName")
+        .then((response) => {
+          setUsers(response.data._embedded.users);
+          console.log(Users);
+          //rows = response.data._embedded.users;
+          //console.log(rows);
+          //console.log(rows[0]);
+        })
+        .catch((error) => {
+          alert(error);
+        })
+
+    }
   };
 
   useEffect(() => {
     Userservice.getUsers()
       .then((response) => {
         setUsers(response.data._embedded.users);
+        setUsersTemp(response.data._embedded.users);
         console.log(Users);
         //rows = response.data._embedded.users;
         //console.log(rows);
@@ -104,7 +126,7 @@ export default function BasicTable() {
             labelId="filter-select"
             id="filter-select"
             value={filter}
-            
+
           >
             <MenuItem value={1}>kategoriji</MenuItem>
             <MenuItem value={2}>Radijusu udaljenosti</MenuItem>
@@ -120,37 +142,37 @@ export default function BasicTable() {
             value={sort}
             onChange={handleChangeSort}
           >
-            <MenuItem value={"1"}>Abecednom redu</MenuItem>
-            <MenuItem value={"2"}>Blizini</MenuItem>
+            <MenuItem value={"1"}>Prezimenu</MenuItem>
+            <MenuItem value={"2"}>Imenu</MenuItem>
 
           </Select>
         </FormControl>
-          <form onSubmit={handleSubmit}>
-          <TextField id="filled-basic" label="Filled" value={value} onChange={handleChangeInput} variant="filled" />
-            
+        <form onSubmit={handleSubmit}>
+          <TextField id="filled-basic" label="Pretraži korisnika" value={value} onChange={handleChangeInput} variant="filled" />
+
         </form>
-          <TableContainer component={Paper}>
-            <Table className={classes.table} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Ime i prezime</TableCell>
-                  <TableCell align="right">email:</TableCell>
-                  <TableCell align="right">ocjena</TableCell>
+        <TableContainer component={Paper}>
+          <Table className={classes.table} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Ime i prezime</TableCell>
+                <TableCell align="right">email:</TableCell>
+                <TableCell align="right">ocjena</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {Users.map((user) => (
+                <TableRow key={user.idUser}>
+                  <TableCell component="th" scope="row">
+                    {user.firstName + " " + user.lastName}
+                  </TableCell>
+                  <TableCell align="right">{user.email}</TableCell>
+                  <TableCell align="right">5</TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {Users.map((user) => (
-                  <TableRow key={user.idUser}>
-                    <TableCell component="th" scope="row">
-                      {user.firstName + " " + user.lastName}
-                    </TableCell>
-                    <TableCell align="right">{user.email}</TableCell>
-                    <TableCell align="right">5</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Container>
     </>
   );
