@@ -344,7 +344,7 @@ public class RequestController { // TODO linkovi...
 	private Link linkActive(long id) {
 		return linkTo(
 			methodOn(getClass())
-				.getActive(PageRequest.of(0, 10, Sort.DEFAULT_DIRECTION), null, null, null)
+				.getActive(PageRequest.of(0, 10, Sort.by("idRequest").ascending()), null, null, null)
 		).withRel("active").withType("get");
 	}
 

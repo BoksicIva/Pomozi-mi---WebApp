@@ -217,7 +217,7 @@ public class UsersController {
 		Specification<User> spec = UserSpecs.firstNameLike(null); // ovaj je always true;
 		if (str == null) return spec; // nije bitno ak je null
 
-		String[] parts = str.split("\s+");
+		String[] parts = str.split("\\s+");
 
 		for (String part : parts) {
 			spec = spec
