@@ -84,16 +84,18 @@ public class UserServiceImpl implements UserService {
 		newUser.setEnabled(true);
 		newUser.setPassword(passwordEncoder.encode(user.getPassword()));
 
-		LocationDTO location = new LocationDTO(
-			null, user.getAdress(), user.getState(), user.getTown(), user.getLongitude(),
-			user.getLatitude()
-		);
-		Location loc = resolveLocation(location);
-		if (loc == null && location != null) {
-			loc = modelMapper.map(location, Location.class);
-			loc.setIdLocation(null);
+		if(user.getLatitude() != null && user.getLongitude() != null) {
+			LocationDTO location = new LocationDTO(
+					null, user.getAdress(), user.getState(), user.getTown(), user.getLongitude(),
+					user.getLatitude()
+			);
+			Location loc = resolveLocation(location);
+			if (loc == null && location != null) {
+				loc = modelMapper.map(location, Location.class);
+				loc.setIdLocation(null);
+			}
+			newUser.setLocation(loc);
 		}
-		newUser.setLocation(loc);
 
 		RoleEntity roleEntity = roleRepo.findByRole(Role.ROLE_USER);
 		if (roleEntity == null) {
