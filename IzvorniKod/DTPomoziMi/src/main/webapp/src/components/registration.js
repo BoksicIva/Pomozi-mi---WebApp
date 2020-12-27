@@ -36,19 +36,15 @@ export const Registration = (props) => (
             data.append("secondPassword", values.secondPassword);
             data.append("email", values.email);
 
-            RegService.getCSRF()
-              .then((response) => {
-                console.log(response);
-                console.log(response.data);
-                console.log(response.headers);
+
 
                 RegService.register(data)
                   .then((response1) => {
                     props.history.push("/login");
                   })
                   .catch((error1) => {
-                    const code = error1.response.status;
-                    const response = error1.response.data;
+                    const code = error1.status;
+                    const response = error1.data;
 
                     if (code === 400) {
                       for (let obj of response) {
@@ -74,10 +70,7 @@ export const Registration = (props) => (
                   
                     }
                   });
-              })
-              .catch((error) => {
-                console.log(error);
-              });
+
           }}
           validationSchema={Yup.object().shape({
             email: Yup.string()

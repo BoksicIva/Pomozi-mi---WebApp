@@ -32,6 +32,14 @@ class LoginService {
     logout(){
       return http.post("../logout", {});
     }
+
+    getUsers(){
+      return http.get("/users" , {});
+    }
+
+    getSortedUsers(condition){
+      return http.get("/users?sort=" + condition + ",asc" , {});
+    }
   
   }
   
