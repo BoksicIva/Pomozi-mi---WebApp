@@ -12,7 +12,7 @@ export const SidebarData = [
   },
   {
     title: 'Zahtjevi',
-    path: '/request',
+    path: '/page',
     icon: <IoIcons.IoIosPaper />,
     cName: 'nav-text'
   },
@@ -24,7 +24,7 @@ export const SidebarData = [
   },
   {
     title: 'Korisnici',
-    path: '/users',
+    path: '/list',
     icon: <IoIcons.IoMdPeople />,
     cName: 'nav-text'
   },
