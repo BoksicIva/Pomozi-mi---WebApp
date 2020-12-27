@@ -23,6 +23,16 @@ function Navbar(props) {
     });
   }
 
+function isLogout(props){
+  let logout;
+  if(props=="Odjava"){
+    logout=<span onClick={handleLogOut}>{props}</span>
+  }else{
+    logout=<span>{props}</span>
+  }
+  return logout
+}
+
   return (
     <>
       <IconContext.Provider value={{ color: '#000', size: "1.5em"}}>
@@ -45,15 +55,12 @@ function Navbar(props) {
               </Link>
             </li>
             {SidebarData.map((item, index) => {
+              let logout=isLogout(item.title);
               return (
                 <li key={index} className={item.cName}>
                   <Link to={item.path}>
                     {item.icon }
-                    if({item.title}=="Odjava"){
-                      <span onClick={handleLogOut}>{item.title}</span>
-                    }else{
-                      <span>{item.title}</span>
-                    }
+                    {logout}
                   </Link>
                 </li>
               );
