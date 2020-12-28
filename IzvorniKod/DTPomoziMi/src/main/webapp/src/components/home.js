@@ -1,31 +1,27 @@
 import React from 'react'
 import './style/home.css'
-import { Button } from 'react-bootstrap';
 import LogoutService from "../service/login-service";
+import Sidebar from './sidebar';
+import Slideshow from './slider';
+import Home from './home';
+import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+
 
 export default function home(props) {
     let name = localStorage.getItem("username");
  
-
  
-    const handleLogOut = () => {
-        localStorage.removeItem("username");
-        
-        LogoutService.logout().then((response) => {
-            props.history.push('/login');
-        }).catch((error) => {
-            console.log(error);
-        });
-    }
-
 
     return (
         <>
+        <Sidebar /> 
+        <img src="../images/holding-hands.png" alt=""/>
         <div className = "container">
-        <div className="msg">korisnik {name} je uspjesno ulogiran
-        <Button variant="secondary" onClick={handleLogOut}>Logout</Button>
-        </div>
-        </div>
+        <div className="pomozi">Pomozi mi</div>
+        <div className="msg">Malo djelo velikog<span className="znacaja"> značaja</span>.
+        </div> 
+        </div>  
+        <Slideshow/>
         </>
     )
 }

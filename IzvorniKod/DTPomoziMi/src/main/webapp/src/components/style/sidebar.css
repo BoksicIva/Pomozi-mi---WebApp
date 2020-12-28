@@ -71,9 +71,9 @@ span {
   margin-left: 16px;
 }
 
-h1.tite{
+.tite{
   text-align: center;
   justify-content:center;
-  font-size: 3em;
+  font-size: 1em;
   font-weight: bold;
 }
