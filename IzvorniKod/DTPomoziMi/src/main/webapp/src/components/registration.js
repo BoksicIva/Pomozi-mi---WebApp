@@ -23,9 +23,21 @@ export const Registration = (props) => (
             email: "",
             password: "",
             secondPassword: "",
+            country: "",
+            town: "",
+            address: "",
             error1: "",
           }}
           onSubmit={async (values) => {
+            if (values.email !== localStorage.getItem("email"))
+              localStorage.removeItem("photo");
+
+            localStorage.setItem("firstName", values.firstName);
+            localStorage.setItem("lastName", values.lastName);
+            localStorage.setItem("email", values.email);
+            localStorage.setItem("country", values.country);
+            localStorage.setItem("town", values.town);
+            localStorage.setItem("address", values.address);
             await new Promise((resolve) => setTimeout(resolve, 500));
 
             let data = new FormData();
@@ -36,41 +48,34 @@ export const Registration = (props) => (
             data.append("secondPassword", values.secondPassword);
             data.append("email", values.email);
 
+            RegService.register(data)
+              .then((response1) => {
+                props.history.push("/login");
+              })
+              .catch((error1) => {
+                const code = error1.status;
+                const response = error1.data;
 
-
-                RegService.register(data)
-                  .then((response1) => {
-                    props.history.push("/login");
-                  })
-                  .catch((error1) => {
-                    const code = error1.status;
-                    const response = error1.data;
-
-                    if (code === 400) {
-                      for (let obj of response) {
-                        let div = document.createElement("div");
-                        for(let s of obj.defaultMessage.split("] | [")) {
-                          div.innerHTML += s + "</br>";
-                        }
-                        
-                        if (obj.field !== undefined) {
-                          document
-                            .getElementById(obj.field + "-error")
-                            .append(div);
-                        } else {
-                          document.getElementById("uncategorised").append(div);
-                        }
-                      }
+                if (code === 400) {
+                  for (let obj of response) {
+                    let div = document.createElement("div");
+                    for (let s of obj.defaultMessage.split("] | [")) {
+                      div.innerHTML += s + "</br>";
                     }
-                    if (code === 403) {
-                     
-                        let div = document.createElement("div");
-                        div.innerHTML = response;
-                        document.getElementById("uncategorised").append(div);
-                  
-                    }
-                  });
 
+                    if (obj.field !== undefined) {
+                      document.getElementById(obj.field + "-error").append(div);
+                    } else {
+                      document.getElementById("uncategorised").append(div);
+                    }
+                  }
+                }
+                if (code === 403) {
+                  let div = document.createElement("div");
+                  div.innerHTML = response;
+                  document.getElementById("uncategorised").append(div);
+                }
+              });
           }}
           validationSchema={Yup.object().shape({
             email: Yup.string()

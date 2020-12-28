@@ -25,7 +25,7 @@ function Navbar(props) {
 
 function isLogout(props){
   let logout;
-  if(props=="Odjava"){
+  if(props==="Odjava"){
     logout=<span onClick={handleLogOut}>{props}</span>
   }else{
     logout=<span>{props}</span>
