@@ -89,7 +89,7 @@ export const Dash = props => {
 
     return (
         <>
-
+            <Sidebar />
             <div className="empthy1">            </div>
             <div className="container">
                 <Card className="crd col-lg-10 mx-auto">
@@ -237,7 +237,6 @@ export const Dash = props => {
                     </GoogleMap>
                 </Card>
             </div>
-            <Sidebar />
         </>
     );
 };
