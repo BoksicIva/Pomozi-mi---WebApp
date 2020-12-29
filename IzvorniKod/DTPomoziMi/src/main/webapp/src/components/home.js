@@ -1,11 +1,10 @@
 import React from 'react'
 import homeStyle from './style/home.module.css'
 import LogoutService from "../service/login-service";
-import Sidebar from './sidebar';
-import Slideshow from './slider';
-import Home from './home';
-import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-
+import Sidebar from "./sidebar";
+import Slideshow from "./slider";
+import Home from "./home";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 export default function home(props) {
     let name = localStorage.getItem("username");
