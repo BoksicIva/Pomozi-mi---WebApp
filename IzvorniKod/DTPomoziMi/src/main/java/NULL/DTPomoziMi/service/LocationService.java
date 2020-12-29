@@ -24,6 +24,17 @@ public interface LocationService {
 	Location save(LocationDTO entity);
 
 	/**
+	 * Saves a given entity. Use the returned instance for further operations as the
+	 * save operation might have changed the entity instance completely.
+	 *
+	 * @param entity must not be {@literal null}.
+	 * @return the saved entity; will never be {@literal null}.
+	 * @throws IllegalArgumentException in case the given {@literal entity} is
+	 *                                  {@literal null}.
+	 */
+	Location save(Location entity);
+
+	/**
 	 * Saves all given entities.
 	 *
 	 * @param entities must not be {@literal null} nor must it contain

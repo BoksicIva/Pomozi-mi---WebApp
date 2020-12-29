@@ -31,6 +31,9 @@ public class LocationServiceImpl implements LocationService {
 		return locationRepo.save(modelMapper.map(entity, Location.class));
 	}
 
+	@Override
+	public Location save(Location entity) { return locationRepo.save(entity); }
+
 	@PreAuthorize("isAuthenticated()")
 	@Override
 	public Iterable<Location> saveAll(Iterable<LocationDTO> entities) {

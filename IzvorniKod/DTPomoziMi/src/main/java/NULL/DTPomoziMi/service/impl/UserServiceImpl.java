@@ -84,16 +84,12 @@ public class UserServiceImpl implements UserService {
 		newUser.setEnabled(true);
 		newUser.setPassword(passwordEncoder.encode(user.getPassword()));
 
-		if(user.getLatitude() != null && user.getLongitude() != null) {
+		if (user.getLatitude() != null && user.getLongitude() != null) {
 			LocationDTO location = new LocationDTO(
-					null, user.getAdress(), user.getState(), user.getTown(), user.getLongitude(),
-					user.getLatitude()
+				null, user.getAdress(), user.getState(), user.getTown(), user.getLongitude(),
+				user.getLatitude()
 			);
 			Location loc = resolveLocation(location);
-			if (loc == null && location != null) {
-				loc = modelMapper.map(location, Location.class);
-				loc.setIdLocation(null);
-			}
 			newUser.setLocation(loc);
 		}
 
@@ -245,10 +241,6 @@ public class UserServiceImpl implements UserService {
 
 		LocationDTO location = userDTO.getLocation();
 		Location loc = resolveLocation(location);
-		if (loc == null && location != null) {
-			loc = modelMapper.map(location, Location.class);
-			loc.setIdLocation(null);
-		}
 		user.setLocation(loc);
 
 		return userRepo.save(user);
@@ -276,16 +268,14 @@ public class UserServiceImpl implements UserService {
 
 	private Location resolveLocation(LocationDTO dto) {
 		if (dto != null) { // ako je dana lokacija onda provjeri postoji li vec spremljena pa ju dodaj u req ili... ako ne onda spremi i dodaj u req 
-			try {
-				Location loc = locationService
-					.findByLatitudeAndLongitude(dto.getLatitude(), dto.getLongitude());
 
-				if (loc == null) loc = locationService.save(dto);
+			Location loc
+				= locationService.findByLatitudeAndLongitude(dto.getLatitude(), dto.getLongitude());
 
-				return loc;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			if (loc == null) loc = locationService.save(dto);
+
+			return loc;
+
 		}
 
 		return null;

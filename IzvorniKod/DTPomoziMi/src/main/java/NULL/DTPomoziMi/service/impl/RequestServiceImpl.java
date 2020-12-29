@@ -53,12 +53,7 @@ public class RequestServiceImpl implements RequestService {
 		Request req = modelMapper.map(request, Request.class);
 
 		LocationDTO location = request.getLocation();
-
 		Location loc = resolveLocation(location);
-		if (loc == null && location != null) {
-			loc = modelMapper.map(req.getLocation(), Location.class);
-			loc.setIdLocation(null);
-		}
 		req.setLocation(loc);
 
 		req.setAuthor(principal.getUser());
@@ -75,21 +70,17 @@ public class RequestServiceImpl implements RequestService {
 
 		User user = principal.getUser();
 		Request req = fetch(idRequest);
+		
+		if (!user.getIdUser().equals(req.getAuthor().getIdUser()))
+			throw new IllegalAccessException("Only authors can modify requests!");
 
 		LocationDTO location = requestDTO.getLocation();
 		Location loc = resolveLocation(location);
-		if (loc == null && location != null) {
-			loc = modelMapper.map(location, Location.class);
-			loc.setIdLocation(null);
-		}
 		req.setLocation(loc);
 
 		req.setDescription(requestDTO.getDescription());
 		req.setPhone(requestDTO.getPhone());
 		req.setTstmp(requestDTO.getTstmp());
-
-		if (!user.getIdUser().equals(req.getAuthor().getIdUser()))
-			throw new IllegalAccessException("Only authors can modify requests!");
 
 		return requestRepo.save(req);
 	}
@@ -286,14 +277,13 @@ public class RequestServiceImpl implements RequestService {
 
 	private Location resolveLocation(LocationDTO dto) {
 		if (dto != null) { // ako je dana lokacija onda provjeri postoji li vec spremljena pa ju dodaj u req ili... ako ne onda spremi i dodaj u req 
-			try {
-				Location loc = locationService
-					.findByLatitudeAndLongitude(dto.getLatitude(), dto.getLongitude());
 
-				if (loc == null) loc = locationService.save(dto);
+			Location loc
+				= locationService.findByLatitudeAndLongitude(dto.getLatitude(), dto.getLongitude());
 
-				return loc;
-			} catch (Exception e) {}
+			if (loc == null) loc = locationService.save(dto);
+
+			return loc;
 		}
 
 		return null;

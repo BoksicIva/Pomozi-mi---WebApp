@@ -40,7 +40,7 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
 		return new ResponseEntity<>(createProps(e, HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
 	}
-
+	
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<?> handleException(Exception e) {
 		e.printStackTrace();
