@@ -1,6 +1,6 @@
 import React from "react";
-import "./style/log-reg.css";
-import "../index.css";
+import style from "./style/log-reg.module.css";
+import "../index.module.css";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -9,11 +9,11 @@ import { Link } from "react-router-dom";
 import LoginService from "../service/login-service";
 
 export const Login = (props) => (
-  <div className="app">
-    <div className="empthy"></div>
+  <div className={style.app}>
+    <div className={style.empthy}></div>
     <div className="container">
       <Card className="crd col-lg-7 mx-auto">
-        <Card.Title className="title">
+        <Card.Title className={style.title}>
           Prijavi se u aplikaciju <span style={{ color: "red" }}>Pomozi</span>Mi
         </Card.Title>
         <Formik
@@ -62,7 +62,7 @@ export const Login = (props) => (
             return (
               <form onSubmit={handleSubmit}>
                 <div>
-                  <div className="inp-line">
+                  <div className={style.inp_line}>
                     <label htmlFor="email">E-mail:</label>
                     <input
                       id="email"
@@ -73,16 +73,16 @@ export const Login = (props) => (
                       onBlur={handleBlur}
                       className={
                         errors.email && touched.email
-                          ? "text-input error"
-                          : "text-input"
+                          ? `${style.text_input} ${style.error}`
+                          : style.text_input
                       }
                     />
                     {errors.email && touched.email && (
-                      <div className="input-feedback">{errors.email}</div>
+                      <div className={style.input_feedback}>{errors.email}</div>
                     )}
                   </div>
 
-                  <div className="inp-line">
+                  <div className={style.inp_line}>
                     <label htmlFor="password">Zaporka:</label>
                     <input
                       id="password"
@@ -93,21 +93,21 @@ export const Login = (props) => (
                       onBlur={handleBlur}
                       className={
                         errors.password && touched.password
-                          ? "text-input error"
-                          : "text-input"
+                          ? `${style.text_input} ${style.error}`
+                          : style.text_input
                       }
                     />
                     {errors.password && touched.password && (
-                      <div className="input-feedback">{errors.password}</div>
+                      <div className={style.input_feedback}>{errors.password}</div>
                     )}
                   </div>
                 </div>
 
-                <span className="input-feedback" id="uncategorised"></span>
+                <span className={style.input_feedback} id="uncategorised"></span>
                 <div className="inp-line lr-button-container">
                   <button
                     type="button"
-                    className="outline"
+                    className={style.outline}
                     onClick={handleReset}
                     disabled={!dirty || isSubmitting}
                   >
@@ -122,7 +122,7 @@ export const Login = (props) => (
             );
           }}
         </Formik>
-        <div className="inp-line">
+        <div className={style.inp_line}>
           Niste registrirani? <Link to="/register">Registracija</Link>
         </div>
       </Card>

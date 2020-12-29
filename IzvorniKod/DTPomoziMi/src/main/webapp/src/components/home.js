@@ -1,5 +1,5 @@
 import React from 'react'
-import './style/home.css'
+import homeStyle from './style/home.module.css'
 import LogoutService from "../service/login-service";
 import Sidebar from './sidebar';
 import Slideshow from './slider';
@@ -9,6 +9,7 @@ import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 export default function home(props) {
     let name = localStorage.getItem("username");
+    //document.body.style = 'background-image: none;';
  
  
 
@@ -16,12 +17,12 @@ export default function home(props) {
         <>
         <Sidebar /> 
         <img src="../images/holding-hands.png" alt=""/>
-        <div className = "container">
-        <div className="pomozi">Pomozi mi</div>
-        <div className="msg">Malo djelo velikog<span className="znacaja"> značaja</span>.
+        <div className = {homeStyle.container}>
+        <div className={homeStyle.pomozi}>Pomozi mi</div>
+        <div className={homeStyle.msg}>Malo djelo velikog<span className={homeStyle.znacaja}> značaja</span>.
         </div> 
         </div>  
-        <Slideshow/>
+        <Slideshow/> 
         </>
     )
 }

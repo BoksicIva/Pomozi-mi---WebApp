@@ -8,31 +8,31 @@ export const SidebarData = [
     title: 'Naslovnica',
     path: '/home',
     icon: <AiIcons.AiFillHome value={{ color: 'blue' }} />,
-    cName: 'nav-text',
+    cName: 'nav_text',
   },
   {
     title: 'Zahtjevi',
     path: '/page',
     icon: <IoIcons.IoIosPaper />,
-    cName: 'nav-text'
+    cName: 'nav_text'
   },
   {
     title: 'Profil',
     path: '/profil',
     icon: <BsIcons.BsPersonFill />,
-    cName: 'nav-text'
+    cName: 'nav_text'
   },
   {
     title: 'Korisnici',
     path: '/list',
     icon: <IoIcons.IoMdPeople />,
-    cName: 'nav-text'
+    cName: 'nav_text'
   },
   {
     title: 'Odjava',
     path: '/logout',
     icon: <IoIcons.IoMdLogOut />,
-    cName: 'nav-text'
+    cName: 'nav_text'
   }
 
 ];

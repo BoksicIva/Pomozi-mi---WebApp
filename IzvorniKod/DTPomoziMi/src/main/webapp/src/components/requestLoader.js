@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./style/page.css";
+import "./style/page.module.css";
 import { Formik } from "formik";
 import Sidebar from "./sidebar"
 import * as Yup from "yup";
-import "./style/log-reg.css";
+import style from "./style/log-reg.module.css";
 import {
     GoogleMap,
     useLoadScript,
@@ -90,8 +90,8 @@ export const Dash = props => {
     return (
         <>
             <Sidebar />
-            <div className="empthy1">            </div>
-            <div className="container">
+            <div className={style.empthy1}>            </div>
+            <div className={style.container}>
                 <Card className="crd col-lg-10 mx-auto">
                     <Formik
                         initialValues={{
@@ -137,7 +137,7 @@ export const Dash = props => {
                             return (
                                 <form onSubmit={handleSubmit}>
                                     <div>
-                                        <div className="inp-line">
+                                        <div className={style.inp_line}>
                                             <label htmlFor="phone">Broj mobitela</label>
                                             <input
                                                 id="phone"
@@ -149,13 +149,13 @@ export const Dash = props => {
                                                 onBlur={handleBlur}
                                                 className={
                                                     errors.phone && touched.phone
-                                                        ? "text-input error"
-                                                        : "text-input"
+                                                        ? `${style.text_input} ${style.error}`
+                                                        :  style.text_input
                                                 }
                                             />
                                         </div>
 
-                                        <div className="inp-line">
+                                        <div className={style.inp_line}>
                                             <label htmlFor="adress">Adresa:</label>
                                             <input
                                                 id="adress"
@@ -166,13 +166,13 @@ export const Dash = props => {
                                                 onBlur={handleBlur}
                                                 className={
                                                     errors.adress && touched.adress
-                                                        ? "text-input error"
-                                                        : "text-input"
+                                                        ? `${style.text_input} ${style.error}`
+                                                        : style.text_input
                                                 }
                                             />
                                         </div>
 
-                                        <div className="inp-line">
+                                        <div className={style.inp_line}>
                                             <label htmlFor="req">Zahtjev:</label>
                                             <textarea
                                                 id="req"
@@ -183,12 +183,12 @@ export const Dash = props => {
                                                 onBlur={handleBlur}
                                                 className={
                                                     errors.req && touched.rew
-                                                        ? "text-input error"
-                                                        : "text-input"
+                                                        ? `${style.text_input} ${style.error}`
+                                                        : style.text_input
                                                 } rows="3"></textarea>
                                         </div>
 
-                                        <div className="inp-line">
+                                        <div className={style.inp_line}>
                                             <label htmlFor="date">Rok izvršenja:</label>
                                             <input
                                                 id="date"
@@ -200,7 +200,7 @@ export const Dash = props => {
                                             />
                                         </div>
 
-                                        <div className="inp-line">
+                                        <div className={style.inp_line}>
                                             <label htmlFor="date">Označite ako želite dodati vašu trenutnu lokaciju:</label>
                                             <input type="checkbox" onClick={handleClick}>
                                             </input>
@@ -208,8 +208,8 @@ export const Dash = props => {
                                         </div>
                                     </div>
 
-                                    <span className="input-feedback" id="uncategorised"></span>
-                                    <div className="inp-line lr-button-container">
+                                    <span className={style.input_feedback} id="uncategorised"></span>
+                                    <div className={`${style.inp_line} ${style.lr_button_container}`}>
 
                                         <button type="submit" disabled={isSubmitting}>
                                             Pošalji zahtjev

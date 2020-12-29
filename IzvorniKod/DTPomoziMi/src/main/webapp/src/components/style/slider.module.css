@@ -1,0 +1,14 @@
+
+.sliderimg{
+    object-fit: cover
+  }
+.img{
+    width: 20%;
+    height: 20%;
+}
+
+.sliderimgShopping{
+  object-fit: cover;
+  width: 50%;
+  height: 50%;
+}
