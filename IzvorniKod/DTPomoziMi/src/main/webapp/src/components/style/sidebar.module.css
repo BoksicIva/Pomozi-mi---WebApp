@@ -1,19 +1,20 @@
 .navbar {
-  background-color: #fff;
+  background-color: rgb(255, 255, 255);
   height: 80px;
   display: flex;
   align-items: center;
+  justify-content: space-between
 }
 
-.menu-bars {
+.menu_bars {
   margin-left: 2rem;
   font-size: 2rem;
   background: none;
 }
 
-.nav-menu {
+.nav_menu {
   background-color: rgb(255, 255, 255);
-  width: 250px;
+  width: 200px;
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -21,23 +22,24 @@
   top: 0;
   left: -100%;
   transition: 850ms;
+  z-index: 1000;
 }
 
-.nav-menu.active {
+.nav_menu.active {
   left: 0;
   transition: 350ms;
 }
 
-.nav-text {
+.nav_text {
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
   padding: 8px 0px 8px 16px;
   list-style: none;
   height: 60px;
 }
 
-.nav-text a {
+.nav_text a {
   text-decoration: none;
   color: #13110e;
   font-size: 18px;
@@ -49,31 +51,31 @@
   border-radius: 4px;
 }
 
-.nav-text a:hover {
+.nav_text a:hover {
   background-color:  rgb(211, 46, 46);
 }
 
-.nav-menu-items {
+.nav_menu_items {
   width: 100%;
 }
 
 
-.navbar-toggle {
-  background-color: #fdfdfd;
+.navbar_toggle {
+  background-color: rgb(255, 255, 255);
   width: 100%;
   height: 80px;
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
 }
 
-span {
+.span_class {
   margin-left: 16px;
 }
 
-.tite{
-  text-align: center;
-  justify-content:center;
-  font-size: 1em;
+.title{
+  text-align: right;
+  justify-content:right;
+  font-size: 1.5em;
   font-weight: bold;
 }

@@ -5,7 +5,7 @@ import * as ImIcons from "react-icons/im";
 import { Link } from 'react-router-dom';
 import { SidebarData } from './SidebarData';
 import LogoutService from "../service/login-service";
-import './style/sidebar.css';
+import sidebarStyle from './style/sidebar.module.css';
 import { IconContext } from 'react-icons';
 
 function Navbar(props) {
@@ -26,38 +26,40 @@ function Navbar(props) {
 function isLogout(props){
   let logout;
   if(props==="Odjava"){
-    logout=<span onClick={handleLogOut}>{props}</span>
+    logout=<span className={sidebarStyle.span_class} onClick={handleLogOut}>{props}</span>
   }else{
-    logout=<span>{props}</span>
+    logout=<span className={sidebarStyle.span_class}>{props}</span>
   }
   return logout
 }
 
   return (
     <>
-      <IconContext.Provider value={{ color: '#000', size: "1.5em"}}>
-        <div className='navbar'>
-          <Link to='#' className='menu-bars'>
+      <IconContext.Provider value={{ color: '#000', size: "1em"}}>
+        <div className={sidebarStyle.navbar}>
+          <Link to='#' className={sidebarStyle.menu_bars}>
             <FaIcons.FaBars onClick={showSidebar} />
           </Link>
-          <h1 className="title"> Pomozi mi &nbsp;
+
+          <h1 className={sidebarStyle.title}> 
             <IconContext.Provider value={{ color: '#cc0000' }}>
               <ImIcons.ImHeart></ImIcons.ImHeart>
             </IconContext.Provider>
+            &nbsp; Pomozi mi &nbsp;
           </h1>
           
-        </div>
-        <nav className={sidebar ? 'nav-menu active' : 'nav-menu'}>
-          <ul className='nav-menu-items' onClick={showSidebar}>
-            <li className='navbar-toggle'>
-              <Link to='#' className='menu-bars'>
+        </div> 
+        <nav className= {sidebar ? `${sidebarStyle.nav_menu} ${sidebarStyle.active}`  : sidebarStyle.nav_menu}>
+          <span className={sidebarStyle.nav_menu_items} onClick={showSidebar}>
+            <li className={sidebarStyle.navbar_toggle}>
+              <Link to='#' className={sidebarStyle.menu_bars}>
                 <AiIcons.AiOutlineLeft/>
               </Link>
             </li>
             {SidebarData.map((item, index) => {
               let logout=isLogout(item.title);
               return (
-                <li key={index} className={item.cName}>
+                <li key={index} className={sidebarStyle.nav_text}>
                   <Link to={item.path}>
                     {item.icon }
                     {logout}
@@ -65,7 +67,7 @@ function isLogout(props){
                 </li>
               );
             })}
-          </ul>
+          </span>
         </nav>
       </IconContext.Provider>
     </>

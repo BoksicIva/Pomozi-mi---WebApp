@@ -1,6 +1,6 @@
 import React from "react";
-import "./style/log-reg.css";
-import "../index.css";
+import style from "./style/log-reg.module.css";
+import "../index.module.css";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -9,11 +9,11 @@ import { Link } from "react-router-dom";
 import RegService from "../service/login-service";
 
 export const Registration = (props) => (
-  <div className="app">
-    <div className="empthy1"></div>
-    <div className="container">
+  <div className={style.app}>
+    <div className={style.empthy1}></div>
+    <div className={style.container}>
       <Card className="crd col-lg-7 mx-auto">
-        <Card.Title className="title">
+        <Card.Title className={style.title}>
           Izradite svoj <span style={{ color: "red" }}>Pomozi</span>Mi račun
         </Card.Title>
         <Formik
@@ -23,9 +23,21 @@ export const Registration = (props) => (
             email: "",
             password: "",
             secondPassword: "",
+            country: "",
+            town: "",
+            address: "",
             error1: "",
           }}
           onSubmit={async (values) => {
+            if (values.email !== localStorage.getItem("email"))
+              localStorage.removeItem("photo");
+
+            localStorage.setItem("firstName", values.firstName);
+            localStorage.setItem("lastName", values.lastName);
+            localStorage.setItem("email", values.email);
+            localStorage.setItem("country", values.country);
+            localStorage.setItem("town", values.town);
+            localStorage.setItem("address", values.address);
             await new Promise((resolve) => setTimeout(resolve, 500));
 
             let data = new FormData();
@@ -36,41 +48,34 @@ export const Registration = (props) => (
             data.append("secondPassword", values.secondPassword);
             data.append("email", values.email);
 
+            RegService.register(data)
+              .then((response1) => {
+                props.history.push("/login");
+              })
+              .catch((error1) => {
+                const code = error1.status;
+                const response = error1.data;
 
-
-                RegService.register(data)
-                  .then((response1) => {
-                    props.history.push("/login");
-                  })
-                  .catch((error1) => {
-                    const code = error1.status;
-                    const response = error1.data;
-
-                    if (code === 400) {
-                      for (let obj of response) {
-                        let div = document.createElement("div");
-                        for(let s of obj.defaultMessage.split("] | [")) {
-                          div.innerHTML += s + "</br>";
-                        }
-                        
-                        if (obj.field !== undefined) {
-                          document
-                            .getElementById(obj.field + "-error")
-                            .append(div);
-                        } else {
-                          document.getElementById("uncategorised").append(div);
-                        }
-                      }
+                if (code === 400) {
+                  for (let obj of response) {
+                    let div = document.createElement("div");
+                    for (let s of obj.defaultMessage.split("] | [")) {
+                      div.innerHTML += s + "</br>";
                     }
-                    if (code === 403) {
-                     
-                        let div = document.createElement("div");
-                        div.innerHTML = response;
-                        document.getElementById("uncategorised").append(div);
-                  
-                    }
-                  });
 
+                    if (obj.field !== undefined) {
+                      document.getElementById(obj.field + "-error").append(div);
+                    } else {
+                      document.getElementById("uncategorised").append(div);
+                    }
+                  }
+                }
+                if (code === 403) {
+                  let div = document.createElement("div");
+                  div.innerHTML = response;
+                  document.getElementById("uncategorised").append(div);
+                }
+              });
           }}
           validationSchema={Yup.object().shape({
             email: Yup.string()
@@ -104,7 +109,7 @@ export const Registration = (props) => (
             } = props;
             return (
               <form onSubmit={handleSubmit}>
-                <div className="inp-line">
+                <div className={style.inp_line}>
                   <label>Ime*:</label>
                   <input
                     id="firstName"
@@ -115,17 +120,17 @@ export const Registration = (props) => (
                     onBlur={handleBlur}
                     className={
                       errors.firstName && touched.firstName
-                        ? "text-input error"
-                        : "text-input"
+                        ? `${style.text_input} ${style.error}`
+                        : style.text_input
                     }
                   />
                   {errors.firstName && touched.firstName && (
-                    <div className="input-feedback">{errors.firstName}</div>
+                    <div className={style.input_feedback}>{errors.firstName}</div>
                   )}
-                  <span className="input-feedback" id="firstName-error"></span>
+                  <span className={style.input_feedback} id="firstName-error"></span>
                 </div>
 
-                <div className="inp-line">
+                <div className={style.inp_line}>
                   <label>Prezime*:</label>
                   <input
                     id="lastName"
@@ -136,17 +141,17 @@ export const Registration = (props) => (
                     onBlur={handleBlur}
                     className={
                       errors.lastName && touched.lastName
-                        ? "text-input error"
-                        : "text-input"
+                        ? `${style.text_input} ${style.error}`
+                        : style.text_input
                     }
                   />
                   {errors.lastName && touched.lastName && (
-                    <div className="input-feedback">{errors.lastName}</div>
+                    <div className={style.input_feedback}>{errors.lastName}</div>
                   )}
-                  <span className="input-feedback" id="lastName-error"></span>
+                  <span className={style.input_feedback} id="lastName-error"></span>
                 </div>
 
-                <div className="inp-line">
+                <div className={style.inp_line}>
                   <label>E-mail*:</label>
                   <input
                     id="email"
@@ -157,17 +162,17 @@ export const Registration = (props) => (
                     onBlur={handleBlur}
                     className={
                       errors.email && touched.email
-                        ? "text-input error"
-                        : "text-input"
+                        ? `${style.text_input} ${style.error}`
+                        : style.text_input
                     }
                   />
                   {errors.email && touched.email && (
-                    <div className="input-feedback">{errors.email}</div>
+                    <div className={style.input_feedback}>{errors.email}</div>
                   )}
-                  <span className="input-feedback" id="email-error"></span>
+                  <span className={style.input_feedback} id="email-error"></span>
                 </div>
 
-                <div className="inp-line">
+                <div className={style.inp_line}>
                   <label>Zaporka*:</label>
                   <input
                     id="password"
@@ -178,17 +183,17 @@ export const Registration = (props) => (
                     onBlur={handleBlur}
                     className={
                       errors.password && touched.password
-                        ? "text-input error"
-                        : "text-input"
+                        ? `${style.text_input} ${style.error}`
+                        : style.text_input
                     }
                   />
                   {errors.password && touched.password && (
-                    <div className="input-feedback">{errors.password}</div>
+                    <div className={style.input_feedback}>{errors.password}</div>
                   )}
-                  <span className="input-feedback" id="password-error"></span>
+                  <span className={style.input_feedback} id="password-error"></span>
                 </div>
 
-                <div className="inp-line">
+                <div className={style.inp_line}>
                   <label>Potvrdi*:</label>
                   <input
                     id="secondPassword"
@@ -199,22 +204,22 @@ export const Registration = (props) => (
                     onBlur={handleBlur}
                     className={
                       errors.secondPassword && touched.secondPassword
-                        ? "text-input error"
-                        : "text-input"
+                        ? `${style.text_input} ${style.error}`
+                        :  style.text_input
                     }
                   />
                   {errors.secondPassword && touched.secondPassword && (
-                    <div className="input-feedback">
+                    <div className={style.input_feedback}>
                       {errors.secondPassword}
                     </div>
                   )}
                   <span
-                    className="input-feedback"
+                    className={style.input_feedback}
                     id="secondPassword-error"
                   ></span>
                 </div>
 
-                <div className="inp-line">
+                <div className={style.inp_line}>
                   <label>Država:</label>
                   <input
                     id="country"
@@ -225,16 +230,16 @@ export const Registration = (props) => (
                     onBlur={handleBlur}
                     className={
                       errors.country && touched.country
-                        ? "text-input error"
-                        : "text-input"
+                        ? `${style.text_input} ${style.error}`
+                        : style.text_input
                     }
                   />
                   {errors.country && touched.country && (
-                    <div className="input-feedback">{errors.country}</div>
+                    <div className={style.input_feedback}>{errors.country}</div>
                   )}
                 </div>
 
-                <div className="inp-line">
+                <div className={style.inp_line}>
                   <label>Mjesto:</label>
                   <input
                     id="town"
@@ -245,16 +250,16 @@ export const Registration = (props) => (
                     onBlur={handleBlur}
                     className={
                       errors.town && touched.town
-                        ? "text-input error"
-                        : "text-input"
+                        ? `${style.text_input} ${style.error}`
+                        : style.text_input
                     }
                   />
                   {errors.town && touched.town && (
-                    <div className="input-feedback">{errors.town}</div>
+                    <div className={style.input_feedback}>{errors.town}</div>
                   )}
                 </div>
 
-                <div className="inp-line">
+                <div className={style.inp_line}>
                   <label>Adresa:</label>
                   <input
                     id="address"
@@ -265,21 +270,21 @@ export const Registration = (props) => (
                     onBlur={handleBlur}
                     className={
                       errors.address && touched.address
-                        ? "text-input error"
-                        : "text-input"
+                        ? `${style.text_input} ${style.error}`
+                        : style.text_input
                     }
                   />
                   {errors.address && touched.address && (
-                    <div className="input-feedback">{errors.address}</div>
+                    <div className={style.input_feedback}>{errors.address}</div>
                   )}
                 </div>
 
-                <span className="input-feedback" id="uncategorised"></span>
-                <div className="inp-line lr-button-container">
-                  <span className="res-btn">
+                <span className={style.input_feedback} id="uncategorised"></span>
+                <div className={`${style.inp_line} ${style.lr_button_container}`}>
+                  <span className={style.res_btn}>
                     <button
                       type="button"
-                      className="outline"
+                      className={style.outline}
                       onClick={handleReset}
                       disabled={!dirty || isSubmitting}
                     >
@@ -294,7 +299,7 @@ export const Registration = (props) => (
             );
           }}
         </Formik>
-        <div className="inp-line">
+        <div className={style.inp_line}>
           Već imate račun? <Link to="/login">Prijavite se</Link>
         </div>
       </Card>

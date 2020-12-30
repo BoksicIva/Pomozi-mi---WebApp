@@ -8,7 +8,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import './style/page.css'
+import style from './style/page.module.css'
 import Sidebar from './sidebar';
 import Userservice from "../service/login-service";
 import InputLabel from '@material-ui/core/InputLabel';
@@ -119,7 +119,7 @@ export default function BasicTable() {
   return (
     <>
       <Sidebar />
-      <div className="empthy1"></div>
+      <div className={style.empthy1}></div>
       <Container maxWidth="lg">
         <FormControl className={classes.formControl}>
           <InputLabel id="filter-select">Filtriraj korisnike po</InputLabel>
