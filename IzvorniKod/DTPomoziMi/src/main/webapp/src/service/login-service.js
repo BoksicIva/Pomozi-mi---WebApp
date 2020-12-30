@@ -40,6 +40,14 @@ class LoginService {
     getSortedUsers(condition){
       return http.get("/users?sort=" + condition + ",asc" , {});
     }
+
+    sendRequest(req){
+      return http.post("/requests", req, {});
+    }
+
+    getRequests(){
+      return http.get("/requests/active?radius=1")
+    }
   
   }
   

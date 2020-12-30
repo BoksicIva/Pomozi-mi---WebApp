@@ -1,10 +1,10 @@
 import React from 'react'
 import './style/home.css'
-import LogoutService from "../service/login-service";
+
 import Sidebar from './sidebar';
 import Slideshow from './slider';
-import Home from './home';
-import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+
+
 
 
 export default function home(props) {

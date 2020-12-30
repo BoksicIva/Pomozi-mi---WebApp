@@ -8,7 +8,7 @@ const Home = lazy(() => import("./components/home"));
 const Registration = lazy(() => import("./components/registration"));
 const RequestLoader = lazy(() => import("./components/requestLoader"));
 const UserList = lazy(() => import("./components/userList"));
-
+const ReqList = lazy(() => import("./components/requests"));
 
 function App() {
   return (
@@ -17,6 +17,7 @@ function App() {
       <BrowserRouter>
         <Suspense fallback={<div>Loading...</div>}>
           <Switch>
+            <Route path='/requests' component={ReqList} />
             <Route path='/page' component={RequestLoader} />
             <Route path='/list' component={UserList} />
             <Route path='/home' component={Home} />

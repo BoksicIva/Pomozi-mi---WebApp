@@ -10,10 +10,12 @@ import {
     GoogleMap,
     useLoadScript,
     Marker,
-    InfoWindow,
 } from "@react-google-maps/api";
+import Geocode from "react-geocode";
+import Service from '../service/login-service';
 
 
+Geocode.setApiKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
 
 const libraries = ["places"];
 const mapContainerStyle = {
@@ -38,21 +40,8 @@ export const Dash = props => {
     const [long, setLong] = useState("");
     const [lat, setLat] = useState("");
     const [checked, setchecked] = useState(false);
+    const [address, setAddress] = useState(false);
 
-    const onMapClick = React.useCallback((e) => {
-
-        setLat(e.latLng.lat());
-        setLong(e.latLng.lng());
-
-        console.log(e.latLng.lat());
-        console.log(e.latLng.lng());
-
-    }, []);
-
-    const mapRef = React.useRef();
-    const onMapLoad = React.useCallback((map) => {
-        mapRef.current = map;
-    }, []);
 
 
 
@@ -66,7 +55,7 @@ export const Dash = props => {
         console.log(checked);
         if (checked === false) {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(showPosition);
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
             } else {
                 alert("Geolocation is not supported by this browser.");
             }
@@ -81,11 +70,45 @@ export const Dash = props => {
     const showPosition = (position) => {
         console.log(position);
 
-        setLong(position.coords.longitude)
-        setLat(position.coords.latitude)
+        setLong(position.coords.longitude);
+        setLat(position.coords.latitude);
 
+        Geocode.fromLatLng(position.coords.latitude, position.coords.longitude).then(
+            response => {
+                const add = response.results[0].formatted_address;
+                console.log(add);
+                setAddress(add);
+            },
+            error => {
+                console.error(error);
+            }
+        );
 
     }
+
+
+
+
+    const showError = (error) => {
+        switch (error.code) {
+            case error.PERMISSION_DENIED:
+                alert("User denied the request for Geolocation.")
+                break;
+            case error.POSITION_UNAVAILABLE:
+                alert("Location information is unavailable.")
+                break;
+            case error.TIMEOUT:
+                alert("The request to get user location timed out.")
+                break;
+            case error.UNKNOWN_ERROR:
+                alert("An unknown error occurred.")
+                break;
+        }
+    }
+
+
+
+
 
     return (
         <>
@@ -98,25 +121,46 @@ export const Dash = props => {
                             adress: "",
                             phone: "",
                             date: "",
-                            req: ""
+                            req: "",
+                            time: "",
                         }}
                         onSubmit={async (values) => {
+                            /* 
+                                                        let postData = new FormData();
+                            
+                                                        postData.append("adress", values.adress);
+                                                        postData.append("phone", values.phone);
+                                                        postData.append("req", values.req);
+                                                        postData.append("date", values.date);
+                                                        if (checked === true) {
+                                                            postData.append("long", long);
+                                                            postData.append("lat", lat);
+                                                        } */
+                            var call = new Object();
+                            var location = new Object();
+                            var addParts = address.split(",");
+                            location.adress = addParts[0];
+                            location.state = addParts[3].trim();
+                            location.town = addParts[2].trim();
+                            location.longitude = long;
+                            location.latitude = lat;
 
-                            let postData = new FormData();
+                            call.phone = values.phone;
+                            call.location = location;
+                            call.tstmp = values.date + " " + "12:00:00";
+                            call.description = values.req;
 
-                            postData.append("adress", values.adress);
-                            postData.append("phone", values.phone);
-                            postData.append("req", values.req);
-                            postData.append("date", values.date);
-                            if (checked === true) {
-                                postData.append("long", long);
-                                postData.append("lat", lat);
-                            }
+                            Service.sendRequest(call)
+                                .then((response) => {
+                                    props.history.push("/home");
+                                }).catch((error) => {
+                                    console.warn(error.message);
+                                })
 
 
+                            console.log(call, values.time);
 
 
-                            console.log(values, lat, long);
 
                         }}
                         validationSchema={Yup.object().shape({
@@ -201,12 +245,40 @@ export const Dash = props => {
                                         </div>
 
                                         <div className="inp-line">
-                                            <label htmlFor="date">Označite ako želite dodati vašu trenutnu lokaciju:</label>
+                                            <label htmlFor="location">Označite ako želite dodati vašu trenutnu lokaciju:</label>
                                             <input type="checkbox" onClick={handleClick}>
                                             </input>
 
                                         </div>
                                     </div>
+                                    {checked ? <div>
+                                        <GoogleMap mapContainerStyle={mapContainerStyle}
+                                            zoom={8}
+                                            center={center}
+                                            options={options}
+                                            onClick={(event) => {
+                                                console.log("kurac")
+                                                setLat(event.latLng.lat())
+                                                setLong(event.latLng.lng())
+                                                Geocode.fromLatLng(event.latLng.lat(), event.latLng.lng()).then(
+                                                    response => {
+                                                        const add = response.results[0].formatted_address;
+                                                        console.log(add);
+                                                        setAddress(add);
+                                                    },
+                                                    error => {
+                                                        console.error(error);
+                                                    }
+                                                );
+                                            }}
+                                        >
+
+                                            <Marker
+                                                key={16}
+                                                position={{ lat: lat, lng: long }}
+                                            />
+                                        </GoogleMap>
+                                    </div> : null}
 
                                     <span className="input-feedback" id="uncategorised"></span>
                                     <div className="inp-line lr-button-container">
@@ -219,22 +291,8 @@ export const Dash = props => {
                             );
                         }}
                     </Formik>
-                    <GoogleMap mapContainerStyle={mapContainerStyle}
-                        zoom={8}
-                        center={center}
-                        options={options}
-                        onClick={(event) => {
-                            console.log("kurac")
-                            setLat(event.latLng.lat())
-                            setLong(event.latLng.lng())
-                        }}
-                    >
 
-                        <Marker
-                            key={16}
-                            position={{ lat: lat, lng: long }}
-                        />
-                    </GoogleMap>
+
                 </Card>
             </div>
         </>

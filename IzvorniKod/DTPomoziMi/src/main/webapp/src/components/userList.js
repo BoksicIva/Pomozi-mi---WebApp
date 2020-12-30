@@ -13,7 +13,6 @@ import Sidebar from './sidebar';
 import Userservice from "../service/login-service";
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
@@ -33,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-let tempUser = [];
+
 let rows = [];
 
 export default function BasicTable() {
