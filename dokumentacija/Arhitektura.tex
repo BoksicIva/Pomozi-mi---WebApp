@@ -270,13 +270,13 @@
 			
 		\section{Dijagram razreda}
 		
-			\textit Na slikama 4.5, 4.6, 4.7, 4.8 i 4.9 su prikazani dijagrami razreda za backend. Raspoređeni su u više slika radi bolje preglednosti i slične funkcionalnosti. Iz samih slika lakše se može uočiti povezanost samih stavki, njihova ovisnost te sadržaj atributa i funkcionalnosti.
+			\textit Na slikama  \ref{fig:4.5}, \ref{fig:4.6}, \ref{fig:4.7}, \ref{fig:4.8} i \ref{fig:4.9} su prikazani dijagrami razreda za backend. Raspoređeni su u više slika radi bolje preglednosti i slične funkcionalnosti. Iz samih slika lakše se može uočiti povezanost samih stavki, njihova ovisnost te sadržaj atributa i funkcionalnosti.
 			%unos slike
 			\begin{figure}[H]
 				\includegraphics[scale=0.65]{slike/user.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
 				\centering
 				\caption { Dijagram razreda za User}
-				\label{fig:promjene}
+				\label{fig:4.5}
 			\end{figure}
 		
 			%unos slike
@@ -284,7 +284,7 @@
 				\includegraphics[scale=0.65]{slike/ControllersDiagram.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
 				\centering
 				\caption { Dijagram razreda za controllere}
-				\label{fig:promjene}
+				\label{fig:4.6}
 			\end{figure}
 			
 			%unos slike
@@ -292,7 +292,7 @@
 				\includegraphics[scale=0.65]{slike/ModelUml.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
 				\centering
 				\caption { Dijagram razreda za model korisnika}
-				\label{fig:promjene}
+				\label{fig:4.7}
 			\end{figure}
 			
 			
@@ -301,7 +301,7 @@
 				\includegraphics[scale=0.65]{slike/ServiceDaoUml.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
 				\centering
 				\caption { Dijagram razreda za ServiceDao}
-				\label{fig:promjene}
+				\label{fig:4.8}
 			\end{figure}
 			
 			
@@ -310,12 +310,8 @@
 				\includegraphics[scale=0.4]{slike/class_dijagram.jpeg} %veličina slike u odnosu na originalnu datoteku i pozicija slike
 				\centering
 				\caption { Dijagram razreda - models}
-				\label{fig:promjene}
+				\label{fig:4.9}
 			\end{figure}
-
-			\begin{comment}
-			
-			\textbf{\textit{dio 2. revizije}}\\
 			
 			
 			\begin{comment}
@@ -323,8 +319,23 @@
 			
 			\textit{Prilikom druge predaje projekta dijagram razreda i opisi moraju odgovarati stvarnom stanju implementacije}
 			\end{comment}
+\newpage			
+\section{Dijagram stanja}
 			
-			
+			\textbf{\textit{dio 2. revizije}}\\		
+		
+		\text Dijagram stanja prikazuje stanja objekta te prijelaze iz jednog stanja u drugo temeljene na dogadajima.Na slici
+		\ref{fig:4.10} prikazan je dijagram stanja registriranog korisnika.Nakon prijave, korisniku se prikazuje početna stranica.Korisnik može odabirom Moji Zahtjevi pregledati
+		vlastite zahtjeve te ih po mogoćunosti može uređivat, brisat,blokirat te kreirat nove zahtjeve.Korisniku se klikom na List Aktivnih Zahtjeva nudi pregled zahtjeva te mogućnost odabira nekoga od zahtjeva s liste.Nakon izvršavanja zahtjeva korisniku se automatski omogućuje
+		mogućnost komentiranja i ocjenjivanja,ali to može obaviti i naknadno te se komentari i ocijene vide u profilu korisnika.Korisniku se nudi i mogućnost uređivanja osobnih podataka kao i brisanje korisničkog računa,dok klikom  na Search korisnik može pretraživati druge korisnike aplikacije te vidjeti "lance povjerenja" korisnika čiji profil gleda.
+		
+			%unos slike
+		\begin{figure}[H]
+			\includegraphics[scale=0.3]{slike/Dijagram Stanja Korisnik.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+			\centering
+			\caption { Dijagram stanja}
+			\label{fig:4.10}
+			\end{figure}		
 			
 \begin{comment}		
 		\section{Dijagram stanja}
@@ -336,7 +347,24 @@
 			
 			
 			\eject 
-		
+\end{comment}
+\newpage
+		\section{Dijagram aktivnosti}
+			
+			\textbf{\textit{dio 2. revizije}}\\
+			
+			\text Dijagram aktivnosti primjenjuje se za opis modela toka upravljanja ili toka podataka.Ne upotrebljava se za modeliranje dogadajima poticanog ponašanja. U modeliranju toka upravljanja svaki novi korak poduzima se nakon završenog prethodnog,a naglasak je na jednostavnosti.Na dijagramu \ref{fig:4.11} prikazan je proces izvršavanja zahtjeva za pomoć.Korisnik se prijavljuje u sustav,prikazujemu se početna stranica,nakon koje on odabire listu aktivnih zahtjeva.Kada je zamijetio zahtjev kojeg može izvršiti,odabire taj zahtjev te mora pričekati dok mu se zahtjev za pomoći odobri.Nakon odobrenog zahtjeva,korisniku se prikazuju osnovne potrebne informacije kako bi mogao izvršiti zahtjev.
+			
+			
+						%unos slike
+		\begin{figure}[H]
+			\includegraphics[scale=0.3]{slike/Dijagram Aktivnosti.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+			\centering
+			\caption { Dijagram Aktivnosti}
+			\label{fig:4.11}
+			\end{figure}
+
+\begin{comment}
 		\section{Dijagram aktivnosti}
 			
 			\textbf{\textit{dio 2. revizije}}\\
@@ -344,9 +372,26 @@
 			 \textit{Potrebno je priložiti dijagram aktivnosti s pripadajućim opisom. Dijagram aktivnosti treba prikazivati značajan dio sustava.}
 			
 			\eject
+\end{comment}
+\newpage
 		\section{Dijagram komponenti}
 		
 			\textbf{\textit{dio 2. revizije}}\\
-		
+			
+			\text   Dijagram komponenti prikazan na slici \ref{fig:4.12} opisuje organizaciju i meduovisnost
+            komponenti, interne strukture i odnose prema okolini. Sustavu se pristupa preko dva različita sučelja. Preko sučelja za dohvat HTML, CSS i JS datoteka poslužuju se
+            datoteke koje pripadaju \emph{frontend} dijelu aplikacije. Router je komponenta koja na
+            upit s url odreduje koja datoteka će se poslužiti na sučelje.Sve JavaScript datoteke ovise o React biblioteci iz koje dohvaćaju gotove komponente kao što su gumbi, forme i slično.REST API poslužuje
+            podatke koji pripadaju \emph{backend} dijelu aplikacije. Pomoću JDBC dohvaćaju se tablice iz baze podataka te se ostvaruje SQL API.Podaci koji su dohvaćeni iz baze oblikuju se pomoću komponenete Model te se prosljeđujue dalje po MVC arhitekturi.DTO(Data Transfer Object) omata podatake te se prosljeđuje prema \emph{frontend} strani koja ih prikladno prikazuje.Za autorizaciju REST servis koirti Spring Security.Reactview komponenta preko dva sučelja komunicira s aplikacijom.
+			
+						%unos slike
+		\begin{figure}[H]
+			\includegraphics[scale=0.3]{slike/Dijagram Komponeneti.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+			\centering
+			\caption { Dijagram Komponeneti}
+			\label{fig:4.12}
+			\end{figure}
+			
+\begin{comment}		
 			 \textit{Potrebno je priložiti dijagram komponenti s pripadajućim opisom. Dijagram komponenti treba prikazivati strukturu cijele aplikacije.}
 \end{comment}
