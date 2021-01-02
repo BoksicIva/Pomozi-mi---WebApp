@@ -45,8 +45,8 @@ class LoginService {
       return http.post("/requests", req, {});
     }
 
-    getRequests(){
-      return http.get("/requests/active?radius=1")
+    getRequests(radius){
+      return http.get("/requests/active?radius=" + radius, {});
     }
   
   }

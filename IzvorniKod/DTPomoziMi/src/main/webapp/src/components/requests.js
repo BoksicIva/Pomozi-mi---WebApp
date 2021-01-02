@@ -17,6 +17,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Sidebar from './sidebar';
 import RequestService from '../service/login-service';
 import Container from '@material-ui/core/Container';
+import TextField from '@material-ui/core/TextField'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -45,9 +46,31 @@ export default function RecipeReviewCard() {
     const classes = useStyles();
     const [expanded, setExpanded] = React.useState(false);
     const [requests, setRequests] = React.useState([]);
+    const [value, setValue] = React.useState('');
+
+    const handleSubmit = (event) => {
+        RequestService.getRequests(value)
+            .then((response) => {
+                setRequests(response.data._embedded.requests);
+                //setUsersTemp(response.data._embedded.users);
+                console.log(response.data._embedded.requests);
+                //rows = response.data._embedded.users;
+                //console.log(rows);
+                //console.log(rows[0]);
+            })
+            .catch((error) => {
+                alert(error);
+            })
+            event.preventDefault();
+    };
+
+
+  const handleChangeInput = (event) => {
+    setValue(event.target.value);
+  };
 
     useEffect(() => {
-        RequestService.getRequests()
+        RequestService.getRequests(1)
             .then((response) => {
                 setRequests(response.data._embedded.requests);
                 //setUsersTemp(response.data._embedded.users);
@@ -68,6 +91,10 @@ export default function RecipeReviewCard() {
     return (
         <>
             <Sidebar />
+            <form onSubmit={handleSubmit}>
+                <TextField id="filled-basic" label="Radius zahtjeva" value={value} onChange={handleChangeInput} variant="filled" />
+
+            </form>
             <Container>
                 {requests.map((request) => (
                     <Card className={classes.root}>
@@ -120,7 +147,7 @@ export default function RecipeReviewCard() {
                                     Grad: {" " + request.location.town}
                                     <br></br>
                                     Adresa: {" " + request.location.adress}
-                                  </Typography>
+                                </Typography>
                             </CardContent>
                         </Collapse>
                     </Card>
