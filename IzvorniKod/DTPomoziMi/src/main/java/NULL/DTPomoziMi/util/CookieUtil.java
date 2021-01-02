@@ -9,11 +9,11 @@ import javax.servlet.http.HttpServletResponse;
 public class CookieUtil {
 	public static void create(
 		HttpServletResponse httpServletResponse, String name, String value, Boolean secure,
-		int maxAge
+		int maxAge, boolean httpOnly
 	) {
 		Cookie cookie = new Cookie(name, value);
 		cookie.setSecure(secure);
-		cookie.setHttpOnly(true);
+		cookie.setHttpOnly(httpOnly);
 		cookie.setMaxAge(maxAge);
 		cookie.setPath("/");
 		httpServletResponse.addCookie(cookie);

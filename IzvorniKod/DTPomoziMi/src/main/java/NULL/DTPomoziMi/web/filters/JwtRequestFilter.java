@@ -89,7 +89,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				claims.put(JwtUtil.CLAIM_ROLES, jwtUtil.extractRoles(refreshToken));
 
 				String newtoken = jwtUtil.generateToken(claims, emailFromRefreshToken);
-				CookieUtil.create(response, JwtConstants.JWT_COOKIE_NAME, newtoken, false, -1);
+				CookieUtil.create(response, JwtConstants.JWT_COOKIE_NAME, newtoken, false, -1, false);
 
 			} else {
 				logger.debug("Deleting cookies because of invalid refresh token");

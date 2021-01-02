@@ -111,8 +111,8 @@ public class AuthController {
 
 		String token = jwtUtil.generateToken(user);
 
-		CookieUtil.create(response, JwtConstants.JWT_COOKIE_NAME, token, false, -1);
-		CookieUtil.create(response, JwtConstants.JWT_REFRESH_COOKIE_NAME, refreshToken, false, -1);
+		CookieUtil.create(response, JwtConstants.JWT_COOKIE_NAME, token, false, -1, false);
+		CookieUtil.create(response, JwtConstants.JWT_REFRESH_COOKIE_NAME, refreshToken, false, -1, true);
 
 		return ResponseEntity.ok("User login successful!");
 	}
