@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import NULL.DTPomoziMi.properties.JwtConstants;
+import NULL.DTPomoziMi.security.UserPrincipal;
 import NULL.DTPomoziMi.service.TokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -21,7 +22,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtUtil {
 
-	public static String CLAIM_ROLES = "roles";
+	public static final String CLAIM_ID = "id";
+
+	public static final String CLAIM_ROLES = "roles";
 
 	@Autowired
 	private TokenService tokenService;
@@ -50,18 +53,19 @@ public class JwtUtil {
 		return extractExpiration(token).before(new Date());
 	}
 
-	public String generateToken(UserDetails userDetails) {
+	public String generateToken(UserPrincipal principal) {
 		Map<String, Object> claims = new HashMap<>();
 		claims
 			.put(
 				CLAIM_ROLES,
-				userDetails
+				principal
 					.getAuthorities()
 					.stream()
 					.map(ga -> ga.getAuthority())
 					.collect(Collectors.toList())
 			);
-		return createToken(claims, userDetails.getUsername(), JwtConstants.JWT_EXPIRATION);
+		claims.put(CLAIM_ID, principal.getUser().getIdUser());
+		return createToken(claims, principal.getUsername(), JwtConstants.JWT_EXPIRATION);
 	}
 
 	public String generateToken(Map<String, Object> claims, String username) {
