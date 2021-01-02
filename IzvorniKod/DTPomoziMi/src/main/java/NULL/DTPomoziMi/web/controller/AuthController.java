@@ -106,11 +106,8 @@ public class AuthController {
 
 		UserPrincipal user = (UserPrincipal) auth.getPrincipal();
 
-		String refreshToken = user.getUser().getToken();
-		if (refreshToken == null) {
-			refreshToken = jwtUtil.generateRefreshToken(user);
-			tokenService.updateToken(user.getUsername(), refreshToken);
-		}
+		String refreshToken = jwtUtil.generateRefreshToken(user);
+		tokenService.updateToken(refreshToken, user.getUsername());
 
 		String token = jwtUtil.generateToken(user);
 

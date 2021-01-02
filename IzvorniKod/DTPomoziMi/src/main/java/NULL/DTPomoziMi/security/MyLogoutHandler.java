@@ -35,7 +35,7 @@ public class MyLogoutHandler implements LogoutSuccessHandler {
 		String username = null;
 		try {
 			username = jwtUtil.extractUsername(token);
-			tokenService.updateToken(username, null);
+			tokenService.updateToken(null, username);
 
 		} catch (JwtException e) {
 			logger.debug("Problems while deleting token: {} for username: {}", token, username);
