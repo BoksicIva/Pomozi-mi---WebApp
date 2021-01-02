@@ -23,6 +23,7 @@ public class DevWebConfig implements WebMvcConfigurer {
 			.addMapping("/**")
 			.allowedOrigins("http://localhost:3000")
 			.allowedHeaders("*")
+			.exposedHeaders("Set-Cookie")
 			.allowedMethods(
 				HttpMethod.GET.toString(), HttpMethod.POST.toString(),
 				HttpMethod.OPTIONS.toString(), HttpMethod.PATCH.toString(),
