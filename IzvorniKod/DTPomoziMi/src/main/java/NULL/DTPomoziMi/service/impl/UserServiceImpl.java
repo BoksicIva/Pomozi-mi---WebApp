@@ -224,7 +224,7 @@ public class UserServiceImpl implements UserService {
 		List<User> list = new ArrayList<>(users);
 		list.sort(comp);
 
-		return list.indexOf(user);
+		return list.indexOf(user) + 1;
 	}
 
 	@Override
