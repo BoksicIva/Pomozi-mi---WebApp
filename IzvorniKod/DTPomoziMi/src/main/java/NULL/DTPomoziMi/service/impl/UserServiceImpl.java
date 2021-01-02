@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -42,6 +40,7 @@ import NULL.DTPomoziMi.web.DTO.RatingDTO;
 import NULL.DTPomoziMi.web.DTO.UserDTO;
 import NULL.DTPomoziMi.web.DTO.UserRegisterDTO;
 import NULL.DTPomoziMi.web.assemblers.RatingDTOAssembler;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -228,6 +227,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@PreAuthorize("isAuthenticated()")
 	public User updateUser(UserDTO userDTO, long id, UserPrincipal principal) {
 		User user = principal.getUser();
 
@@ -248,21 +248,22 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional
 	@Override
+	@PreAuthorize("isAuthenticated()")
 	public List<RatingDTO> getChainOfTrust(long id, UserPrincipal principal) {
-		User user = principal.getUser(); // TODO ovo treba debelo testirat
+		User user = fetch(principal.getUser().getIdUser()); // TODO ovo treba debelo testirat
 		//da je korisnik kojeg ste vi visoko ocjenili ocijenio korisnika čiji profil gledate.
 		return user
 			.getRatedOthers()
 			.stream()
-			.filter(r -> r.getRate() > 3)
-			.flatMap(
-				r -> r
-					.getRated()
-					.getRatedOthers()
-					.stream()
-					.filter(o -> o.getRated().getIdUser().equals(id))
-			)
-			.map(r -> ratingDTOAssembler.toModel(r))
+				.filter(r -> r.getRate() > 3)
+                .flatMap(
+                    r -> r
+                        .getRated()
+                        .getRatedOthers()
+                        .stream()
+                        .filter(o -> o.getRated().getIdUser().equals(id))
+                )
+                .map(r -> ratingDTOAssembler.toModel(r))
 			.collect(Collectors.toList());
 	}
 

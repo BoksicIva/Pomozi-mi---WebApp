@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
@@ -194,7 +195,7 @@ public class UsersController {
 		@PathVariable long id, @AuthenticationPrincipal UserPrincipal principal
 	) {
 		try {
-			EntityModel<?> model = EntityModel.of(userService.getChainOfTrust(id, principal));
+			CollectionModel<?> model = CollectionModel.of(userService.getChainOfTrust(id, principal));
 			model.add(linkTo(methodOn(getClass()).getChainOfTrust(id, principal)).withSelfRel());
 			model.add(getLinks(id));
 			return ResponseEntity.ok(model);
