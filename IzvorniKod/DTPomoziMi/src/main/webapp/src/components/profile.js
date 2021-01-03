@@ -30,7 +30,6 @@ import PropTypes from "prop-types";
 import SwipeableViews from "react-swipeable-views";
 import UserService from "../service/user-service";
 import Sidebar from "./sidebar";
-import ProfileStyle from "./style/profile.module.css";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
