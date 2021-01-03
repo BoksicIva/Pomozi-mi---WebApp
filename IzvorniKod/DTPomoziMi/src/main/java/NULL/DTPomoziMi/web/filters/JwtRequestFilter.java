@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import NULL.DTPomoziMi.jwt.JwtUtil;
-import NULL.DTPomoziMi.model.User;
 import NULL.DTPomoziMi.properties.JwtConstants;
 import NULL.DTPomoziMi.security.UserPrincipal;
 import NULL.DTPomoziMi.util.CookieUtil;
@@ -53,18 +52,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 		try {
 			logger.debug("Extracting email from token");
-			
+
 			if (token != null && !token.isBlank()) emailFromToken = jwtUtil.extractUsername(token);
 
 		} catch (SignatureException e) {
 			logger.debug("Deleting cookies because of signature exception: {}", e.getMessage());
-			
+
 			deleteCookies(response);
 
 		} catch (JwtException e) {
 			try {
 				logger.debug("Extracting email from refresh token: {}", e.getMessage());
-				
+
 				if (refreshToken != null && !refreshToken.isBlank())
 					emailFromRefreshToken = jwtUtil.extractUsername(refreshToken);
 
@@ -77,13 +76,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		if (emailFromToken != null && UserPrincipalGetter.getPrincipal() == null) {
 			logger.debug("Validating token");
 			if (jwtUtil.validateToken(token)) {
-				
-				setAuthAndGenerateToken(emailFromToken, false, null); valid = true; }
+
+				setAuthAndGenerateToken(emailFromToken, false, null);
+				valid = true;
+			}
 		}
 
 		if (!valid && emailFromRefreshToken != null && UserPrincipalGetter.getPrincipal() == null) {
 			logger.debug("Validating refresh token");
-			
+
 			if (jwtUtil.validateRefreshToken(refreshToken)) {
 				setAuthAndGenerateToken(emailFromRefreshToken, true, response);
 
@@ -92,7 +93,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 			} else {
 				logger.debug("Deleting cookies because of invalid refresh token");
-				
+
 				deleteCookies(response);
 			}
 		}
@@ -100,9 +101,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 	}
 
-	private void setAuthAndGenerateToken(String email, boolean generate, HttpServletResponse response) {
+	private void setAuthAndGenerateToken(
+		String email, boolean generate, HttpServletResponse response
+	) {
 		logger.debug("Setting auth");
-		
+
 		UserDetails user = null;
 		try {
 			user = userDetailsService.loadUserByUsername(email);
@@ -117,15 +120,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			SecurityContextHolder
 				.getContext()
 				.setAuthentication(usernamePasswordAuthenticationToken);
-			
-			if(generate) {
-				generateToken(response, user);
-			}
+
+			if (generate) { generateToken(response, user); }
 		}
 	}
-	
+
 	private void generateToken(HttpServletResponse response, UserDetails user) {
-		String newtoken = jwtUtil.generateToken(new UserPrincipal((User) user));
+		String newtoken = jwtUtil.generateToken((UserPrincipal) user);
 		CookieUtil.create(response, JwtConstants.JWT_COOKIE_NAME, newtoken, false, -1, false);
 	}
 
