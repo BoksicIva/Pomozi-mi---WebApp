@@ -7,6 +7,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import RegService from "../service/login-service";
+import Geocode from "react-geocode";
+
+Geocode.setApiKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
+
 
 export const Registration = (props) => (
   <div className={style.app}>
@@ -38,9 +42,20 @@ export const Registration = (props) => (
             localStorage.setItem("country", values.country);
             localStorage.setItem("town", values.town);
             localStorage.setItem("address", values.address);
-            await new Promise((resolve) => setTimeout(resolve, 500));
 
             let data = new FormData();
+
+            Geocode.fromAddress(values.address).then(
+              response => {
+                const { lat, lng } = response.results[0].geometry.location;
+                console.log(lat, lng);
+                data.append("longitude", lng);
+                data.append("latitude", lat)
+              },
+              error => {
+                console.error(error);
+              }
+            );
 
             data.append("firstName", values.firstName);
             data.append("lastName", values.lastName);
