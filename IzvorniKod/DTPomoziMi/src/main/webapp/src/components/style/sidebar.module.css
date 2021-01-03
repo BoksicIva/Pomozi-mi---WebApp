@@ -1,14 +1,18 @@
 .navbar {
   background-color: rgb(255, 255, 255);
-  height: 80px;
+  height: 60px;
   display: flex;
   align-items: center;
-  justify-content: space-between
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.2);
+  padding: 0rem 2rem;
 }
 
 .menu_bars {
-  margin-left: 2rem;
-  font-size: 2rem;
+  font-size: 1.7rem;
   background: none;
 }
 
@@ -52,13 +56,12 @@
 }
 
 .nav_text a:hover {
-  background-color:  rgb(211, 46, 46);
+  background-color: rgb(211, 46, 46);
 }
 
 .nav_menu_items {
   width: 100%;
 }
-
 
 .navbar_toggle {
   background-color: rgb(255, 255, 255);
@@ -73,9 +76,9 @@
   margin-left: 16px;
 }
 
-.title{
+.title {
   text-align: right;
-  justify-content:right;
+  justify-content: right;
   font-size: 1.5em;
   font-weight: bold;
 }

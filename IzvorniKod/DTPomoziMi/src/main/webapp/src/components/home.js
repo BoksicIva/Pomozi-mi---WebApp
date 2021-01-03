@@ -1,9 +1,8 @@
-import React from 'react'
-import homeStyle from './style/home.module.css'
+import React from "react";
+import homeStyle from "./style/home.module.css";
 
 import Sidebar from "./sidebar";
 import Slideshow from "./slider";
-
 
 export default function home(props) {
     let name = localStorage.getItem("username");

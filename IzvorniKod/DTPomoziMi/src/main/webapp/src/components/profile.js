@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import {
   Container,
@@ -11,7 +11,6 @@ import {
   Divider,
   Paper,
   IconButton,
-  InputBase,
   TextField,
   Dialog,
   DialogActions,
@@ -23,13 +22,13 @@ import {
   Tab,
   Box,
 } from "@material-ui/core";
-import SearchIcon from "@material-ui/icons/Search";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import "fontsource-roboto";
 import PropTypes from "prop-types";
 import SwipeableViews from "react-swipeable-views";
+import UserService from "../service/user-service";
 import Sidebar from "./sidebar";
 
 function TabPanel(props) {
@@ -63,34 +62,6 @@ function a11yProps(index) {
 }
 
 const useStyles = makeStyles((theme) => ({
-  header: {
-    width: "100%",
-    position: "sticky",
-    top: 0,
-    backgroundColor: "white",
-    zIndex: 1,
-    boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.2)",
-  },
-
-  headerTitle: {
-    //backgroundColor: "green",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-
-  headerLine: {
-    paddingLeft: 20,
-    paddingRight: 20,
-    height: 50,
-  },
-
-  drawerToggle: {
-    width: 40,
-    height: 40,
-  },
-
   profileInfo: {
     height: 300,
     width: "100%",
@@ -157,31 +128,6 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
 
-  search: {
-    padding: "0px 5px",
-    display: "flex",
-    alignItems: "center",
-    width: 300,
-    //backgroundColor: "lightgray",
-    marginLeft: 20,
-    boxShadow: "none",
-  },
-
-  input: {
-    marginLeft: theme.spacing(1),
-    flex: 1,
-  },
-
-  iconButton: {
-    height: 40,
-    width: 40,
-    boxShadow: "none",
-  },
-
-  searchIcon: {
-    marginLeft: 0,
-  },
-
   avatarLabel: {
     margin: 0,
     height: "100%",
@@ -201,7 +147,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Profile = () => {
+const Profile = (props) => {
   const classes = useStyles();
   const theme = useTheme();
   document.body.style = "background-image: none; background-color: white";
@@ -229,45 +175,16 @@ const Profile = () => {
     setAbout(!about);
   };
 
+  useEffect(() => {
+    console.log(UserService.getUserContext());
+    UserService.getUser(UserService.getUserContext().id).then((response) => {
+      console.log(response.data);
+    });
+  });
+
   return (
     <div>
       <Sidebar />
-      <div className={classes.header}>
-        <div className={classes.headerLine}>
-          <Container
-            className={classes.headerTitle}
-            maxWidth="lg"
-            disableGutters={true}
-          >
-            <a href="/home" style={{ textDecoration: "none" }}>
-              <Typography
-                variant="h4"
-                color="textSecondary"
-                align="left"
-                display="inline"
-              >
-                Pomozi
-              </Typography>
-              <Typography variant="h4" color="secondary" display="inline">
-                Mi
-              </Typography>
-            </a>
-            <Paper component="form" className={classes.search}>
-              <InputBase className={classes.input} placeholder="Traži..." />
-              <IconButton
-                type="submit"
-                className={classes.iconButton}
-                aria-label="search"
-                classes={{ label: classes.searchIcon }}
-              >
-                <SearchIcon />
-              </IconButton>
-            </Paper>
-          </Container>
-        </div>
-
-        <Divider />
-      </div>
       <div className={classes.body}>
         <Container className={classes.profileInfo} maxWidth="lg">
           <IconButton
