@@ -262,6 +262,7 @@ public class RequestServiceImpl implements RequestService {
 		List<Request> active = requestRepo.findByStatusAndAuthor(RequestStatus.ACTIVE, user);
 		List<Request> finalized = requestRepo.findByStatusAndAuthor(RequestStatus.FINALIZED, user);
 		List<Request> blocked = requestRepo.findByStatusAndAuthor(RequestStatus.BLOCKED, user);
+		List<Request> executing = requestRepo.findByStatusAndAuthor(RequestStatus.EXECUTING, user);
 
 		Map<String, CollectionModel<RequestDTO>> map = new HashMap<>();
 
@@ -271,6 +272,7 @@ public class RequestServiceImpl implements RequestService {
 				RequestStatus.FINALIZED.toString(), requestDTOAssembler.toCollectionModel(finalized)
 			);
 		map.put(RequestStatus.BLOCKED.toString(), requestDTOAssembler.toCollectionModel(blocked));
+		map.put(RequestStatus.EXECUTING.toString(), requestDTOAssembler.toCollectionModel(executing));
 
 		return map;
 	}
