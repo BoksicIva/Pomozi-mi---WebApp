@@ -1,15 +1,15 @@
 package NULL.DTPomoziMi.service.impl;
 
-import NULL.DTPomoziMi.model.Location;
-import NULL.DTPomoziMi.repository.LocationRepo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import java.math.BigDecimal;
+
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigDecimal;
-import java.util.Collections;
-
-import static org.junit.jupiter.api.Assertions.*;
+import NULL.DTPomoziMi.repository.LocationRepo;
 
 class LocationServiceImplTest {
 

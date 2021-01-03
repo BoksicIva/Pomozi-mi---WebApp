@@ -1,20 +1,30 @@
 package NULL.DTPomoziMi.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
+
 import NULL.DTPomoziMi.exception.IllegalActionException;
 import NULL.DTPomoziMi.model.User;
 import NULL.DTPomoziMi.repository.UserRepo;
 import NULL.DTPomoziMi.security.UserPrincipal;
+import NULL.DTPomoziMi.service.UserService;
+import NULL.DTPomoziMi.util.UserPrincipalGetter;
 import NULL.DTPomoziMi.web.DTO.UserDTO;
 import NULL.DTPomoziMi.web.DTO.UserRegisterDTO;
-import org.junit.Before;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.junit.jupiter.api.Assertions.*;
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@ActiveProfiles("dev")
 class UserServiceImplTest {
 
     @Autowired
@@ -23,25 +33,29 @@ class UserServiceImplTest {
     @Autowired
     private ModelMapper modelMapper;
 
-    private UserServiceImpl service;
+    @Autowired
+    private UserService service;
 
     private UserPrincipal principal;
     private User expectedUser = new User();
     private UserDTO userDTO;
-    @Before
-    void setup(){
-        service = new UserServiceImpl();
-        expectedUser = userRepo.findByEmail("marija.orec@gmail.com");
-        principal = new UserPrincipal(expectedUser);
-        userDTO = new UserDTO();
-        modelMapper.map(userDTO, expectedUser);
-        //TODO: povezati dto sa user
-    }
+    
+	/*
+	 * @Before void setup(){ service = new UserServiceImpl(); expectedUser =
+	 * userRepo.findByEmail("marija.orec@gmail.com"); principal = new
+	 * UserPrincipal(expectedUser); userDTO = new UserDTO();
+	 * modelMapper.map(userDTO, expectedUser); //TODO: povezati dto sa user }
+	 */
+    
     //provjera registracije novog korisnika
     @Test
+    @WithUserDetails(value="jan.rocek@gmail.com", userDetailsServiceBeanName="myUserDetailsService")
+    @Transactional
     void registerUserTest1()
     {
         UserRegisterDTO user = new UserRegisterDTO();
+        UserPrincipal principal = UserPrincipalGetter.getPrincipal();
+        System.out.println(service.fetch(3).getIdUser());
         user.setFirstName("Ana");
         user.setLastName("Anic");
         user.setPassword("ana123");

@@ -29,7 +29,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString
+@ToString(exclude = {"users"})
 @Entity(name = "uloga")
 @Table(name = "uloga")
 public class RoleEntity implements Serializable {

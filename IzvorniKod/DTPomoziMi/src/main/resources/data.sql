@@ -1,4 +1,5 @@
 INSERT INTO public.uloga (id_uloga,naziv) VALUES
+	(2,'ROLE_ADMIN'),
 	 (1,'ROLE_USER');
 	 
 INSERT INTO public.lokacija (id_lokacija,duljina,sirina,drzava,naselje,adresa) VALUES
@@ -22,6 +23,7 @@ INSERT INTO public.korisnik (id_korisnik,ime,prezime,lozinka,email,aktivan,token
 INSERT INTO public.imaulogu (id_korisnik,id_uloga) VALUES
 	 (13,1),
 	 (3,1),
+	 (3,2),
 	 (7,1),
 	 (8,1),
 	 (9,1),
