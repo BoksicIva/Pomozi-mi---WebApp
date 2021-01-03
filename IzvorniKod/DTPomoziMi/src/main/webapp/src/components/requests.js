@@ -17,13 +17,14 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Sidebar from './sidebar';
 import RequestService from '../service/login-service';
 import Container from '@material-ui/core/Container';
+import style from "./style/page.module.css";
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        maxWidth: 345,
+        width:  '65vw',
     },
     media: {
-        height: 0,
+        height: 100,
         paddingTop: '56.25%', // 16:9
     },
     expand: {
@@ -61,35 +62,43 @@ export default function RecipeReviewCard() {
             })
     }, []);
 
-    const handleExpandClick = () => {
-        setExpanded(!expanded);
+    
+    
+    const handleExpandClick = (i) => {
+    setExpanded(expanded === i ? -1 : i);
     };
 
+    
+
     return (
-        <>
+            <>
             <Sidebar />
+            <div className={style.background}>
             <Container>
-                {requests.map((request) => (
-                    <Card className={classes.root}>
+                {requests.map((request,i) => (
+                    <>
+                    <br></br>
+                    <Card className={classes.root} expandable expanded={true}>
                         <CardHeader
                             avatar={
                                 <Avatar aria-label="recipe" className={classes.avatar}>
                                     R
                              </Avatar>
                             }
-                            action={
-                                <IconButton aria-label="settings">
-                                    <MoreVertIcon />
-                                </IconButton>
-                            }
+                            // action={
+                            //     // <IconButton aria-label="settings">
+                            //     //     <MoreVertIcon />
+                            //     // </IconButton>
+                            // }
                             title={
 
                                 <Link to={"/user/" + request.author.idUser}>{request.author.firstName + " " + request.author.lastName}</Link>
                             }
                             subheader={request.author.email}
+                            showExpandableButton={true}
                         />
 
-                        <CardContent>
+                        <CardContent expandable={true}>
                             <Typography variant="body2" color="textSecondary" component="p">
                                 {request.description}
                             </Typography>
@@ -99,7 +108,7 @@ export default function RecipeReviewCard() {
                                 className={clsx(classes.expand, {
                                     [classes.expandOpen]: expanded,
                                 })}
-                                onClick={handleExpandClick}
+                                 onClick={handleExpandClick(i)}
                                 aria-expanded={expanded}
                                 aria-label="show more"
                             >
@@ -124,8 +133,11 @@ export default function RecipeReviewCard() {
                             </CardContent>
                         </Collapse>
                     </Card>
-                ))};
+                    <br></br>
+                    </>
+                ))}
             </Container>
+            </div>
         </>
     );
 }

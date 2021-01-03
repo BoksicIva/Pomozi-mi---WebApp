@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import LoginService from "../service/login-service";
 
 export const Login = (props) => (
-  <div className={style.app}>
+  <div className={style.background}>
     <div className={style.empthy}></div>
     <div className="container">
       <Card className="crd col-lg-7 mx-auto">

@@ -12,15 +12,15 @@ export default function home(props) {
  
 
     return (
-        <>
+    <div className={homeStyle.background}>
         <Sidebar /> 
-        <img src="../images/holding-hands.png" alt=""/>
         <div className = {homeStyle.container}>
-        <div className={homeStyle.pomozi}>Pomozi mi</div>
-        <div className={homeStyle.msg}>Malo djelo velikog<span className={homeStyle.znacaja}> značaja</span>.
-        </div> 
+            <div className={homeStyle.pomozi}>Pomozi mi</div>
+            <div className={homeStyle.msg}>Malo djelo velikog<span className={homeStyle.znacaja}> značaja </span>.
+            </div> 
+            <br></br>
+            <Slideshow/> 
         </div>  
-        <Slideshow/> 
-        </>
+    </div>    
     )
 }

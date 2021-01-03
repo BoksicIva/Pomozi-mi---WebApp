@@ -5,7 +5,7 @@ import "./style/page.module.css";
 import { Formik } from "formik";
 import Sidebar from "./sidebar"
 import * as Yup from "yup";
-import style from "./style/log-reg.module.css";
+import style from "./style/page.module.css";
 import {
     GoogleMap,
     useLoadScript,
@@ -112,7 +112,8 @@ export const Dash = props => {
 
     return (
         <>
-            <Sidebar />
+        <Sidebar />
+        <div className={style.background}>
             <div className={style.empthy1}>            </div>
             <div className={style.container}>
                 <Card className="crd col-lg-10 mx-auto">
@@ -295,6 +296,7 @@ export const Dash = props => {
 
                 </Card>
             </div>
+        </div>
         </>
     );
 };

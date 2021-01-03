@@ -17,12 +17,11 @@ const AccessibleFocusOutline = lazy(() =>
 
 function App() {
   return (
-    <>
       <BrowserRouter>
         <Suspense fallback={<div>Loading...</div>}>
           <AccessibleFocusOutline>
             <Switch>
-            <Route path="/requests" component={ReqList} />
+              <Route path="/requests" component={ReqList} />
               <Route path="/page" component={RequestLoader} />
               <Route path="/profile" component={Profile} />
               <Route path="/list" component={UserList} />
@@ -34,7 +33,6 @@ function App() {
           </AccessibleFocusOutline>
         </Suspense>
       </BrowserRouter>
-    </>
   );
 }
 

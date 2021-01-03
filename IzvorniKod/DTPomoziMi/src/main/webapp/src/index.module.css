@@ -5,8 +5,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #ffffff;
   overflow: auto;
+  background-color: cornsilk;
 }
 
 @import url('https://fonts.googleapis.com/css?family=Courgette');
