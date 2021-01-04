@@ -70,7 +70,7 @@ export default function RecipeReviewCard() {
     setValue(event.target.value);
   };
 
-    useEffect(() => {
+    /* useEffect(() => {
         RequestService.getRequests(1)
             .then((response) => {
                 setRequests(response.data._embedded.requests);
@@ -83,7 +83,7 @@ export default function RecipeReviewCard() {
             .catch((error) => {
                 alert(error);
             })
-    }, []);
+    }, []); */
 
     
     

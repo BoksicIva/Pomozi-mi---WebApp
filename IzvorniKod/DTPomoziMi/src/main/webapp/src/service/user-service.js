@@ -36,6 +36,14 @@ class UserService {
   getUser(id) {
     return http.get("./users/" + id, {});
   }
+
+  getUserStatistics(id) {
+    return http.get("./users/statistics/" + id, {});
+  }
+
+  getAuthored(id) {
+    return http.get("./requests/authored/" + id, {});
+  }
 }
 
 export default new UserService();
