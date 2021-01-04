@@ -1,9 +1,9 @@
 package NULL.DTPomoziMi.service.impl;
 
-import NULL.DTPomoziMi.repository.RequestRepo;
-import NULL.DTPomoziMi.security.UserPrincipal;
-import NULL.DTPomoziMi.util.UserPrincipalGetter;
-import NULL.DTPomoziMi.web.DTO.RequestDTO;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -16,8 +16,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import NULL.DTPomoziMi.exception.IllegalAccessException;
-
-import static org.junit.jupiter.api.Assertions.*;
+import NULL.DTPomoziMi.security.UserPrincipal;
+import NULL.DTPomoziMi.util.UserPrincipalGetter;
+import NULL.DTPomoziMi.web.DTO.RequestDTO;
 
 
 @RunWith(SpringRunner.class)
@@ -27,9 +28,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UpdateRequestTest {
     @Autowired
     private RequestServiceImpl service;
-
-    @Autowired
-    private RequestRepo requestRepo;
 
     private RequestDTO requestDTO;
     private UserPrincipal principal;
