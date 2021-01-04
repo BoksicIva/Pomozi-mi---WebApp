@@ -49,7 +49,7 @@ export default function RecipeReviewCard() {
     const [requests, setRequests] = React.useState([]);
     const [value, setValue] = React.useState('');
 
-    const handleSubmit = (event) => {
+     const handleSubmit = (event) => {
         RequestService.getRequests(value)
             .then((response) => {
                 setRequests(response.data._embedded.requests);
@@ -84,11 +84,9 @@ export default function RecipeReviewCard() {
                 alert(error);
             })
     }, []);
-
     
-    
-    const handleExpandClick = (i) => {
-    setExpanded(expanded === i ? -1 : i);
+    const handleExpandClick = () => {
+        setExpanded(!expanded);
     };
 
     
@@ -96,20 +94,21 @@ export default function RecipeReviewCard() {
     return (
             <>
             <Sidebar />
+            <div></div>
             <div className={style.background}>
             <form onSubmit={handleSubmit}>
                 <TextField id="filled-basic" label="Radius zahtjeva" value={value} onChange={handleChangeInput} variant="filled" />
 
             </form>
             <Container>
-                {requests.map((request,i) => (
+                {requests.map((request) => (
                     <>
                     <br></br>
-                    <Card className={classes.root} expandable expanded={true}>
+                    <Card className={classes.root} >
                         <CardHeader
                             avatar={
                                 <Avatar aria-label="recipe" className={classes.avatar}>
-                                    R
+                                    
                              </Avatar>
                             }
                             // action={
@@ -122,10 +121,10 @@ export default function RecipeReviewCard() {
                                 <Link to={"/user/" + request.author.idUser}>{request.author.firstName + " " + request.author.lastName}</Link>
                             }
                             subheader={request.author.email}
-                            showExpandableButton={true}
+                            
                         />
 
-                        <CardContent expandable={true}>
+                        <CardContent >
                             <Typography variant="body2" color="textSecondary" component="p">
                                 {request.description}
                             </Typography>
@@ -135,7 +134,7 @@ export default function RecipeReviewCard() {
                                 className={clsx(classes.expand, {
                                     [classes.expandOpen]: expanded,
                                 })}
-                                 onClick={handleExpandClick(i)}
+                                 onClick={handleExpandClick}
                                 aria-expanded={expanded}
                                 aria-label="show more"
                             >
