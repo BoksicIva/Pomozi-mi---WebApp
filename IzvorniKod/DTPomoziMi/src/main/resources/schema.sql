@@ -40,7 +40,7 @@ CREATE TABLE Korisnik
   slika VARCHAR(500),
   ID_Lokacija BIGINT,
   PRIMARY KEY (ID_Korisnik),
-  FOREIGN KEY (ID_Lokacija) REFERENCES Lokacija(ID_Lokacija),
+  FOREIGN KEY (ID_Lokacija) REFERENCES Lokacija(ID_Lokacija) ON DELETE CASCADE,
   UNIQUE (email)
 );
 
@@ -59,7 +59,7 @@ CREATE TABLE Zahtjev
   PRIMARY KEY (ID_Zahtjev),
   FOREIGN KEY (ID_Autor) REFERENCES Korisnik(ID_Korisnik) ON DELETE CASCADE,
   FOREIGN KEY (ID_Izvrsitelj) REFERENCES Korisnik(ID_Korisnik) ON DELETE SET NULL,
-  FOREIGN KEY (ID_Lokacija) REFERENCES Lokacija(ID_Lokacija)
+  FOREIGN KEY (ID_Lokacija) REFERENCES Lokacija(ID_Lokacija) ON DELETE SET NULL
 );
 
 CREATE TABLE Ocjenjivanje
@@ -71,9 +71,9 @@ CREATE TABLE Ocjenjivanje
   ID_Ocjenjeni BIGINT NOT NULL,
   ID_Zahtjev BIGINT,
   PRIMARY KEY (ID_Ocjenjivanje),
-  FOREIGN KEY (ID_Ocjenjivac) REFERENCES Korisnik(ID_Korisnik),
-  FOREIGN KEY (ID_Ocjenjeni) REFERENCES Korisnik(ID_Korisnik),
-  FOREIGN KEY (ID_Zahtjev) REFERENCES Zahtjev(ID_Zahtjev),
+  FOREIGN KEY (ID_Ocjenjivac) REFERENCES Korisnik(ID_Korisnik) ON DELETE CASCADE,
+  FOREIGN KEY (ID_Ocjenjeni) REFERENCES Korisnik(ID_Korisnik) ON DELETE CASCADE,
+  FOREIGN KEY (ID_Zahtjev) REFERENCES Zahtjev(ID_Zahtjev) ON DELETE CASCADE,
   CONSTRAINT CHK_OCJENA CHECK (OCJENA BETWEEN 1 AND 5)
 );
 
@@ -82,8 +82,8 @@ CREATE TABLE Kandidiranje
   ID_Korisnik BIGINT NOT NULL,
   ID_Kandidatura BIGINT NOT NULL,
   PRIMARY KEY (ID_Korisnik, ID_Kandidatura),
-  FOREIGN KEY (ID_Korisnik) REFERENCES Korisnik(ID_Korisnik),
-  FOREIGN KEY (ID_Kandidatura) REFERENCES Kandidatura(ID_Kandidatura)
+  FOREIGN KEY (ID_Korisnik) REFERENCES Korisnik(ID_Korisnik) ON DELETE CASCADE,
+  FOREIGN KEY (ID_Kandidatura) REFERENCES Kandidatura(ID_Kandidatura) ON DELETE CASCADE
 );
 
 CREATE TABLE ImaUlogu

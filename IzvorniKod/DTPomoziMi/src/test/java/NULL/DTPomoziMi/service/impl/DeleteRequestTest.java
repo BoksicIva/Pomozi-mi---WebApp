@@ -1,8 +1,8 @@
 package NULL.DTPomoziMi.service.impl;
 
-import NULL.DTPomoziMi.model.RequestStatus;
-import NULL.DTPomoziMi.security.UserPrincipal;
-import NULL.DTPomoziMi.util.UserPrincipalGetter;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +14,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import NULL.DTPomoziMi.exception.IllegalAccessException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import NULL.DTPomoziMi.model.RequestStatus;
+import NULL.DTPomoziMi.security.UserPrincipal;
+import NULL.DTPomoziMi.util.UserPrincipalGetter;
 
 
 @RunWith(SpringRunner.class)

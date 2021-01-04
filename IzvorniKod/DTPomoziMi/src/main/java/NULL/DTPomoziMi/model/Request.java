@@ -58,14 +58,14 @@ public class Request implements Serializable {
 
 	private LocalDateTime tstmp;
 
-	@OneToMany(mappedBy = "request")
+	@OneToMany(mappedBy = "request", cascade = CascadeType.ALL)
 	private Set<Rating> ratings = new HashSet<>();
 
-	@ManyToOne(cascade = CascadeType.REMOVE)
+	@ManyToOne
 	@JoinColumn(name = "id_autor")
 	private User author;
 
-	@ManyToOne(cascade = CascadeType.REMOVE)
+	@ManyToOne
 	@JoinColumn(name = "id_izvrsitelj")
 	private User executor;
 

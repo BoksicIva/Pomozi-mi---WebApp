@@ -214,8 +214,6 @@ public class RequestServiceImpl implements RequestService {
 		return req;
 	}
 
-	private void hideInfo(Request req) { req.setRecivedNotif(null); req.setPhone(null); }
-
 	@Override
 	public Page<Request> getAllActiveRequests(
 		Pageable pageable, Double radius, UserPrincipal principal
@@ -235,15 +233,73 @@ public class RequestServiceImpl implements RequestService {
 				}
 				return in;
 			}).collect(Collectors.toList());
-
+	
 		long start = pageable.getOffset();
 		long end = (start + pageable.getPageSize()) > actives.size() ? actives.size()
 			: (start + pageable.getPageSize());
-
+	
 		if (start >= end) return new PageImpl<>(new ArrayList<>(), pageable, 0);
-
+	
 		return new PageImpl<>(actives.subList((int) start, (int) end), pageable, actives.size());
 	}
+
+	@Override
+	public Map<String, CollectionModel<RequestDTO>> getAuthoredRequests(
+		long userID, UserPrincipal principal
+	) {
+		User user = principal.getUser(); // principal exists in the context because user has to be authenticated before accessing this point
+		if (
+			!user.getIdUser().equals(userID)
+		) throw new IllegalAccessException("ID of logged in user is not the same as given userID!");
+	
+		Specification<Request> spec = ReqSpecs.authorEqual(user);
+		
+		List<Request> active = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.ACTIVE)));
+		List<Request> finalized = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.FINALIZED)));
+		List<Request> blocked = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.BLOCKED)));
+		List<Request> executing = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.EXECUTING)));
+	
+		Map<String, CollectionModel<RequestDTO>> map = new HashMap<>();
+	
+		map.put(RequestStatus.ACTIVE.toString(), requestDTOAssembler.toCollectionModel(active));
+		map
+			.put(
+				RequestStatus.FINALIZED.toString(), requestDTOAssembler.toCollectionModel(finalized)
+			);
+		map.put(RequestStatus.BLOCKED.toString(), requestDTOAssembler.toCollectionModel(blocked));
+		map.put(RequestStatus.EXECUTING.toString(), requestDTOAssembler.toCollectionModel(executing));
+	
+		return map;
+	}
+
+	@Override
+	public Map<String, CollectionModel<RequestDTO>> getRequestsByExecutor(
+		Long userId, UserPrincipal principal
+	) {
+		User user = principal.getUser(); // principal exists in the context because user has to be authenticated before accessing this point
+		if (
+			!user.getIdUser().equals(userId)
+		) throw new IllegalAccessException("ID of logged in user is not the same as given userID!");
+		
+		Specification<Request> spec = ReqSpecs.executorEqual(user);
+	
+		List<Request> finalized = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.FINALIZED)));
+		List<Request> blocked = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.BLOCKED)));
+		List<Request> executing = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.EXECUTING)));
+	
+		Map<String, CollectionModel<RequestDTO>> map = new HashMap<>();
+	
+		map
+			.put(
+				RequestStatus.FINALIZED.toString(), requestDTOAssembler.toCollectionModel(finalized)
+			);
+		map.put(RequestStatus.BLOCKED.toString(), requestDTOAssembler.toCollectionModel(blocked));
+		map.put(RequestStatus.EXECUTING.toString(), requestDTOAssembler.toCollectionModel(executing));
+		
+		return map;
+	}
+
+	private void hideInfo(Request req) { req.setRecivedNotif(null); req.setPhone(null); }
 
 	private double calculateDistanceInKM(Location l1, Location l2) {
 		double lat1 = l1.getLatitude().doubleValue(), lon1 = l1.getLongitude().doubleValue();
@@ -264,62 +320,6 @@ public class RequestServiceImpl implements RequestService {
 		double rad = 6371; //radius zemlje
 		double c = 2 * Math.asin(Math.sqrt(a));
 		return rad * c;
-	}
-
-	@Override
-	public Map<String, CollectionModel<RequestDTO>> getAuthoredRequests(
-		long userID, UserPrincipal principal
-	) {
-		User user = principal.getUser(); // principal exists in the context because user has to be authenticated before accessing this point
-		if (
-			!user.getIdUser().equals(userID)
-		) throw new IllegalAccessException("ID of logged in user is not the same as given userID!");
-
-		Specification<Request> spec = ReqSpecs.authorEqual(user);
-		
-		List<Request> active = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.ACTIVE)));
-		List<Request> finalized = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.FINALIZED)));
-		List<Request> blocked = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.BLOCKED)));
-		List<Request> executing = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.EXECUTING)));
-
-		Map<String, CollectionModel<RequestDTO>> map = new HashMap<>();
-
-		map.put(RequestStatus.ACTIVE.toString(), requestDTOAssembler.toCollectionModel(active));
-		map
-			.put(
-				RequestStatus.FINALIZED.toString(), requestDTOAssembler.toCollectionModel(finalized)
-			);
-		map.put(RequestStatus.BLOCKED.toString(), requestDTOAssembler.toCollectionModel(blocked));
-		map.put(RequestStatus.EXECUTING.toString(), requestDTOAssembler.toCollectionModel(executing));
-
-		return map;
-	}
-	
-	@Override
-	public Map<String, CollectionModel<RequestDTO>> getRequestsByExecutor(
-		Long userId, UserPrincipal principal
-	) {
-		User user = principal.getUser(); // principal exists in the context because user has to be authenticated before accessing this point
-		if (
-			!user.getIdUser().equals(userId)
-		) throw new IllegalAccessException("ID of logged in user is not the same as given userID!");
-		
-		Specification<Request> spec = ReqSpecs.executorEqual(user);
-
-		List<Request> finalized = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.FINALIZED)));
-		List<Request> blocked = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.BLOCKED)));
-		List<Request> executing = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.EXECUTING)));
-
-		Map<String, CollectionModel<RequestDTO>> map = new HashMap<>();
-
-		map
-			.put(
-				RequestStatus.FINALIZED.toString(), requestDTOAssembler.toCollectionModel(finalized)
-			);
-		map.put(RequestStatus.BLOCKED.toString(), requestDTOAssembler.toCollectionModel(blocked));
-		map.put(RequestStatus.EXECUTING.toString(), requestDTOAssembler.toCollectionModel(executing));
-		
-		return map;
 	}
 
 	private Location resolveLocation(LocationDTO dto) {

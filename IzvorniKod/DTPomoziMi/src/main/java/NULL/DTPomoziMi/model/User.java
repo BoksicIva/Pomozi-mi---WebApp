@@ -6,7 +6,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -56,26 +68,26 @@ public class User implements Serializable {
 	@JoinColumn(name = "id_lokacija")
 	private Location location;
 
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(
 		name = "kandidiranje", joinColumns = { @JoinColumn(name = "id_korisnik") },
 		inverseJoinColumns = { @JoinColumn(name = "id_kandidatura") }
 	)
 	private Set<Candidacy> candidacies = new HashSet<>();
 
-	@OneToMany(mappedBy = "rated")
+	@OneToMany(mappedBy = "rated", cascade = CascadeType.ALL)
 	private Set<Rating> ratedBy = new HashSet<>();
 
-	@OneToMany(mappedBy = "rator")
+	@OneToMany(mappedBy = "rator", cascade = CascadeType.ALL)
 	private Set<Rating> ratedOthers = new HashSet<>();
 
 	@ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
 	private Set<RoleEntity> roles = new HashSet<>();
 
-	@OneToMany(mappedBy = "author")
+	@OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
 	private Set<Request> authoredReqs = new HashSet<>();
 
-	@OneToMany(mappedBy = "executor")
+	@OneToMany(mappedBy = "executor", cascade = CascadeType.ALL)
 	private Set<Request> executedReqs = new HashSet<>();
 
 	public List<Role> getEnumRoles() {

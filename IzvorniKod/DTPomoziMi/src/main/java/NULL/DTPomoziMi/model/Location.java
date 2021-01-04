@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -54,13 +55,13 @@ public class Location implements Serializable {
 	@Column(name = "sirina")
 	private BigDecimal latitude;
 
-	@OneToMany(mappedBy = "location")
+	@OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
 	private Set<Candidacy> candidacies = new HashSet<>();
 
-	@OneToMany(mappedBy = "location")
+	@OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
 	private Set<User> users = new HashSet<>();
 
-	@OneToMany(mappedBy = "location")
+	@OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
 	private Set<Request> requests = new HashSet<>();
 
 	public Candidacy addCandidacy(Candidacy candidacy) {
