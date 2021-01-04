@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import NULL.DTPomoziMi.exception.EntityMissingException;
 import NULL.DTPomoziMi.exception.IllegalAccessException;
+import NULL.DTPomoziMi.exception.IllegalActionException;
 import NULL.DTPomoziMi.model.Candidacy;
 import NULL.DTPomoziMi.model.Location;
 import NULL.DTPomoziMi.model.Rating;
@@ -121,12 +122,14 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@PreAuthorize("isAuthenticated()")
 	public User getUserByID(long ID, UserPrincipal principal) {
-		UserPrincipal userPrincipal = principal;
 
 		User user = fetch(ID);
+		if (!principal.getUser().getEnumRoles().contains(Role.ROLE_ADMIN) && !user.getEnabled())
+			throw new IllegalActionException("Cannot access blocked user's profile");
+
 		if (
-			!userPrincipal.getUser().getIdUser().equals(ID)
-				&& !userPrincipal.getUser().getEnumRoles().contains(Role.ROLE_ADMIN)
+			!principal.getUser().getIdUser().equals(ID)
+				&& !principal.getUser().getEnumRoles().contains(Role.ROLE_ADMIN)
 		) user.setLocation(null);
 
 		return user;
@@ -138,11 +141,10 @@ public class UserServiceImpl implements UserService {
 		Pageable pageable, Specification<User> specification, UserPrincipal principal
 	) {
 		User user = principal.getUser();
-		
-		if(!user.getEnumRoles().contains(Role.ROLE_ADMIN)) {
-			specification = specification.and((root, query, cb)->{
-				return cb.equal(root.<Boolean>get("enabled"), true);
-			});
+
+		if (!user.getEnumRoles().contains(Role.ROLE_ADMIN)) {
+			specification = specification
+				.and((root, query, cb) -> { return cb.equal(root.<Boolean>get("enabled"), true); });
 		}
 
 		Page<User> page = userRepo.findAll(specification, pageable);

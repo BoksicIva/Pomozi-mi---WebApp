@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -55,6 +56,13 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 		e.printStackTrace();
 
 		return new ResponseEntity<>(createProps(e, HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(PropertyReferenceException.class)
+	public ResponseEntity<?> handlePropertyReferenceException(PropertyReferenceException e) {
+		e.printStackTrace();
+
+		return new ResponseEntity<>(createProps(e, HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(IllegalAccessException.class)

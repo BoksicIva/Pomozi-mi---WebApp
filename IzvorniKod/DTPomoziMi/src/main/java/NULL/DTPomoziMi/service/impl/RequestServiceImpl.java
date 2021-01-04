@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import NULL.DTPomoziMi.model.Request;
 import NULL.DTPomoziMi.model.RequestStatus;
 import NULL.DTPomoziMi.model.Role;
 import NULL.DTPomoziMi.model.User;
+import NULL.DTPomoziMi.model.specification.ReqSpecs;
 import NULL.DTPomoziMi.repository.RequestRepo;
 import NULL.DTPomoziMi.security.UserPrincipal;
 import NULL.DTPomoziMi.service.LocationService;
@@ -218,8 +220,10 @@ public class RequestServiceImpl implements RequestService {
 	public Page<Request> getAllActiveRequests(
 		Pageable pageable, Double radius, UserPrincipal principal
 	) {
+		Specification<Request> specs = ReqSpecs.statusEqual(RequestStatus.ACTIVE);
+		
 		List<Request> actives
-			= requestRepo.findByStatusOrderByIdRequest(RequestStatus.ACTIVE).stream().filter(r -> {
+			= requestRepo.findAll(specs, pageable.getSort()).stream().filter(r -> {
 				User user = principal.getUser();
 				boolean in = false;
 				if (r.getLocation() == null) // ako zahtjev nema lokaciju... moze
@@ -271,10 +275,12 @@ public class RequestServiceImpl implements RequestService {
 			!user.getIdUser().equals(userID)
 		) throw new IllegalAccessException("ID of logged in user is not the same as given userID!");
 
-		List<Request> active = requestRepo.findByStatusAndAuthor(RequestStatus.ACTIVE, user);
-		List<Request> finalized = requestRepo.findByStatusAndAuthor(RequestStatus.FINALIZED, user);
-		List<Request> blocked = requestRepo.findByStatusAndAuthor(RequestStatus.BLOCKED, user);
-		List<Request> executing = requestRepo.findByStatusAndAuthor(RequestStatus.EXECUTING, user);
+		Specification<Request> spec = ReqSpecs.authorEqual(user);
+		
+		List<Request> active = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.ACTIVE)));
+		List<Request> finalized = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.FINALIZED)));
+		List<Request> blocked = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.BLOCKED)));
+		List<Request> executing = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.EXECUTING)));
 
 		Map<String, CollectionModel<RequestDTO>> map = new HashMap<>();
 
@@ -297,10 +303,12 @@ public class RequestServiceImpl implements RequestService {
 		if (
 			!user.getIdUser().equals(userId)
 		) throw new IllegalAccessException("ID of logged in user is not the same as given userID!");
+		
+		Specification<Request> spec = ReqSpecs.executorEqual(user);
 
-		List<Request> finalized = requestRepo.findByStatusAndExecutor(RequestStatus.FINALIZED, user);
-		List<Request> blocked = requestRepo.findByStatusAndExecutor(RequestStatus.BLOCKED, user);
-		List<Request> executing = requestRepo.findByStatusAndExecutor(RequestStatus.EXECUTING, user);
+		List<Request> finalized = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.FINALIZED)));
+		List<Request> blocked = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.BLOCKED)));
+		List<Request> executing = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.EXECUTING)));
 
 		Map<String, CollectionModel<RequestDTO>> map = new HashMap<>();
 
