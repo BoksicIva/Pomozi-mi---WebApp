@@ -324,14 +324,12 @@
 			
 			\textbf{\textit{dio 2. revizije}}\\		
 		
-		\text Dijagram stanja prikazuje stanja objekta te prijelaze iz jednog stanja u drugo temeljene na dogadajima.Na slici
-		\ref{fig:4.10} prikazan je dijagram stanja registriranog korisnika.Nakon prijave, korisniku se prikazuje početna stranica.Korisnik može odabirom Moji Zahtjevi pregledati
-		vlastite zahtjeve te ih po mogoćunosti može uređivat, brisat,blokirat te kreirat nove zahtjeve.Korisniku se klikom na List Aktivnih Zahtjeva nudi pregled zahtjeva te mogućnost odabira nekoga od zahtjeva s liste.Nakon izvršavanja zahtjeva korisniku se automatski omogućuje
-		mogućnost komentiranja i ocjenjivanja,ali to može obaviti i naknadno te se komentari i ocijene vide u profilu korisnika.Korisniku se nudi i mogućnost uređivanja osobnih podataka kao i brisanje korisničkog računa,dok klikom  na Search korisnik može pretraživati druge korisnike aplikacije te vidjeti "lance povjerenja" korisnika čiji profil gleda.
+		\text Dijagram stanja prikazuje stanja objekta te prijelaze iz jednog stanja u drugo temeljene na dogadajima. Na slici
+		\ref{fig:4.10} prikazan je dijagram stanja registriranog korisnika. Nakon prijave, korisniku se prikazuje početna stranica(Home page). Korisnik klikom na Profil otvara svoju profilnu stranicu. Korisnik može odabirom Aktivni Zahtjevi pregledati vlastite zahtjeve aktivne zahtjeve. Isto tako odabirom Izvršeni Zahtjevi može pregledati vlastite zahtjeve koji su Izvršeni. Korisniku se klikom na Pregled Zahtjeva nudi pregled aktivnih zahtjeva te mogućnost odabira nekoga od zahtjeva s liste. Nakon izvršavanja zahtjeva korisnik mora ocijeniti drugog korisnika i opcionalno ostaviti komentar te se komentari i ocjene vide u profilu korisnika. Korisniku se nudi i mogućnost uređivanja osobnih podataka kao i brisanje korisničkog računa, dok klikom  na Search korisnik može pretraživati druge korisnike aplikacije. Također klikom na Zadavanje Zahtjeva korisnik može zadati novi zahtjev.
 		
 			%unos slike
 		\begin{figure}[H]
-			\includegraphics[scale=0.3]{slike/Dijagram Stanja Korisnik.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+			\includegraphics[scale=0.3]{slike/Dijagram Stanja.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
 			\centering
 			\caption { Dijagram stanja}
 			\label{fig:4.10}
@@ -353,12 +351,12 @@
 			
 			\textbf{\textit{dio 2. revizije}}\\
 			
-			\text Dijagram aktivnosti primjenjuje se za opis modela toka upravljanja ili toka podataka.Ne upotrebljava se za modeliranje dogadajima poticanog ponašanja. U modeliranju toka upravljanja svaki novi korak poduzima se nakon završenog prethodnog,a naglasak je na jednostavnosti.Na dijagramu \ref{fig:4.11} prikazan je proces izvršavanja zahtjeva za pomoć.Korisnik se prijavljuje u sustav,prikazujemu se početna stranica,nakon koje on odabire listu aktivnih zahtjeva.Kada je zamijetio zahtjev kojeg može izvršiti,odabire taj zahtjev te mora pričekati dok mu se zahtjev za pomoći odobri.Nakon odobrenog zahtjeva,korisniku se prikazuju osnovne potrebne informacije kako bi mogao izvršiti zahtjev.
+			\text Dijagram aktivnosti primjenjuje se za opis modela toka upravljanja ili toka podataka. Ne upotrebljava se za modeliranje dogadajima poticanog ponašanja. U modeliranju toka upravljanja svaki novi korak poduzima se nakon završenog prethodnog, a naglasak je na jednostavnosti. Na dijagramu \ref{fig:4.11} prikazan je proces izvršavanja zahtjeva za pomoć. Korisnik se prijavljuje u sustav,prikazujemu se početna stranica, nakon koje on odabire Pregled zahtjeva. Kada je zamijetio zahtjev kojeg može izvršiti, odabire taj zahtjev te mu se poslužuju dodatne informacije o zahtjevu kako bi mogao izvršiti zahtjev. Nakon izvršenog zahtjeva, korisnik treba ocijeniti i opcinalno komentirati.
 			
 			
 						%unos slike
 		\begin{figure}[H]
-			\includegraphics[scale=0.3]{slike/Dijagram Aktivnosti.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+			\includegraphics[scale=0.3]{slike/DijagramAktivnosti.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
 			\centering
 			\caption { Dijagram Aktivnosti}
 			\label{fig:4.11}
@@ -382,7 +380,7 @@
             komponenti, interne strukture i odnose prema okolini. Sustavu se pristupa preko dva različita sučelja. Preko sučelja za dohvat HTML, CSS i JS datoteka poslužuju se
             datoteke koje pripadaju \emph{frontend} dijelu aplikacije. Router je komponenta koja na
             upit s url odreduje koja datoteka će se poslužiti na sučelje.Sve JavaScript datoteke ovise o React biblioteci iz koje dohvaćaju gotove komponente kao što su gumbi, forme i slično.REST API poslužuje
-            podatke koji pripadaju \emph{backend} dijelu aplikacije. Pomoću JDBC dohvaćaju se tablice iz baze podataka te se ostvaruje SQL API.Podaci koji su dohvaćeni iz baze oblikuju se pomoću komponenete Model te se prosljeđujue dalje po MVC arhitekturi.DTO(Data Transfer Object) omata podatake te se prosljeđuje prema \emph{frontend} strani koja ih prikladno prikazuje.Za autorizaciju REST servis koirti Spring Security.Reactview komponenta preko dva sučelja komunicira s aplikacijom.
+            podatke koji pripadaju \emph{backend} dijelu aplikacije. Pomoću JDBC dohvaćaju se tablice iz baze podataka te se ostvaruje SQL API.Podaci koji su dohvaćeni iz baze oblikuju se pomoću komponenete Model te se prosljeđujue dalje po MVC arhitekturi.DTO(Data Transfer Object) omata podatake te se prosljeđuje prema \emph{frontend} strani koja ih prikladno prikazuje.Za autorizaciju REST servis koirti Spring Security.
 			
 						%unos slike
 		\begin{figure}[H]
