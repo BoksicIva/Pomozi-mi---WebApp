@@ -44,6 +44,10 @@ class UserService {
   getAuthored(id) {
     return http.get("./requests/authored/" + id, {});
   }
+
+  blockUser(id) {
+    return http.post("./users/block/" + id, {});
+  }
 }
 
 export default new UserService();

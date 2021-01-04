@@ -30,6 +30,8 @@ import PropTypes from "prop-types";
 import SwipeableViews from "react-swipeable-views";
 import UserService from "../service/user-service";
 import Sidebar from "./sidebar";
+import BlockIcon from '@material-ui/icons/Block';
+import ReportIcon from '@material-ui/icons/Report';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -160,6 +162,7 @@ const Profile = (props) => {
   const [requests, setRequests] = useState({});
   const [location, setLocation] = useState({});
   const [isUser, setUser] = useState(false);
+  const [isAdmin, setAdmin] = useState(false);
 
 
   function handleChange(event, newValue) {
@@ -181,23 +184,37 @@ const Profile = (props) => {
   const handleAbout = () => {
     setAbout(!about);
   };
+  const handleBlock = () => {
+      UserService.blockUser(props.match.params.id).then((response) => {
+        props.history.push("/list");;
+    })
+    .catch((error) => {
+        alert(error);
+    })
+  }
 
   useEffect(() => {
-    console.log(props.match.params.id);
-    const userId = UserService.getUserContext().id;
+    //console.log(props.match.params.id);
+    const user = UserService.getUserContext();
     UserService.getUser(props.match.params.id).then((response) => {
+      console.log(response);
       setUserData(response.data);
-      console.log(userId == props.match.params.id);
-      if (userId == props.match.params.id) {
+      console.log(user.id == props.match.params.id);
+      if (user.id == props.match.params.id) {
         setUser(true);
+      }
+      for (let role of user.roles) {
+        if (role === "ROLE_ADMIN") {
+          setAdmin(true);
+        }
       }
     });
     UserService.getUserStatistics(props.match.params.id).then((response) => {
       setUserStatistics(response.data);
 
     });
-    if (props.match.params.id == userId) {
-      UserService.getAuthored(userId).then((response) => {
+    if (props.match.params.id == user.id) {
+      UserService.getAuthored(user.id).then((response) => {
         setRequests(response.data);
         setLoading(false);
       });
@@ -291,14 +308,14 @@ const Profile = (props) => {
 
                 {isUser ? <p>
                   Država : {location.state}
-                < br />
+                  < br />
                 Mjesto: {location.town}
-                <br />
+                  <br />
                 Adresa: {location.adress}
-                <br /> 
+                  <br />
                 </p>
-                : null
-              }
+                  : null
+                }
                 <div>
                   <a
                     href={"mailto: " + localStorage.getItem("email")}
@@ -323,6 +340,16 @@ const Profile = (props) => {
                 Rang: {userStatistics.rank}
               </Typography>
             </Container>
+            {isUser ? null :
+              isAdmin ?
+              <IconButton aria-label="block"
+                title="Blokiraj korisnika"
+                onClick={handleBlock}>
+                <ReportIcon fontSize="large" />
+              </IconButton> : null
+              
+            } 
+            
           </Container>
           <Dialog open={open} onClose={handleClose}>
             <DialogTitle id="form-dialog-title">
