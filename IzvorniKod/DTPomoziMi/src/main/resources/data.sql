@@ -33,7 +33,7 @@ INSERT INTO public.imaulogu (id_korisnik,id_uloga) VALUES
 	 
 INSERT INTO public.zahtjev (id_zahtjev,opis,tstmp,status,brojmobitela,id_lokacija,id_autor,id_izvrsitelj,primljenanotif,exectstmp) VALUES
 	 (1,'masna kobasa','2021-02-03 10:08:02','ACTIVE','0981904779',1,3,NULL,false,NULL),
-	 (2,'masna kobasa','2021-02-03 10:08:02','ACTIVE','0981904779',3,3,NULL,false,NULL),
+	 (2,'masna kobasa','2021-02-03 10:08:02','BLOCKED','0981904779',3,3,NULL,false,NULL),
 	 (3,'masna kobasa','2021-02-03 10:08:02','ACTIVE','0981904779',6,3,NULL,false,NULL),
 	 (4,'masna kobasa','2021-02-03 10:08:02','ACTIVE','0981904779',5,3,NULL,false,NULL),
 	 (5,'masna kobasa','2021-02-03 10:08:02','ACTIVE','0981904779',4,3,NULL,false,NULL),
@@ -68,7 +68,7 @@ INSERT INTO public.zahtjev (id_zahtjev,opis,tstmp,status,brojmobitela,id_lokacij
 	 (34,'masna kobasa','2021-02-03 10:08:02','ACTIVE','0981904779',5,12,NULL,false,NULL),
 	 (35,'masna kobasa','2021-02-03 10:08:02','ACTIVE','0981904779',4,12,NULL,false,NULL),
 	 (36,'masna kobasa','2021-02-03 10:08:02','ACTIVE','0981904779',2,12,NULL,false,NULL),
-	 (37,'masna kobasa','2021-02-03 10:08:02','ACTIVE','0981904779',1,11,NULL,false,NULL),
+	 (37,'masna kobasa','2021-02-03 10:08:02','ACTIVE','0981904779',1,11,3,false,NULL),
 	 (38,'masna kobasa','2021-02-03 10:08:02','ACTIVE','0981904779',3,11,NULL,false,NULL),
 	 (39,'masna kobasa','2021-02-03 10:08:02','ACTIVE','0981904779',6,11,NULL,false,NULL),
 	 (40,'masna kobasa','2021-02-03 10:08:02','ACTIVE','0981904779',5,11,NULL,false,NULL),
