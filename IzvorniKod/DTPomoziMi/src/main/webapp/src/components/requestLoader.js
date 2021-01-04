@@ -22,10 +22,7 @@ const mapContainerStyle = {
     height: "100vh",
     width: "60vw",
 };
-const center = {
-    lat: 45.815399,
-    lng: 15.966568,
-};
+
 const options = {
     disableDefaultUI: true,
     zoomControl: true,
@@ -255,7 +252,7 @@ export const Dash = props => {
                                     {checked ? <div>
                                         <GoogleMap mapContainerStyle={mapContainerStyle}
                                             zoom={8}
-                                            center={center}
+                                            center={{lat: lat, lng: long }}
                                             options={options}
                                             onClick={(event) => {
                                                 console.log("kurac")

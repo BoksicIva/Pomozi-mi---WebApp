@@ -15,7 +15,7 @@ import { red } from '@material-ui/core/colors';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Sidebar from './sidebar';
-import RequestService from '../service/login-service';
+import RequestService from '../service/request-service';
 import Container from '@material-ui/core/Container';
 import style from "./style/page.module.css";
 import TextField from '@material-ui/core/TextField'
@@ -25,11 +25,13 @@ import {
     useLoadScript,
     Marker,
 } from "@react-google-maps/api";
-import { propTypes } from 'react-bootstrap/esm/Image';
+import DeleteIcon from '@material-ui/icons/Delete';
+import UserService from '../service/user-service';
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        width:  '65vw',
+        width: '65vw',
     },
     media: {
         height: 100,
@@ -55,10 +57,7 @@ const mapContainerStyle = {
     height: "100vh",
     width: "60vw",
 };
-const center = {
-    lat: 45.815399,
-    lng: 15.966568,
-};
+
 const options = {
     disableDefaultUI: true,
     zoomControl: true,
@@ -71,6 +70,12 @@ export default function RecipeReviewCard(props) {
         RequestService.getRequests(1)
             .then((response) => {
                 setRequests(response.data._embedded.requests);
+                const roles = UserService.getUserContext().roles;
+                for(let role of roles){
+                    if(role === "ROLE_ADMIN"){
+                        setAdmin(true);
+                    }
+                }
                 //setUsersTemp(response.data._embedded.users);
                 console.log(response.data._embedded.requests);
                 //rows = response.data._embedded.users;
@@ -86,6 +91,15 @@ export default function RecipeReviewCard(props) {
         googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
         libraries,
     });
+    const handleDelete = value => () => {
+        RequestService.deleteRequest(value.idRequest).then((response) => {
+            window.location.reload(false);
+
+        })
+        .catch((error) => {
+            alert(error);
+        })
+    }
 
     const classes = useStyles();
     const [expanded, setExpanded] = React.useState(false);
@@ -94,6 +108,7 @@ export default function RecipeReviewCard(props) {
     const [notSent, setNotSent] = React.useState(true);
     const [lat, setLat] = React.useState('');
     const [lng, setLng] = React.useState(true);
+    const [isAdmin, setAdmin] = React.useState(false);
 
 
     if (loadError) return "Error";
@@ -127,8 +142,8 @@ export default function RecipeReviewCard(props) {
 
 
 
-    
-    
+
+
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
@@ -150,107 +165,112 @@ export default function RecipeReviewCard(props) {
     }
 
     return (
-            <>
+        <>
             <Sidebar />
             <div></div>
             <div className={style.background}>
-            <form onSubmit={handleSubmit}>
-                <TextField id="filled-basic" label="Radius zahtjeva" value={value} onChange={handleChangeInput} variant="filled" />
+                <form onSubmit={handleSubmit}>
+                    <TextField id="filled-basic" label="Radius zahtjeva" value={value} onChange={handleChangeInput} variant="filled" />
 
-            </form>
-            <Container>
-                {notSent ?
-                    requests.map((request) => (
-                        <Card className={classes.root}>
-                            <CardHeader
-                                avatar={
-                                    <Avatar aria-label="recipe" className={classes.avatar}>
-                                        R
+                </form>
+                <Container>
+                    {notSent ?
+                        requests.map((request) => (
+                            <Card className={classes.root}>
+                                <CardHeader
+                                    avatar={
+                                        <Avatar aria-label="recipe" className={classes.avatar}>
+                                            R
                              </Avatar>
-                                }
-                                action={
-                                    <IconButton aria-label="settings">
-                                        <MoreVertIcon />
-                                    </IconButton>
-                                }
-                                title={
+                                    }
+                                    action={
+                                        <IconButton aria-label="settings">
+                                            <MoreVertIcon />
+                                        </IconButton>
 
-                                    <Link onClick={(event) => {props.history.push("/profile/" + request.author.idUser)}}>{request.author.firstName + " " + request.author.lastName}</Link>
-                                }
-                                subheader={request.author.email}
-                            />
+                                    }
+                                    title={
 
-                            <CardContent>
-                                <Typography variant="body2" color="textSecondary" component="p">
-                                    {request.description}
-                                </Typography>
-                            </CardContent>
-                            <CardActions disableSpacing>
+                                        <Link onClick={(event) => { props.history.push("/profile/" + request.author.idUser) }}>{request.author.firstName + " " + request.author.lastName}</Link>
+                                    }
+                                    subheader={request.author.email}
+                                />
 
-                                <Button size="small" onClick={handleRequestClick(request)}>Izvrši zahtjev</Button>
-
-                                <IconButton
-                                    className={clsx(classes.expand, {
-                                        [classes.expandOpen]: expanded,
-                                    })}
-                                    onClick={handleExpandClick}
-                                    aria-expanded={expanded}
-                                    aria-label="show more"
-                                >
-                                    <ExpandMoreIcon />
-                                </IconButton>
-                            </CardActions>
-                            <Collapse in={expanded} timeout="auto" unmountOnExit>
                                 <CardContent>
-                                    <Typography paragraph>Rok izvrsavanja:</Typography>
-
-                                    <Typography paragraph>
-                                        {request.tstmp}
-                                    </Typography>
-                                    <Typography paragraph>
-                                        Lokacija:
-                                </Typography>
-                                    <Typography paragraph>
-                                        Grad: {" " + request.location.town}
-                                        <br></br>
-                                    Adresa: {" " + request.location.adress}
+                                    <Typography variant="body2" color="textSecondary" component="p">
+                                        {request.description}
                                     </Typography>
                                 </CardContent>
-                            </Collapse>
-                        </Card>
-                    )) :
-                    <>
-                        <div>
-                            <button onClick={refreshPage}>Povratak na zahtjeve</button>
-                        </div>
-                        <h1>
-                            Zahtjev uspjesno poslan
+                                <CardActions disableSpacing>
+
+                                    <Button size="small" onClick={handleRequestClick(request)}>Izvrši zahtjev</Button>
+                                    {isAdmin ?
+                                    <IconButton aria-label="trash" onClick={handleDelete(request)}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                    : null  }
+                                    <IconButton
+                                        className={clsx(classes.expand, {
+                                            [classes.expandOpen]: expanded,
+                                        })}
+                                        onClick={handleExpandClick}
+                                        aria-expanded={expanded}
+                                        aria-label="show more"
+                                    >
+                                        <ExpandMoreIcon />
+                                    </IconButton>
+                                </CardActions>
+                                <Collapse in={expanded} timeout="auto" unmountOnExit>
+                                    <CardContent>
+                                        <Typography paragraph>Rok izvrsavanja:</Typography>
+
+                                        <Typography paragraph>
+                                            {request.tstmp}
+                                        </Typography>
+                                        <Typography paragraph>
+                                            Lokacija:
+                                </Typography>
+                                        <Typography paragraph>
+                                            Grad: {" " + request.location.town}
+                                            <br></br>
+                                    Adresa: {" " + request.location.adress}
+                                        </Typography>
+                                    </CardContent>
+                                </Collapse>
+                            </Card>
+                        )) :
+                        <>
+                            <div>
+                                <button onClick={refreshPage}>Povratak na zahtjeve</button>
+                            </div>
+                            <h1>
+                                Zahtjev uspjesno poslan
                     </h1>
-                        <h2>
-                            Lokacija zahtjeva:
+                            <h2>
+                                Lokacija zahtjeva:
                     </h2>
 
-                        <div>
-                            <GoogleMap mapContainerStyle={mapContainerStyle}
-                                zoom={15}
-                                center={center}
-                                options={options}
-                                onClick={(event) => {
-                                    
-                                    setLat(event.latLng.lat())
-                                    setLng(event.latLng.lng())
-                                }}
-                            >
+                            <div>
+                                <GoogleMap mapContainerStyle={mapContainerStyle}
+                                    zoom={15}
+                                    center={{ lat: lat, lng: lng }}
+                                    options={options}
+                                    onClick={(event) => {
 
-                                <Marker
-                                    key={16}
-                                    position={{ lat: lat, lng: lng }}
-                                />
-                            </GoogleMap>
-                        </div>
-                    </>
-                }
-            </Container>
+                                        setLat(event.latLng.lat())
+                                        setLng(event.latLng.lng())
+                                    }}
+                                >
+
+                                    <Marker
+                                        key={16}
+                                        position={{ lat: lat, lng: lng }}
+                                    />
+                                </GoogleMap>
+                            </div>
+                        </>
+                    }
+                </Container>
             </div>
         </>
     );
