@@ -8,6 +8,7 @@ import LogoutService from "../service/login-service";
 import sidebarStyle from "./style/sidebar.module.css";
 import { IconContext } from "react-icons";
 import { Typography } from "@material-ui/core";
+import UserService from '../service/user-service';
 
 function Navbar(props) {
   const [sidebar, setSidebar] = useState(false);
@@ -39,6 +40,8 @@ function Navbar(props) {
     }
     return logout;
   }
+
+
 
   return (
     <>
@@ -86,7 +89,7 @@ function Navbar(props) {
               let logout = isLogout(item.title);
               return (
                 <li key={index} className={sidebarStyle.nav_text}>
-                  <Link to={item.path}>
+                  <Link to={item.title === "Profil" ? item.path + "/" + UserService.getUserContext().id : item.path}>
                     {item.icon}
                     {logout}
                   </Link>

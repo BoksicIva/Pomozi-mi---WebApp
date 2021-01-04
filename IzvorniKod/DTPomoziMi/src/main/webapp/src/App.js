@@ -21,9 +21,9 @@ function App() {
         <Suspense fallback={<div>Loading...</div>}>
           <AccessibleFocusOutline>
             <Switch>
+              <Route path="/profile/:id" component={Profile} />
               <Route path="/requests" component={ReqList} />
               <Route path="/page" component={RequestLoader} />
-              <Route path="/profile" component={Profile} />
               <Route path="/list" component={UserList} />
               <Route path="/home" component={Home} />
               <Route path="/login" component={Login} />

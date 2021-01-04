@@ -165,7 +165,7 @@ export default function BasicTable() {
               {Users.map((user) => (
                 <TableRow key={user.idUser}>
                   <TableCell component="th" scope="row">
-                    <Link to={"/user/" + user.idUser}>{user.firstName + " " + user.lastName}</Link>
+                    <Link to={"/profile/" + user.idUser}>{user.firstName + " " + user.lastName}</Link>
                   </TableCell>
                   <TableCell align="right">{user.email}</TableCell>
                   <TableCell align="right">5</TableCell>

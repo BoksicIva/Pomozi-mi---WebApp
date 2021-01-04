@@ -46,7 +46,11 @@ class LoginService {
     }
 
     getRequests(radius){
-      return http.get("/requests/active?radius=" + radius, {});
+      return http.get("/requests/active?radius=" + radius + "&page=0&size=400000", {});
+    }
+
+    sendExecution(id){
+      return http.patch("/requests/pickForExecution/" + id, {});
     }
   
   }

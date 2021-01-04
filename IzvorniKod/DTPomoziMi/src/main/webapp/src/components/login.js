@@ -33,6 +33,7 @@ export const Login = (props) => (
 
             LoginService.login(formData)
               .then((response) => {
+                console.log(response);
                 //alert(JSON.stringify(response, null, 2));
                 props.history.push("/home");
               })

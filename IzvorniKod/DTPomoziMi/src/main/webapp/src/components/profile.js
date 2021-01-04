@@ -158,6 +158,9 @@ const Profile = (props) => {
   const [userData, setUserData] = useState({});
   const [userStatistics, setUserStatistics] = useState({});
   const [requests, setRequests] = useState({});
+  const [location, setLocation] = useState({});
+  const [isUser, setUser] = useState(false);
+
 
   function handleChange(event, newValue) {
     setValue(newValue);
@@ -180,20 +183,33 @@ const Profile = (props) => {
   };
 
   useEffect(() => {
+    console.log(props.match.params.id);
     const userId = UserService.getUserContext().id;
-    UserService.getUser(userId).then((response) => {
+    UserService.getUser(props.match.params.id).then((response) => {
       setUserData(response.data);
+      console.log(userId == props.match.params.id);
+      if (userId == props.match.params.id) {
+        setUser(true);
+      }
     });
-    UserService.getUserStatistics(userId).then((response) => {
+    UserService.getUserStatistics(props.match.params.id).then((response) => {
       setUserStatistics(response.data);
+
     });
-    UserService.getAuthored(userId).then((response) => {
-      setRequests(response.data);
+    if (props.match.params.id == userId) {
+      UserService.getAuthored(userId).then((response) => {
+        setRequests(response.data);
+        setLoading(false);
+      });
+    } else {
+      setRequests();
       setLoading(false);
-    });
+    }
   }, []);
 
+
   const mapRequests = (request) => {
+
     return (
       <>
         <ListItem alignItems="flex-start">
@@ -216,10 +232,11 @@ const Profile = (props) => {
             }
           />
         </ListItem>
-        <Divider variant="inset" component="li"/>
+        <Divider variant="inset" component="li" />
       </>
     );
   };
+
 
   if (isLoading) {
     return null;
@@ -241,8 +258,8 @@ const Profile = (props) => {
                   className={classes.avatar}
                 />
               ) : (
-                <AccountCircleIcon className={classes.avatar} />
-              )}
+                  <AccountCircleIcon className={classes.avatar} />
+                )}
             </IconButton>
 
             <Container
@@ -271,12 +288,17 @@ const Profile = (props) => {
                 color="textSecondary"
                 style={{ display: about ? "block" : "none" }}
               >
-                Država: {userData.location.state}
+
+                {isUser ? <p>
+                  Država : {location.state}
+                < br />
+                Mjesto: {location.town}
                 <br />
-                Mjesto: {userData.location.town}
-                <br />
-                Adresa: {userData.location.adress}
-                <br />
+                Adresa: {location.adress}
+                <br /> 
+                </p>
+                : null
+              }
                 <div>
                   <a
                     href={"mailto: " + localStorage.getItem("email")}
@@ -368,39 +390,42 @@ const Profile = (props) => {
               </Tabs>
             </Paper>
           </Container>
-          <Container
-            className={classes.requestsContainer}
-            maxWidth="lg"
-            disableGutters={true}
-          >
-            <SwipeableViews
-              axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-              index={value}
-              onChangeIndex={handleChangeIndex}
-              style={{ width: "100%" }}
+          {requests ?
+            <Container
+              className={classes.requestsContainer}
+              maxWidth="lg"
+              disableGutters={true}
             >
-              <TabPanel value={value} index={0} dir={theme.direction}>
-                <List className={classes.list}>
-                  {requests.ACTIVE._embedded.requests.map(mapRequests)}
-                </List>
-              </TabPanel>
-              <TabPanel value={value} index={1} dir={theme.direction}>
-                <List>
-                {/* {requests.FINALIZED._embedded.requests.map(mapRequests)} */}
-                </List>
-              </TabPanel>
-              <TabPanel value={value} index={2} dir={theme.direction}>
-                <List className={classes.list}>
-                  
-                </List>
-              </TabPanel>
-              <TabPanel value={value} index={3} dir={theme.direction}>
-                <List className={classes.list}>
-                  {/* {requests.BLOCKED._embedded.requests.map(mapRequests)} */}
-                </List>
-              </TabPanel>
-            </SwipeableViews>
-          </Container>
+              <SwipeableViews
+                axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+                index={value}
+                onChangeIndex={handleChangeIndex}
+                style={{ width: "100%" }}
+              >
+                <TabPanel value={value} index={0} dir={theme.direction}>
+                  <List className={classes.list}>
+                    {requests.ACTIVE._embedded.requests.map(mapRequests)}
+                  </List>
+                </TabPanel>
+                <TabPanel value={value} index={1} dir={theme.direction}>
+                  <List>
+                    {/* requests.FINALIZED._embedded.requests.map(mapRequests) */}
+                  </List>
+                </TabPanel>
+                <TabPanel value={value} index={2} dir={theme.direction}>
+                  <List className={classes.list}>
+
+                  </List>
+                </TabPanel>
+                <TabPanel value={value} index={3} dir={theme.direction}>
+                  <List className={classes.list}>
+                    {/* requests.BLOCKED._embedded.requests.map(mapRequests) */}
+                  </List>
+                </TabPanel>
+              </SwipeableViews>
+            </Container>
+            : null
+          }
         </div>
       </div>
     );
