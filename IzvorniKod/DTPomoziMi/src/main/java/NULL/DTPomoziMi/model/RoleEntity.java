@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -45,7 +46,7 @@ public class RoleEntity implements Serializable {
 	@Column(name = "naziv")
 	private Role role;
 
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.REMOVE)
 	@JoinTable(
 		name = "imaulogu", joinColumns = { @JoinColumn(name = "id_uloga") },
 		inverseJoinColumns = { @JoinColumn(name = "id_korisnik") }

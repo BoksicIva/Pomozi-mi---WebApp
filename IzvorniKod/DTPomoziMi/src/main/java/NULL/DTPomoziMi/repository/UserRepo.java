@@ -27,10 +27,13 @@ public interface UserRepo extends PagingAndSortingRepository<User, Long> , JpaSp
 	)
 	String getTokenByEmail(@Param(value = "email") String email);
 
-	@Transactional
-	@Modifying
-	@Query(
-		nativeQuery = false, value = "UPDATE korisnik u SET u.enabled = :e where u.IdUser = :IdUser"
-	)
-	User updateEnabled(@Param("IdUser") long userID, @Param("e") boolean enabled);
+	/*
+	 * @Transactional
+	 * 
+	 * @Modifying
+	 * 
+	 * @Query( nativeQuery = false, value =
+	 * "UPDATE korisnik u SET u.enabled = :e where u.IdUser = :IdUser" ) void
+	 * updateEnabled(@Param("IdUser") long userID, @Param("e") boolean enabled);
+	 */
 }

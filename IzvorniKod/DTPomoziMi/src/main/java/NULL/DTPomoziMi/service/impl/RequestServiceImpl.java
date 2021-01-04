@@ -104,7 +104,7 @@ public class RequestServiceImpl implements RequestService {
 	}
 
 	@Override
-	public Request blockRequest(long idRequest, UserPrincipal principal) {
+	public Request blockUnblockRequest(long idRequest, UserPrincipal principal, boolean enabled) {
 		Request r = fetch(idRequest);
 		User user = principal.getUser();
 
@@ -113,7 +113,19 @@ public class RequestServiceImpl implements RequestService {
 				&& !user.getEnumRoles().contains(Role.ROLE_ADMIN)
 		) throw new IllegalAccessException("Missing permissions to block the request!");
 
-		r.setStatus(RequestStatus.BLOCKED);
+		if(r.getStatus().equals(RequestStatus.FINALIZED))
+			throw new IllegalActionException("Can't block or unblock finalized request");
+			
+		RequestStatus status;
+		
+		if(!enabled)
+			status = RequestStatus.BLOCKED;
+		else if(r.getExecutor() != null)
+			status = RequestStatus.EXECUTING;
+		else
+			status = RequestStatus.ACTIVE;
+		
+		r.setStatus(status);
 
 		return requestRepo.save(r);
 	}
@@ -274,6 +286,31 @@ public class RequestServiceImpl implements RequestService {
 		map.put(RequestStatus.BLOCKED.toString(), requestDTOAssembler.toCollectionModel(blocked));
 		map.put(RequestStatus.EXECUTING.toString(), requestDTOAssembler.toCollectionModel(executing));
 
+		return map;
+	}
+	
+	@Override
+	public Map<String, CollectionModel<RequestDTO>> getRequestsByExecutor(
+		Long userId, UserPrincipal principal
+	) {
+		User user = principal.getUser(); // principal exists in the context because user has to be authenticated before accessing this point
+		if (
+			!user.getIdUser().equals(userId)
+		) throw new IllegalAccessException("ID of logged in user is not the same as given userID!");
+
+		List<Request> finalized = requestRepo.findByStatusAndExecutor(RequestStatus.FINALIZED, user);
+		List<Request> blocked = requestRepo.findByStatusAndExecutor(RequestStatus.BLOCKED, user);
+		List<Request> executing = requestRepo.findByStatusAndExecutor(RequestStatus.EXECUTING, user);
+
+		Map<String, CollectionModel<RequestDTO>> map = new HashMap<>();
+
+		map
+			.put(
+				RequestStatus.FINALIZED.toString(), requestDTOAssembler.toCollectionModel(finalized)
+			);
+		map.put(RequestStatus.BLOCKED.toString(), requestDTOAssembler.toCollectionModel(blocked));
+		map.put(RequestStatus.EXECUTING.toString(), requestDTOAssembler.toCollectionModel(executing));
+		
 		return map;
 	}
 

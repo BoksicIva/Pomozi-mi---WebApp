@@ -66,14 +66,15 @@ public interface UserService {
 	);
 
 	/**
-	 * Block user.
+	 * Block or unblock user.
 	 *
 	 * @param id the id
+	 * @param enabled the enabled
 	 * @return the user
 	 * @throws EntityMissingException - if element with given <code>id</code> does
 	 *                                not exist
 	 */
-	User blockUser(long id);
+	User blockUnblockUser(long id, boolean enabled);
 
 	/**
 	 * Gets the statistics.
@@ -100,4 +101,12 @@ public interface UserService {
 	 * @return the chain of trust
 	 */
 	List<RatingDTO> getChainOfTrust(long id, UserPrincipal principal);
+
+	/**
+	 * Delete user.
+	 *
+	 * @param idUser the id user
+	 * @return the user
+	 */
+	User deleteUser(long idUser, UserPrincipal principal);
 }

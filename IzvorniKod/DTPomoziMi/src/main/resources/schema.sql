@@ -57,8 +57,8 @@ CREATE TABLE Zahtjev
   primljenaNotif BOOLEAN NOT NULL,
   execTstmp TIMESTAMP,
   PRIMARY KEY (ID_Zahtjev),
-  FOREIGN KEY (ID_Autor) REFERENCES Korisnik(ID_Korisnik),
-  FOREIGN KEY (ID_Izvrsitelj) REFERENCES Korisnik(ID_Korisnik),
+  FOREIGN KEY (ID_Autor) REFERENCES Korisnik(ID_Korisnik) ON DELETE CASCADE,
+  FOREIGN KEY (ID_Izvrsitelj) REFERENCES Korisnik(ID_Korisnik) ON DELETE SET NULL,
   FOREIGN KEY (ID_Lokacija) REFERENCES Lokacija(ID_Lokacija)
 );
 
@@ -91,7 +91,7 @@ CREATE TABLE ImaUlogu
   ID_Korisnik BIGINT NOT NULL,
   ID_Uloga BIGINT NOT NULL,
   PRIMARY KEY (ID_Korisnik, ID_Uloga),
-  FOREIGN KEY (ID_Korisnik) REFERENCES Korisnik(ID_Korisnik),
-  FOREIGN KEY (ID_Uloga) REFERENCES Uloga(ID_Uloga)
+  FOREIGN KEY (ID_Korisnik) REFERENCES Korisnik(ID_Korisnik) ON DELETE CASCADE,
+  FOREIGN KEY (ID_Uloga) REFERENCES Uloga(ID_Uloga) ON DELETE CASCADE
 );
 

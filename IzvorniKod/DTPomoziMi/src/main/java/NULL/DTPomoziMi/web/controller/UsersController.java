@@ -30,6 +30,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -141,10 +142,24 @@ public class UsersController {
 	 * @return the response entity
 	 */
 	@Secured("ROLE_ADMIN")
-	@PostMapping(value = "/block/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> blockUser(@PathVariable(name = "id") long IdUser) {
+	@PostMapping(value = "/blockUnblock/{id}", produces = { "application/json; charset=UTF-8" })
+	public ResponseEntity<?> blockUnblockUser(@PathVariable(name = "id") long IdUser, @RequestParam(name="enabled") boolean enabled) {
 		try {
-			UserDTO user = userDTOModelAssembler.toModel(userService.blockUser(IdUser));
+			UserDTO user = userDTOModelAssembler.toModel(userService.blockUnblockUser(IdUser, enabled));
+			user.add(getLinks(IdUser));
+			return ResponseEntity.ok(user);
+		} catch (Exception e) {
+			logger.debug(e.getMessage());
+			throw e;
+		}
+	}
+	
+	
+	
+	@DeleteMapping(value = "{id}", produces = { "application/json; charset=UTF-8" })
+	public ResponseEntity<?> deleteUser(@PathVariable(name = "id") long IdUser, @AuthenticationPrincipal UserPrincipal principal) {
+		try {
+			UserDTO user = userDTOModelAssembler.toModel(userService.deleteUser(IdUser, principal));
 			user.add(getLinks(IdUser));
 			return ResponseEntity.ok(user);
 		} catch (Exception e) {
@@ -232,7 +247,7 @@ public class UsersController {
 	}
 
 	private Link[] getLinks(long id) {
-		return new Link[] { linkGetUser(id), linkGetUsers(), linkUpdateUser(id), linkBlockUser(id),
+		return new Link[] { linkGetUser(id), linkGetUsers(), linkUpdateUser(id), linkDeleteUser(id), linkBlockUser(id),
 			linkGetStatistics(id), linkChainOfTrust(id) };
 	}
 
@@ -247,7 +262,7 @@ public class UsersController {
 	}
 
 	private Link linkBlockUser(long id) {
-		return linkTo(methodOn(getClass()).blockUser(id)).withRel("block").withType("post");
+		return linkTo(methodOn(getClass()).blockUnblockUser(id, true)).withRel("blockUnblock").withType("post");
 	}
 
 	private Link linkGetStatistics(long id) {
@@ -258,6 +273,12 @@ public class UsersController {
 		return linkTo(methodOn(getClass()).updateUser(id, null, null, null))
 			.withRel("update")
 			.withType("put");
+	}
+	
+	private Link linkDeleteUser(long id) {
+		return linkTo(methodOn(getClass()).deleteUser(id, null))
+			.withRel("delete")
+			.withType("delete");
 	}
 
 	private Link linkChainOfTrust(long id) {

@@ -17,15 +17,16 @@ import NULL.DTPomoziMi.web.DTO.RequestDTO;
 public interface RequestService {
 
 	/**
-	 * Block request.
+	 * Block or unblock request.
 	 *
 	 * @param idRequest the id request
 	 * @param principal the principal
+	 * @param enabled the enabled
 	 * @return the request
 	 * @throws EntityMissingException - if element with given <code>id</code> does
 	 *                                not exist
 	 */
-	Request blockRequest(long idRequest, UserPrincipal principal);
+	Request blockUnblockRequest(long idRequest, UserPrincipal principal, boolean enabled);
 
 	/**
 	 * Creates the request.
@@ -141,4 +142,13 @@ public interface RequestService {
 	 *                                not exist
 	 */
 	Request backOff(long id, UserPrincipal principal);
+
+	/**
+	 * Gets the requests by executor.
+	 *
+	 * @param userId the user id
+	 * @param principal the principal
+	 * @return the requests by executor
+	 */
+	Map<String, CollectionModel<RequestDTO>> getRequestsByExecutor(Long userId, UserPrincipal principal);
 }

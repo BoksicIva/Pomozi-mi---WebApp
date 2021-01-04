@@ -138,6 +138,12 @@ public class UserServiceImpl implements UserService {
 		Pageable pageable, Specification<User> specification, UserPrincipal principal
 	) {
 		User user = principal.getUser();
+		
+		if(!user.getEnumRoles().contains(Role.ROLE_ADMIN)) {
+			specification = specification.and((root, query, cb)->{
+				return cb.equal(root.<Boolean>get("enabled"), true);
+			});
+		}
 
 		Page<User> page = userRepo.findAll(specification, pageable);
 		if (!user.getEnumRoles().contains(Role.ROLE_ADMIN)) page.forEach(u -> u.setLocation(null));
@@ -147,7 +153,23 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Secured("ROLE_ADMIN")
-	public User blockUser(long userID) { return userRepo.updateEnabled(userID, false); }
+	public User blockUnblockUser(long userID, boolean enabled) {
+		User user = fetch(userID);
+		user.setEnabled(enabled);
+		userRepo.save(user);
+		return user;
+	}
+
+	@Override
+	@PreAuthorize("isAuthenticated()")
+	public User deleteUser(long idUser, UserPrincipal principal) {
+		if (!principal.getUser().getIdUser().equals(idUser))
+			throw new IllegalAccessException("Missing permission to delete user");
+
+		User user = fetch(idUser);
+		userRepo.delete(user);
+		return user;
+	}
 
 	@Override
 	@Transactional
@@ -255,15 +277,15 @@ public class UserServiceImpl implements UserService {
 		return user
 			.getRatedOthers()
 			.stream()
-				.filter(r -> r.getRate() > 3)
-                .flatMap(
-                    r -> r
-                        .getRated()
-                        .getRatedOthers()
-                        .stream()
-                        .filter(o -> o.getRated().getIdUser().equals(id))
-                )
-                .map(r -> ratingDTOAssembler.toModel(r))
+			.filter(r -> r.getRate() > 3)
+			.flatMap(
+				r -> r
+					.getRated()
+					.getRatedOthers()
+					.stream()
+					.filter(o -> o.getRated().getIdUser().equals(id))
+			)
+			.map(r -> ratingDTOAssembler.toModel(r))
 			.collect(Collectors.toList());
 	}
 

@@ -45,6 +45,7 @@ public class UserDTOModelAssembler extends RepresentationModelAssemblerSupport<U
 				map().setFirstName(source.getFirstName());
 				map().setLastName(source.getLastName());
 				map().setIdUser(source.getIdUser());
+				map().setEnabled(source.getEnabled());
 			}
 		});
 

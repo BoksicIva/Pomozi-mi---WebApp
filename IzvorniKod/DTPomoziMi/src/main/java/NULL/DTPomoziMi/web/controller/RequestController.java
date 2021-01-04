@@ -68,13 +68,13 @@ public class RequestController { // TODO linkovi...
 	 * @param id the id
 	 * @return the response entity
 	 */
-	@PatchMapping(value = "/block/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> blockRequest(
-		@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal
+	@PatchMapping(value = "/blockUnblock/{id}", produces = { "application/json; charset=UTF-8" })
+	public ResponseEntity<?> blockUnblockRequest(
+		@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal, @RequestParam(name="enabled") boolean enabled
 	) {
 		try {
 			RequestDTO blocked
-				= requestDTOassembler.toModel(requestService.blockRequest(id, principal));
+				= requestDTOassembler.toModel(requestService.blockUnblockRequest(id, principal, enabled));
 			blocked.add(getLinks(id));
 			return new ResponseEntity<>(blocked, HttpStatus.OK);
 		} catch (Exception e) {
@@ -191,6 +191,27 @@ public class RequestController { // TODO linkovi...
 			model
 				.add(
 					linkTo(methodOn(getClass()).getAuthoredRequests(userId, principal))
+						.withSelfRel()
+				);
+			model.add(getLinks(0));
+
+			return ResponseEntity.ok(model);
+		} catch (Exception e) {
+			logger.debug(e.getMessage());
+			throw e;
+		}
+	}
+	
+	@GetMapping(value = "/byExecutor/{id}", produces = { "application/json; charset=UTF-8" })
+	public ResponseEntity<?> getRequestsByExecutor(
+		@PathVariable(name = "id") Long userId, @AuthenticationPrincipal UserPrincipal principal
+	) {
+		try {
+			EntityModel<?> model
+				= EntityModel.of(requestService.getRequestsByExecutor(userId, principal));
+			model
+				.add(
+					linkTo(methodOn(getClass()).getRequestsByExecutor(userId, principal))
 						.withSelfRel()
 				);
 			model.add(getLinks(0));
@@ -320,12 +341,12 @@ public class RequestController { // TODO linkovi...
 	private Link[] getLinks(long id) {
 		return new Link[] { linkCreate(), linkOne(id), linkUpdate(id), linkDelete(id),
 			linkBlock(id), linkPick(id), linkExecuted(id), linkBackoff(id), linkActive(id),
-			linkAuthored(id) };
+			linkAuthored(id), linkByExecutor(id) };
 	}
 
 	private Link linkBlock(long id) {
-		return linkTo(methodOn(getClass()).blockRequest(id, null))
-			.withRel("block")
+		return linkTo(methodOn(getClass()).blockUnblockRequest(id, null, true))
+			.withRel("blockUnblock")
 			.withType("patch");
 	}
 
@@ -351,6 +372,12 @@ public class RequestController { // TODO linkovi...
 	private Link linkAuthored(long id) {
 		return linkTo(methodOn(getClass()).getAuthoredRequests(id, null))
 			.withRel("authored")
+			.withType("get");
+	}
+	
+	private Link linkByExecutor(long id) {
+		return linkTo(methodOn(getClass()).getRequestsByExecutor(id, null))
+			.withRel("byExecutor")
 			.withType("get");
 	}
 
