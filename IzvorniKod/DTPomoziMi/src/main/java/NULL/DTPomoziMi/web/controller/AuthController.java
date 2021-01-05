@@ -73,7 +73,9 @@ public class AuthController {
 		try {
 			userService.registerUser(user);
 		} catch (DataIntegrityViolationException e) {
-			throw new UserAlreadyExistException("User with username: " + user.getEmail() + " already exists");
+			throw new UserAlreadyExistException(
+				messageSource.getMessage("auth.registration.exists", new Object[] { user.getEmail() }, request.getLocale())
+			);
 		}
 
 		return ResponseEntity.ok(messageSource.getMessage("auth.registration.success", null, request.getLocale()));
@@ -81,7 +83,8 @@ public class AuthController {
 
 	@PostMapping(value = "/login", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> login(
-		@RequestParam("email") String email, @RequestParam("password") String password, HttpServletResponse response
+		@RequestParam("email") String email, @RequestParam("password") String password, HttpServletResponse response,
+		HttpServletRequest request
 	) throws Exception {
 
 		logger.debug("Login with username: {}", email);
@@ -92,7 +95,9 @@ public class AuthController {
 			auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 		} catch (AuthenticationException e) {
 			logger.debug("Incorect username: {} or password", email);
-			return new ResponseEntity<String>("Incorect username or password", HttpStatus.UNAUTHORIZED); // TODO promjeni
+			return new ResponseEntity<String>(
+				messageSource.getMessage("userDetails.service.notFound", null, request.getLocale()), HttpStatus.UNAUTHORIZED
+			);
 		}
 
 		UserPrincipal user = (UserPrincipal) auth.getPrincipal();
@@ -105,7 +110,7 @@ public class AuthController {
 		CookieUtil.create(response, JwtConstants.JWT_COOKIE_NAME, token, false, -1, false);
 		CookieUtil.create(response, JwtConstants.JWT_REFRESH_COOKIE_NAME, refreshToken, false, -1, true);
 
-		return ResponseEntity.ok("User login successful!");
+		return ResponseEntity.ok(messageSource.getMessage("auth.login.sucess", null, request.getLocale()));
 	}
 
 }
