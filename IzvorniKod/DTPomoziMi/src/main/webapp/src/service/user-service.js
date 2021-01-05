@@ -45,9 +45,67 @@ class UserService {
     return http.get("./requests/authored/" + id, {});
   }
 
-  blockUser(id) {
-    return http.post("./users/block/" + id, {});
+  blockRequest(id) {
+    return http.patch("./requests/blockUnblock/" + id + "?enabled=false", {});
+  }
+
+  unblockRequest(id) {
+    return http.patch("./requests/blockUnblock/" + id + "?enabled=true", {});
+  }
+
+  deleteRequest(id) {
+    return http.delete("./requests/" + id, {});
+  }
+
+  updateRequest(id, updatedRequest) {
+    return http.put("./requests/" + id, updatedRequest);
   }
 }
 
 export default new UserService();
+
+/* ALL LINKS 
+"self": {
+            "href": "http://localhost:8080/api/requests/7"
+        },
+        "create": {
+            "href": "http://localhost:8080/api/requests/",
+            "type": "post"
+        },
+        "one": {
+            "href": "http://localhost:8080/api/requests/7",
+            "type": "get"
+        },
+        "update": {
+            "href": "http://localhost:8080/api/requests/7",
+            "type": "put"
+        },
+        "delete": {
+            "href": "http://localhost:8080/api/requests/7",
+            "type": "delete"
+        },
+        "block": {
+            "href": "http://localhost:8080/api/requests/block/7",
+            "type": "patch"
+        },
+        "pick": {
+            "href": "http://localhost:8080/api/requests/pickForExecution/7",
+            "type": "patch"
+        },
+        "markExecuted": {
+            "href": "http://localhost:8080/api/requests/markExecuted/7",
+            "type": "patch"
+        },
+        "backoff": {
+            "href": "http://localhost:8080/api/requests/backOff/7",
+            "type": "patch"
+        },
+        "active": {
+            "href": "http://localhost:8080/api/requests/active{?radius}",
+            "type": "get",
+            "templated": true
+        },
+        "authored": {
+            "href": "http://localhost:8080/api/requests/authored/7",
+            "type": "get"
+        }*/
