@@ -33,7 +33,7 @@ public class Rating implements Serializable {
 
 	@Include
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id_ocjenjivanje")
 	private Long IdRating;
 

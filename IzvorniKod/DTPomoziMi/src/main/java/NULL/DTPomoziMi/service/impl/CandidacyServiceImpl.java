@@ -74,12 +74,13 @@ public class CandidacyServiceImpl implements CandidacyService {
 	}
 
 	private Location resolveLocation() {
-		BigDecimal bd = new BigDecimal(-1000);
+		BigDecimal bd = new BigDecimal(-300);
 		Location loc = locationService.findByLatitudeAndLongitude(bd, bd);
 
 		if (loc != null) return loc;
 
 		loc = new Location();
+		loc.setIdLocation(null);
 		loc.setAdress("global");
 		loc.setState("global");
 		loc.setTown("global");

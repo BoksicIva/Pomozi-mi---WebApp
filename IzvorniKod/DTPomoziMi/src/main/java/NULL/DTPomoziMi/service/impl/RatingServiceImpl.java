@@ -85,7 +85,7 @@ public class RatingServiceImpl implements RatingService {
 					&& !req.getExecutor().getIdUser().equals(idUser)
 			) throw new IllegalAccessException("Only authors and executors can rate requests!");
 
-			if (req.getStatus().equals(RequestStatus.FINALIZED))
+			if (!req.getStatus().equals(RequestStatus.FINALIZED))
 				throw new IllegalActionException("Cannot rate request that is not finalized!");
 		}
 
