@@ -180,7 +180,14 @@ public class UserServiceImpl implements UserService {
 		Map<String, Object> statistics = new HashMap<>(); // TODO tko moze vidjet?
 
 		User user = fetch(idUser);
-		statistics.put(numExecutedRequests, user.getExecutedReqs().size());
+		statistics
+			.put(
+				numExecutedRequests,
+				user
+					.getExecutedReqs().stream()
+					.filter(r -> r.getStatus().equals(RequestStatus.FINALIZED))
+					.count()
+			);
 		statistics.put(numAuthoredRequests, user.getAuthoredReqs().size());
 		statistics
 			.put(
@@ -222,30 +229,53 @@ public class UserServiceImpl implements UserService {
 		if (!users.contains(user)) return null;
 
 		Comparator<User> comp = (u1, u2) -> {
-			double avgGrade1
+			Double avgGrade1
 				= u1.getRatedBy().stream().mapToInt(r -> r.getRate()).average().orElse(-1);
-			double avgGrade2
+			Double avgGrade2
 				= u2.getRatedBy().stream().mapToInt(r -> r.getRate()).average().orElse(-1);
-			long numExecuted1 = u1
-				.getExecutedReqs()
-				.stream()
-				.filter(r -> r.getExecTstmp().getYear() == year)
-				.count();
-			long numExecuted2 = u2
-				.getExecutedReqs()
-				.stream()
-				.filter(r -> r.getExecTstmp().getYear() == year)
-				.count();
 
-			if (numExecuted1 > numExecuted2) return 1;
-			if (numExecuted1 < numExecuted2) return -1;
-			if (avgGrade1 > avgGrade2) return 1;
-			if (avgGrade1 < avgGrade2) return -1;
+			Long numExecuted1 = u1
+				.getExecutedReqs()
+				.stream()
+				.filter(
+					r -> r.getStatus().equals(RequestStatus.FINALIZED)
+						&& r.getExecTstmp().getYear() == year
+				)
+				.count();
+			Long numExecuted2 = u2
+				.getExecutedReqs()
+				.stream()
+				.filter(
+					r -> r.getStatus().equals(RequestStatus.FINALIZED)
+						&& r.getExecTstmp().getYear() == year
+				)
+				.count();
+			
+
+			if(avgGrade1 == -1 && avgGrade2 == -1)
+				return 0;
+			if(avgGrade1 == -1 && avgGrade2 != -1)
+				return -1;
+			if(avgGrade1 != -1 && avgGrade2 == -1)
+				return 1;
+			
+			if(numExecuted1 == 0 && numExecuted2 == 0)
+				return 0;
+			
+			long sum = numExecuted1+numExecuted2;
+			double weighted1 = avgGrade1 * (((double)numExecuted1)/sum);
+			double weighted2 = avgGrade2 * (((double)numExecuted2)/sum);
+			
+			if(weighted1 > weighted2)
+				return 1;
+			if(weighted1 < weighted2)
+				return -1;
+			
 			return 0;
 		};
 
 		List<User> list = new ArrayList<>(users);
-		list.sort(comp);
+		list.sort(comp.reversed());
 
 		return list.indexOf(user) + 1;
 	}

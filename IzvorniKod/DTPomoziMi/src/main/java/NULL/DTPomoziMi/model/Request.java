@@ -31,7 +31,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString
+@ToString(exclude = {"ratings"})
 @Table(name = "zahtjev")
 @Entity(name = "zahtjev")
 public class Request implements Serializable {

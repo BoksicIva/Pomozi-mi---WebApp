@@ -92,3 +92,12 @@ INSERT INTO public.ocjenjivanje (id_ocjenjivanje,ocjena,komentar,id_ocjenjivac,i
 	 (10,4,'Reprehenderit mollitia totam necessitatibus et ducimus ducimus omnis qui.',10,12,38),
 	 (11,4,'Fuga voluptates rerum libero.',10,9,40),
 	 (12,2,'Perferendis corrupti et aut ad sed corporis.',9,10,40);
+	 
+INSERT INTO public.kandidiranje (id_korisnik,id_kandidatura) VALUES
+	 (3,1),
+	 (7,1),
+	 (8,1),
+	 (9,1),
+	 (10,1),
+	 (11,1),
+	 (12,1);

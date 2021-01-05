@@ -19,6 +19,7 @@ import NULL.DTPomoziMi.repository.CandidacyRepo;
 import NULL.DTPomoziMi.security.UserPrincipal;
 import NULL.DTPomoziMi.service.CandidacyService;
 import NULL.DTPomoziMi.service.LocationService;
+import NULL.DTPomoziMi.service.UserService;
 
 @Service
 @PreAuthorize("isAuthenticated()")
@@ -26,6 +27,9 @@ public class CandidacyServiceImpl implements CandidacyService {
 
 	@Autowired
 	private CandidacyRepo candidacyRepo;
+
+	@Autowired
+	private UserService userService;
 
 	@Autowired
 	private LocationService locationService;
@@ -50,7 +54,8 @@ public class CandidacyServiceImpl implements CandidacyService {
 
 	@Override
 	public Candidacy candidateYourself(UserPrincipal principal) {
-		User user = principal.getUser();
+		User user = userService.fetch(principal.getUser().getIdUser());
+
 		int year = LocalDate.now().getYear();
 
 		List<Candidacy> list = candidacyRepo.findByYear(year);
@@ -65,10 +70,9 @@ public class CandidacyServiceImpl implements CandidacyService {
 			can.setLocation(loc);
 			can.setYear(year);
 		}
-
-		can.getUsers().add(user);
-
-		can = candidacyRepo.save(can);
+		user.addCandidacy(can);
+		candidacyRepo.save(can);
+		
 		can.getUsers().forEach(u -> u.setLocation(null));
 		return can;
 	}
@@ -86,7 +90,7 @@ public class CandidacyServiceImpl implements CandidacyService {
 		loc.setTown("global");
 		loc.setLatitude(bd);
 		loc.setLongitude(bd);
-		
+
 		return locationService.save(loc);
 	}
 
