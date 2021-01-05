@@ -75,6 +75,8 @@ public class RequestServiceImpl implements RequestService {
 
 		if (!user.getIdUser().equals(req.getAuthor().getIdUser())) throw new IllegalAccessException("Only authors can modify requests!");
 
+		if (!req.getStatus().equals(RequestStatus.ACTIVE)) throw new IllegalActionException("Only active requests can be modified!");
+
 		LocationDTO location = requestDTO.getLocation();
 		Location loc = resolveLocation(location);
 		req.setLocation(loc);
