@@ -59,7 +59,6 @@ public class RequestServiceImpl implements RequestService {
 		req.setLocation(loc);
 
 		req.setAuthor(principal.getUser());
-		req.setRecivedNotif(false);
 		req.setStatus(RequestStatus.ACTIVE);
 
 		return requestRepo.save(req);
@@ -272,7 +271,7 @@ public class RequestServiceImpl implements RequestService {
 		return map;
 	}
 
-	private void hideInfo(Request req) { req.setRecivedNotif(null); req.setPhone(null); }
+	private void hideInfo(Request req) { req.setPhone(null); }
 
 	private double calculateDistanceInKM(Location l1, Location l2) {
 		double lat1 = l1.getLatitude().doubleValue(), lon1 = l1.getLongitude().doubleValue();

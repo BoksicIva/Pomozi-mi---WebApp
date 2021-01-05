@@ -77,6 +77,9 @@ public class User implements Serializable {
 
 	@OneToMany(mappedBy = "rated", cascade = CascadeType.ALL)
 	private Set<Rating> ratedBy = new HashSet<>();
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private Set<Notification> notifications = new HashSet<>();
 
 	@OneToMany(mappedBy = "rator", cascade = CascadeType.ALL)
 	private Set<Rating> ratedOthers = new HashSet<>();
@@ -91,6 +94,20 @@ public class User implements Serializable {
 	private Set<Request> executedReqs = new HashSet<>();
 
 	public List<Role> getEnumRoles() { return roles.stream().map(r -> r.getRole()).collect(Collectors.toList()); }
+	
+	public Notification addNotification(Notification notification) {
+		getNotifications().add(notification);
+		notification.setUser(this);
+
+		return notification;
+	}
+
+	public Notification removeNotification(Notification notification) {
+		getNotifications().remove(notification);
+		notification.setUser(null);
+
+		return notification;
+	}
 
 	public Rating addRatedBy(Rating ratedBy) {
 		getRatedBy().add(ratedBy);

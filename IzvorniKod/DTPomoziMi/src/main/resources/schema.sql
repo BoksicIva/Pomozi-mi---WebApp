@@ -36,8 +36,8 @@ CREATE TABLE Korisnik
   lozinka VARCHAR(70) NOT NULL,
   email VARCHAR(250) NOT NULL,
   aktivan BOOLEAN NOT NULL,
-  token VARCHAR(500),
-  slika VARCHAR(500),
+  token VARCHAR(1000),
+  slika VARCHAR(1000),
   ID_Lokacija BIGINT,
   PRIMARY KEY (ID_Korisnik),
   FOREIGN KEY (ID_Lokacija) REFERENCES Lokacija(ID_Lokacija) ON DELETE CASCADE,
@@ -47,7 +47,7 @@ CREATE TABLE Korisnik
 CREATE TABLE Zahtjev
 (
   ID_Zahtjev BIGINT AUTO_INCREMENT NOT NULL,
-  opis VARCHAR(500) NOT NULL,
+  opis VARCHAR(2000) NOT NULL,
   tstmp TIMESTAMP,
   status VARCHAR(15) NOT NULL,
   brojMobitela VARCHAR(15),
@@ -93,5 +93,15 @@ CREATE TABLE ImaUlogu
   PRIMARY KEY (ID_Korisnik, ID_Uloga),
   FOREIGN KEY (ID_Korisnik) REFERENCES Korisnik(ID_Korisnik) ON DELETE CASCADE,
   FOREIGN KEY (ID_Uloga) REFERENCES Uloga(ID_Uloga) ON DELETE CASCADE
+);
+
+CREATE TABLE Obavijest
+(
+  ID_Obavijest BIGINT AUTO_INCREMENT NOT NULL,
+  obavijest VARCHAR(2000) NOT NULL,
+  primljena BOOLEAN NOT NULL,
+  ID_Korisnik BIGINT NOT NULL,
+  PRIMARY KEY (ID_Obavijest),
+  FOREIGN KEY (ID_Korisnik) REFERENCES Korisnik(ID_Korisnik) ON DELETE CASCADE
 );
 

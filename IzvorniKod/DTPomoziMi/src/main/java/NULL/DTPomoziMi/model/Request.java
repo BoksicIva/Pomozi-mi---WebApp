@@ -50,9 +50,6 @@ public class Request implements Serializable {
 	@Column(name = "opis")
 	private String description;
 
-	@Column(name = "primljenanotif")
-	private Boolean recivedNotif;
-
 	@Enumerated(EnumType.STRING)
 	private RequestStatus status;
 
