@@ -30,8 +30,8 @@ import PropTypes from "prop-types";
 import SwipeableViews from "react-swipeable-views";
 import UserService from "../service/user-service";
 import Sidebar from "./sidebar";
-import BlockIcon from '@material-ui/icons/Block';
 import ReportIcon from '@material-ui/icons/Report';
+import ReportOffIcon from '@material-ui/icons/ReportOff';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -163,6 +163,7 @@ const Profile = (props) => {
   const [location, setLocation] = useState({});
   const [isUser, setUser] = useState(false);
   const [isAdmin, setAdmin] = useState(false);
+  const [isBlocked, setBlocked] = useState(false);
 
 
   function handleChange(event, newValue) {
@@ -184,14 +185,15 @@ const Profile = (props) => {
   const handleAbout = () => {
     setAbout(!about);
   };
-  const handleBlock = () => {
-      UserService.blockUser(props.match.params.id).then((response) => {
-        props.history.push("/list");;
+  const handleBlock = value => () => {
+    UserService.blockUser(props.match.params.id, value).then((response) => {
+      props.history.push("/list");;
     })
-    .catch((error) => {
+      .catch((error) => {
         alert(error);
-    })
+      })
   }
+
 
   useEffect(() => {
     //console.log(props.match.params.id);
@@ -199,6 +201,9 @@ const Profile = (props) => {
     UserService.getUser(props.match.params.id).then((response) => {
       console.log(response);
       setUserData(response.data);
+      if (response.data.enabled === false) {
+        setBlocked(true);
+      }
       console.log(user.id == props.match.params.id);
       if (user.id == props.match.params.id) {
         setUser(true);
@@ -222,7 +227,7 @@ const Profile = (props) => {
       setRequests();
       setLoading(false);
     }
-  }, []);
+  }, [props.match.params.id]);
 
 
   const mapRequests = (request) => {
@@ -341,15 +346,21 @@ const Profile = (props) => {
               </Typography>
             </Container>
             {isUser ? null :
-              isAdmin ?
-              <IconButton aria-label="block"
+            isAdmin ?
+              isBlocked ? <IconButton aria-label="block"
                 title="Blokiraj korisnika"
-                onClick={handleBlock}>
-                <ReportIcon fontSize="large" />
-              </IconButton> : null
-              
-            } 
-            
+                onClick={handleBlock("true")}>
+                <ReportOffIcon fontSize="large" />
+              </IconButton> :
+                
+                  <IconButton aria-label="block"
+                    title="Blokiraj korisnika"
+                    onClick={handleBlock("false")}>
+                    <ReportIcon fontSize="large" />
+                  </IconButton> :
+                    null
+            }
+
           </Container>
           <Dialog open={open} onClose={handleClose}>
             <DialogTitle id="form-dialog-title">

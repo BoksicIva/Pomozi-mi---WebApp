@@ -39,14 +39,10 @@ export const Dash = props => {
     const [checked, setchecked] = useState(false);
     const [address, setAddress] = useState(false);
 
-
-
-
     if (loadError) return "Error";
     if (!isLoaded) return "Loading...";
 
     document.body.style = 'background-image: none;';
-
 
     const handleClick = () => {
         console.log(checked);
@@ -82,9 +78,6 @@ export const Dash = props => {
         );
 
     }
-
-
-
 
     const showError = (error) => {
         switch (error.code) {
@@ -136,16 +129,20 @@ export const Dash = props => {
                                                         } */
                             var call = new Object();
                             var location = new Object();
+                            if(checked){
                             var addParts = address.split(",");
                             location.adress = addParts[0];
                             location.state = addParts[3].trim();
                             location.town = addParts[2].trim();
                             location.longitude = long;
                             location.latitude = lat;
+                            }else{
+                                location=null;
+                            }
 
                             call.phone = values.phone;
                             call.location = location;
-                            call.tstmp = values.date + " " + "12:00:00";
+                            call.tstmp = ((values.date === "") ? null : values.date + " " + "12:00:00");
                             call.description = values.req;
 
                             Service.sendRequest(call)

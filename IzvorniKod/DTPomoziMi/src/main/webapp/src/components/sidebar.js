@@ -15,7 +15,7 @@ function Navbar(props) {
 
   const showSidebar = () => setSidebar(!sidebar);
 
-  const handleLogOut = () => {
+  const handleLogOut = (props) => {
     localStorage.removeItem("username");
 
     LogoutService.logout()

@@ -32,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 let rows = [];
 
 export default function BasicTable() {
