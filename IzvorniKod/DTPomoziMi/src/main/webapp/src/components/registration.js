@@ -33,16 +33,6 @@ export const Registration = (props) => (
             error1: "",
           }}
           onSubmit={async (values) => {
-            /* if (values.email !== localStorage.getItem("email"))
-              localStorage.removeItem("photo");
-
-            localStorage.setItem("firstName", values.firstName);
-            localStorage.setItem("lastName", values.lastName);
-            localStorage.setItem("email", values.email);
-            localStorage.setItem("country", values.country);
-            localStorage.setItem("town", values.town);
-            localStorage.setItem("address", values.address); */
-
             let data = new FormData();
 
             Geocode.fromAddress(values.address).then(

@@ -30,8 +30,13 @@ import PropTypes from "prop-types";
 import SwipeableViews from "react-swipeable-views";
 import UserService from "../service/user-service";
 import Sidebar from "./sidebar";
-import BlockIcon from "@material-ui/icons/Block";
+import CreateIcon from "@material-ui/icons/Create";
 import ReportIcon from "@material-ui/icons/Report";
+import ReportOffIcon from "@material-ui/icons/ReportOff";
+import StarBorderIcon from "@material-ui/icons/StarBorder";
+import Star from "@material-ui/icons/Star";
+import Rating from "@material-ui/lab/Rating";
+import RatingService from "../service/rating-service";
 //https://p16-sg.tiktokcdn.com/img/musically-maliva-obj/1651168661856262~c5_720x720.jpeg
 
 function TabPanel(props) {
@@ -148,6 +153,10 @@ const useStyles = makeStyles((theme) => ({
   scrollIndicator: {
     margin: 0,
   },
+
+  ratingContainer: {
+    marginBottom: "10px",
+  },
 }));
 
 const Profile = (props) => {
@@ -158,6 +167,7 @@ const Profile = (props) => {
   const [photoDialog, setPhotoDialog] = useState(false);
   const [reqDialog, setReqDialog] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
+  const [gradeDialog, setGradeDialog] = useState(false);
   const [about, setAbout] = useState(true);
   const [value, setValue] = useState(0);
   const [userData, setUserData] = useState(null);
@@ -167,6 +177,11 @@ const Profile = (props) => {
   const [updateReqs, setUpdateReqs] = useState({});
   const [isUser, setUser] = useState(false);
   const [isAdmin, setAdmin] = useState(false);
+  const [isBlocked, setBlocked] = useState(false);
+  const [rating, setRating] = useState({
+    ratingComment: null,
+    ratingGrade: null,
+  });
 
   function handleChange(event, newValue) {
     setValue(newValue);
@@ -200,13 +215,21 @@ const Profile = (props) => {
     setDeleteDialog(false);
   };
 
-  const handleAbout = () => {
-    setAbout(!about);
-    console.log(requests);
+  const openGradeDialog = () => {
+    setGradeDialog(true);
   };
 
-  const handleBlock = () => {
-    UserService.blockUser(props.match.params.id)
+  const closeGradeDialog = () => {
+    setGradeDialog(false);
+  };
+
+  const handleAbout = () => {
+    setAbout(!about);
+    console.log(userStatistics);
+  };
+
+  const handleBlock = (value) => () => {
+    UserService.blockUser(props.match.params.id, value)
       .then((response) => {
         props.history.push("/list");
       })
@@ -217,30 +240,46 @@ const Profile = (props) => {
 
   useEffect(() => {
     const user = UserService.getUserContext();
-    UserService.getUser(props.match.params.id).then((response) => {
-      setUserData(response.data);
-      if (user.id == props.match.params.id) {
-        setUser(true);
-      }
-      for (let role of user.roles) {
-        if (role === "ROLE_ADMIN") {
-          setAdmin(true);
+    UserService.getUser(props.match.params.id)
+      .then((response) => {
+        setUserData(response.data);
+        if (response.data.enabled === false) {
+          setBlocked(true);
         }
-      }
-    });
+        if (user.id == props.match.params.id) {
+          setUser(true);
+        }
+        for (let role of user.roles) {
+          if (role === "ROLE_ADMIN") {
+            setAdmin(true);
+          }
+        }
+      })
+      .catch((error) => {
+        alert(error);
+      });
 
-    UserService.getUserStatistics(props.match.params.id).then((response) => {
-      setUserStatistics(response.data);
-    });
+    UserService.getUserStatistics(props.match.params.id)
+      .then((response) => {
+        setUserStatistics(response.data);
+      })
+      .catch((error) => {
+        alert(error);
+      });
 
     if (props.match.params.id == user.id) {
-      UserService.getAuthored(user.id).then((response) => {
-        setRequests(response.data);
-      });
+      UserService.getAuthored(user.id)
+        .then((response) => {
+          setRequests(response.data);
+        })
+        .catch((error) => {
+          alert(error);
+        });
     } else {
       setRequests();
     }
-  }, [updateReqs]);
+    console.log("Refreshao sam se");
+  }, [updateReqs, props.match.params.id]);
 
   const mapRequests = (request) => {
     return (
@@ -288,7 +327,7 @@ const Profile = (props) => {
       <Sidebar />
 
       {/*dialog for editing a request*/}
-      <Dialog open={reqDialog} onClose={closeReqDialog}>
+      <Dialog open={reqDialog} onClose={closeReqDialog} maxWidth="sm" fullWidth>
         <DialogTitle>
           Zahtjev od:{" "}
           {dialogReq
@@ -365,7 +404,12 @@ const Profile = (props) => {
       </Dialog>
 
       {/* dialog for changing profile photo */}
-      <Dialog open={photoDialog} onClose={closePhotoDialog}>
+      <Dialog
+        open={photoDialog}
+        onClose={closePhotoDialog}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle id="form-dialog-title">
           Promijeni sliku profila
         </DialogTitle>
@@ -397,7 +441,7 @@ const Profile = (props) => {
       {/*dialog for confirming deleting a request*/}
       <Dialog open={deleteDialog} onClose={closeDeleteDialog}>
         <DialogTitle>
-          {"Jeste li sigurni da želite izbrisati ovaj zahtjev??"}
+          {"Jeste li sigurni da želite izbrisati ovaj zahtjev?"}
         </DialogTitle>
         <DialogActions>
           <Button
@@ -416,6 +460,71 @@ const Profile = (props) => {
             Izbriši
           </Button>
           <Button onClick={closeDeleteDialog} color="primary">
+            Odustani
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/*dialog for grading a user*/}
+      <Dialog
+        fullWidth
+        maxWidth="sm"
+        open={gradeDialog}
+        onClose={closeGradeDialog}
+      >
+        <DialogTitle>
+          Ocijenite korisnika:
+          {userData ? " " + userData.firstName + " " + userData.lastName : null}
+        </DialogTitle>
+        <DialogContent style={{ justifyContent: "center" }}>
+          <Rating
+            name="customized-empty"
+            value={rating.ratingGrade ? rating.ratingGrade : 0}
+            precision={1}
+            emptyIcon={<StarBorderIcon fontSize="large" />}
+            icon={<Star fontSize="large" />}
+            size="large"
+            classes={{ root: classes.ratingContainer }}
+            onChange={(event, grade) => {
+              setRating({
+                ratingComment: rating.ratingComment,
+                ratingGrade: grade,
+              });
+            }}
+          />
+          <TextField
+            value={rating.ratingComment ? rating.ratingComment : undefined}
+            label="Komentar"
+            fullWidth
+            multiline
+            onChange={(comment) => {
+              setRating({
+                ratingComment: comment.target.value,
+                ratingGrade: rating.ratingGrade,
+              });
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            disabled={
+              rating.ratingComment === null || rating.ratingGrade === null
+                ? true
+                : false
+            }
+            onClick={() => {
+              closeGradeDialog();
+              RatingService.rateUser(userData.idUser, {
+                comment: rating.ratingComment,
+                rate: rating.ratingGrade,
+              });
+              setUpdateReqs({});
+            }}
+            color="secondary"
+          >
+            Ocijeni
+          </Button>
+          <Button onClick={closeGradeDialog} color="primary">
             Odustani
           </Button>
         </DialogActions>
@@ -455,15 +564,41 @@ const Profile = (props) => {
               >
                 {about ? <VisibilityOffIcon /> : <VisibilityIcon />}
               </IconButton>
+              {isUser ? null : isAdmin ? (
+                isBlocked ? (
+                  <IconButton
+                    classes={{
+                      label: classes.visibilityLabel,
+                      root: classes.visibilityRoot,
+                    }}
+                    className={classes.visibilityButton}
+                    onClick={handleBlock("true")}
+                  >
+                    <ReportOffIcon fontSize="large" />
+                  </IconButton>
+                ) : (
+                  <IconButton
+                    classes={{
+                      label: classes.visibilityLabel,
+                      root: classes.visibilityRoot,
+                    }}
+                    className={classes.visibilityButton}
+                    onClick={handleBlock("false")}
+                  >
+                    <ReportIcon fontSize="large" />
+                  </IconButton>
+                )
+              ) : null}
               <IconButton
+                disabled={isUser ? true : false}
                 classes={{
                   label: classes.visibilityLabel,
                   root: classes.visibilityRoot,
                 }}
-                onClick={handleAbout}
+                onClick={openGradeDialog}
                 className={classes.visibilityButton}
               >
-                {about ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                <CreateIcon />
               </IconButton>
             </Container>
 
@@ -496,7 +631,7 @@ const Profile = (props) => {
                 Ocjena: {userStatistics ? userStatistics.avgGrade : null}
                 <br />
                 Izvršeni zahtjevi:{" "}
-                {userStatistics ? userStatistics.numFinalizedR : null}
+                {userStatistics ? userStatistics.numExecutedR : null}
                 <br />
                 Zadani zahtjevi:{" "}
                 {userStatistics ? userStatistics.numAuthoredR : null}
@@ -504,15 +639,6 @@ const Profile = (props) => {
                 Rang: {userStatistics ? userStatistics.rank : null}
               </Typography>
             </Container>
-            {isUser ? null : isAdmin ? (
-              <IconButton
-                aria-label="block"
-                title="Blokiraj korisnika"
-                onClick={handleBlock}
-              >
-                <ReportIcon fontSize="large" />
-              </IconButton>
-            ) : null}
           </Container>
         </Container>
 

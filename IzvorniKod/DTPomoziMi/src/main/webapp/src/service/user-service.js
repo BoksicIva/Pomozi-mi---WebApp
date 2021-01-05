@@ -60,6 +60,10 @@ class UserService {
   updateRequest(id, updatedRequest) {
     return http.put("./requests/" + id, updatedRequest);
   }
+
+  blockUser(id, en) {
+    return http.post("./users/blockUnblock/" + id +"?enabled=" + en, {});
+  }
 }
 
 export default new UserService();
