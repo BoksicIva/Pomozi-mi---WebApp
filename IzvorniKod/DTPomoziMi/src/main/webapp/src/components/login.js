@@ -37,6 +37,16 @@ export const Login = (props) => (
                 //alert(JSON.stringify(response, null, 2));
                 props.history.push("/home");
               })
+            .catch((error1) => {
+              const code = error1.response.status;
+              const response = error1.response.data;
+              console.log(error1.response.data)
+              if (code === 401) {
+                let div = document.createElement("div");
+                div.innerHTML = response;
+                document.getElementById("uncategorised").append(div);
+              }
+            });
 
 
           }

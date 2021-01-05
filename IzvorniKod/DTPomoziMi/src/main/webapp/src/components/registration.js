@@ -54,13 +54,15 @@ export const Registration = (props) => (
             data.append("email", values.email);
 
             RegService.register(data)
-              .then((response1) => {
+              .then((res) => {
                 props.history.push("/login");
+                console.log(res);
               })
               .catch((error1) => {
-                const code = error1.status;
-                const response = error1.data;
-
+                const code = error1.response.status;
+                const response = error1.response.data;
+                console.log(error1.response)
+                
                 if (code === 400) {
                   for (let obj of response) {
                     let div = document.createElement("div");
@@ -74,10 +76,11 @@ export const Registration = (props) => (
                       document.getElementById("uncategorised").append(div);
                     }
                   }
+                  
                 }
                 if (code === 403) {
                   let div = document.createElement("div");
-                  div.innerHTML = response;
+                  div.innerHTML = response.message;
                   document.getElementById("uncategorised").append(div);
                 }
               });
