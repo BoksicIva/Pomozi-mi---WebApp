@@ -33,8 +33,6 @@ import Sidebar from "./sidebar";
 import ReportIcon from '@material-ui/icons/Report';
 import ReportOffIcon from '@material-ui/icons/ReportOff';
 import CreateIcon from "@material-ui/icons/Create";
-import ReportIcon from "@material-ui/icons/Report";
-import ReportOffIcon from "@material-ui/icons/ReportOff";
 import StarBorderIcon from "@material-ui/icons/StarBorder";
 import Star from "@material-ui/icons/Star";
 import Rating from "@material-ui/lab/Rating";
