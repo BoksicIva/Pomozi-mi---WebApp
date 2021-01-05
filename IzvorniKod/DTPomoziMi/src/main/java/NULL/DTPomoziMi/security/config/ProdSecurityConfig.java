@@ -21,6 +21,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import NULL.DTPomoziMi.web.filters.JwtRequestFilter;
+import NULL.DTPomoziMi.web.filters.UnratedRequestsFilter;
 
 @Profile("prod")
 @Configuration
@@ -36,6 +37,9 @@ public class ProdSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private LogoutSuccessHandler myLogoutHandler;
+	
+	@Autowired
+	private UnratedRequestsFilter unratedRequestsFilter;
 
 	@Bean
 	@Override
@@ -69,6 +73,7 @@ public class ProdSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.formLogin().disable().logout().logoutUrl("/logout").logoutSuccessHandler(myLogoutHandler);
 
 		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+		http.addFilterAfter(unratedRequestsFilter, JwtRequestFilter.class);
 
 	}
 

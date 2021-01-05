@@ -4,7 +4,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 import NULL.DTPomoziMi.model.Request;
 import NULL.DTPomoziMi.model.RequestStatus;
-import NULL.DTPomoziMi.model.User;
 
 public class ReqSpecs {
 	public static Specification<Request> statusEqual(RequestStatus status) {
@@ -15,19 +14,14 @@ public class ReqSpecs {
 		};
 	}
 
-	public static Specification<Request> authorEqual(User author) {
+	public static <R, P> Specification<R> atributeEqualNotEqual(String attribute, P type, boolean equal) {
 		return (root, query, builder) -> {
-			if (author == null) return builder.conjunction();// nemoj filtrirat ak je null
+			if (type == null) return builder.conjunction();// nemoj filtrirat ak je null
 
-			return builder.equal(root.<User>get("author"), author);
-		};
-	}
-
-	public static Specification<Request> executorEqual(User executor) {
-		return (root, query, builder) -> {
-			if (executor == null) return builder.conjunction();// nemoj filtrirat ak je null
-
-			return builder.equal(root.<User>get("executor"), executor);
+			if (equal)
+				return builder.equal(root.<P>get(attribute), type);
+			else
+				return builder.notEqual(root.<P>get(attribute), type);
 		};
 	}
 }

@@ -1,11 +1,13 @@
 package NULL.DTPomoziMi.service.impl;
 
-import org.modelmapper.ModelMapper;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import NULL.DTPomoziMi.exception.EntityMissingException;
@@ -26,9 +28,6 @@ import NULL.DTPomoziMi.web.DTO.RatingDTO;
 @Service
 @PreAuthorize("isAuthenticated()")
 public class RatingServiceImpl implements RatingService {
-	@Autowired
-	private ModelMapper modelMapper;
-
 	@Autowired
 	private RatingRepo ratingRepo;
 
@@ -68,9 +67,14 @@ public class RatingServiceImpl implements RatingService {
 	}
 
 	@Override
+	@Transactional
 	public Rating create(RatingDTO rating, long idUser, Long idRequest, UserPrincipal principal) {
 		User user = principal.getUser();
 		User rated = userService.fetch(idUser);
+
+		if (user.getIdUser() == rated.getIdUser()) throw new IllegalActionException("User cannot rate himself!");
+
+		Rating newRating = null;
 
 		Request req = null;
 		if (idRequest != null) {
@@ -80,15 +84,28 @@ public class RatingServiceImpl implements RatingService {
 
 			if (!req.getStatus().equals(RequestStatus.FINALIZED))
 				throw new IllegalActionException("Cannot rate request that is not finalized!");
+
+			Set<Rating> ratings = req.getRatings(); // ako je vec ocjenjen taj user za taj request
+
+			for (Rating r : ratings) { if (r.getRated().getIdUser().equals(rated.getIdUser())) newRating = r; }
+
+		} else {
+			Set<Rating> ratedBy = rated.getRatedBy();
+
+			for (Rating r : ratedBy) { // ako je taj koga se pokusava ocijenit vec ocjenjen od tog korisnika, a to nije bilo za request
+				if (r.getRator().getIdUser().equals(user.getIdUser()) && r.getRequest() == null) newRating = r;
+			}
 		}
 
-		Rating r = modelMapper.map(rating, Rating.class);
+		if (newRating == null) { newRating = new Rating(); }
 
-		r.setRequest(req);
-		r.setRator(user);
-		r.setRated(rated);
+		newRating.setComment(rating.getComment());
+		newRating.setRate(rating.getRate());
+		newRating.setRated(rated);
+		newRating.setRator(user);
+		newRating.setRequest(req);
 
-		return ratingRepo.save(r);
+		return ratingRepo.save(newRating);
 	}
 
 	@Override
@@ -100,7 +117,7 @@ public class RatingServiceImpl implements RatingService {
 
 		User user = principal.getUser();
 		if (!user.getIdUser().equals(rating.getRator().getIdUser()))
-			throw new IllegalAccessException("Missing permission to update request!");
+			throw new IllegalAccessException("Missing permission to update rating!");
 
 		Rating r = fetch(ratingId);
 		r.setComment(rating.getComment());

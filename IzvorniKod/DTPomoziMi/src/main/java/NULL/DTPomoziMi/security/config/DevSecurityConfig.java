@@ -2,6 +2,8 @@ package NULL.DTPomoziMi.security.config;
 
 import NULL.DTPomoziMi.web.filters.CsrfTokenRequestFilter;
 import NULL.DTPomoziMi.web.filters.JwtRequestFilter;
+import NULL.DTPomoziMi.web.filters.UnratedRequestsFilter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,6 +43,9 @@ public class DevSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private LogoutSuccessHandler myLogoutHandler;
 
+	@Autowired
+	private UnratedRequestsFilter unratedRequestsFilter;
+
 	@Bean
 	@Override
 	public AuthenticationManager authenticationManagerBean() throws Exception { return super.authenticationManagerBean(); }
@@ -79,6 +84,7 @@ public class DevSecurityConfig extends WebSecurityConfigurerAdapter {
 
 		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 		http.addFilterBefore(csrfTokenRequestFilter, CsrfFilter.class);
+		http.addFilterAfter(unratedRequestsFilter, JwtRequestFilter.class);
 
 	}
 

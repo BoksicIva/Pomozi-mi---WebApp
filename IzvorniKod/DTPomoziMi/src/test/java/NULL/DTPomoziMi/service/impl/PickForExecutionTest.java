@@ -28,8 +28,8 @@ public class PickForExecutionTest {
 	@WithUserDetails(value = "iva.boksic@gmail.com", userDetailsServiceBeanName = "myUserDetailsService")
 	public void test1() {
 		UserPrincipal principal = UserPrincipalGetter.getPrincipal();
-		service.pickForExecution(14, principal).getStatus();
-		assertEquals(RequestStatus.EXECUTING, service.fetch(14).getStatus());
+		service.pickForExecution(31, principal).getStatus();
+		assertEquals(RequestStatus.EXECUTING, service.fetch(31).getStatus());
 	}
 
 	//neaktivan zahtjev

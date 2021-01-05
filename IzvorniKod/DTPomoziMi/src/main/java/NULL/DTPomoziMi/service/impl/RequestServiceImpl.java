@@ -135,6 +135,8 @@ public class RequestServiceImpl implements RequestService {
 
 		if (!r.getStatus().equals(RequestStatus.ACTIVE)) throw new IllegalActionException("Cannot pick non active request for execution!");
 
+		if (r.getAuthor().getIdUser().equals(user.getIdUser())) throw new IllegalActionException("Cannot pick your request for execution!");
+
 		r.setExecutor(user);
 		r.setStatus(RequestStatus.EXECUTING);
 
@@ -205,6 +207,8 @@ public class RequestServiceImpl implements RequestService {
 	public Page<Request> getAllActiveRequests(Pageable pageable, Double radius, UserPrincipal principal) {
 		Specification<Request> specs = ReqSpecs.statusEqual(RequestStatus.ACTIVE);
 
+		specs = specs.and(ReqSpecs.<Request, User>atributeEqualNotEqual("author", principal.getUser(), false)); // author != prijavljeni korisnik
+
 		List<Request> actives = requestRepo.findAll(specs, pageable.getSort()).stream().filter(r -> {
 			User user = principal.getUser();
 			boolean in = false;
@@ -231,7 +235,7 @@ public class RequestServiceImpl implements RequestService {
 		User user = principal.getUser(); // principal exists in the context because user has to be authenticated before accessing this point
 		if (!user.getIdUser().equals(userID)) throw new IllegalAccessException("ID of logged in user is not the same as given userID!");
 
-		Specification<Request> spec = ReqSpecs.authorEqual(user);
+		Specification<Request> spec = ReqSpecs.<Request, User>atributeEqualNotEqual("author", user, true); // author = prijavljenom korisniku
 
 		List<Request> active = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.ACTIVE)));
 		List<Request> finalized = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.FINALIZED)));
@@ -253,7 +257,7 @@ public class RequestServiceImpl implements RequestService {
 		User user = principal.getUser(); // principal exists in the context because user has to be authenticated before accessing this point
 		if (!user.getIdUser().equals(userId)) throw new IllegalAccessException("ID of logged in user is not the same as given userID!");
 
-		Specification<Request> spec = ReqSpecs.executorEqual(user);
+		Specification<Request> spec = ReqSpecs.<Request, User>atributeEqualNotEqual("executor", user, true); // executor = prijavljeni korisnik
 
 		List<Request> finalized = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.FINALIZED)));
 		List<Request> blocked = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.BLOCKED)));
