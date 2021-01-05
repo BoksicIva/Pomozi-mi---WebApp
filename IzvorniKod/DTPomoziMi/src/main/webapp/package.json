@@ -6,6 +6,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.57",
     "@react-google-maps/api": "^2.0.2",
     "@reduxjs/toolkit": "^1.4.0",
     "@testing-library/jest-dom": "^4.2.4",
@@ -25,6 +26,7 @@
     "react-geocode": "^0.2.2",
     "react-google-maps": "^9.4.5",
     "react-icons": "^4.1.0",
+    "react-rating": "^2.0.5",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "react-slideshow-image": "^3.4.3",

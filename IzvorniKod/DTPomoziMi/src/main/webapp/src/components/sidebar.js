@@ -51,13 +51,6 @@ function Navbar(props) {
             <FaIcons.FaBars onClick={showSidebar} />
           </Link>
 
-          {/* <h1 className={sidebarStyle.title}> 
-            <IconContext.Provider value={{ color: '#cc0000' }}>
-              <ImIcons.ImHeart></ImIcons.ImHeart>
-            </IconContext.Provider>
-            &nbsp; Pomozi mi &nbsp;
-          </h1> */}
-
           <a href="/home" style={{ textDecoration: "none" }}>
             <Typography
               variant="h4"

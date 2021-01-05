@@ -82,3 +82,17 @@
   font-size: 1.5em;
   font-weight: bold;
 }
+
+.input {
+  width: 20vw;
+}
+
+.iconButton {
+  height: 40px;
+  width: 40px;
+  box-shadow: none;
+}
+
+.searchIcon {
+  margin-left: 0;
+}
