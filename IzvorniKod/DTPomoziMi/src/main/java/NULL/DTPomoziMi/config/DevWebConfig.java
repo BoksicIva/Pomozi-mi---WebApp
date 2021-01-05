@@ -24,8 +24,7 @@ public class DevWebConfig implements WebMvcConfigurer {
 			.allowedOrigins("http://localhost:3000")
 			.allowedHeaders("*")
 			.allowedMethods(
-				HttpMethod.GET.toString(), HttpMethod.POST.toString(),
-				HttpMethod.OPTIONS.toString(), HttpMethod.PATCH.toString(),
+				HttpMethod.GET.toString(), HttpMethod.POST.toString(), HttpMethod.OPTIONS.toString(), HttpMethod.PATCH.toString(),
 				HttpMethod.PUT.toString(), HttpMethod.DELETE.toString()
 			)
 			.allowCredentials(true);
@@ -40,8 +39,7 @@ public class DevWebConfig implements WebMvcConfigurer {
 
 	@Bean
 	public MessageSource messageSource() {
-		ReloadableResourceBundleMessageSource messageSource
-			= new ReloadableResourceBundleMessageSource();
+		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
 
 		messageSource.setBasename("classpath:messages");
 		messageSource.setDefaultEncoding("UTF-8");

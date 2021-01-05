@@ -64,8 +64,7 @@ public class RatingController {
 	 */
 	@GetMapping(value = "/user/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> getUsersRatings(
-		@PathVariable("id") long userID, @PageableDefault Pageable pageable,
-		PagedResourcesAssembler<Rating> assembler
+		@PathVariable("id") long userID, @PageableDefault Pageable pageable, PagedResourcesAssembler<Rating> assembler
 	) {
 		try {
 			Page<Rating> ratingsPage = ratingService.findByRated(pageable, userID);
@@ -85,12 +84,9 @@ public class RatingController {
 	 * @return the rating by id
 	 */
 	@GetMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> getRatingById(
-		@PathVariable("id") Long id, @AuthenticationPrincipal UserPrincipal principal
-	) {
+	public ResponseEntity<?> getRatingById(@PathVariable("id") Long id, @AuthenticationPrincipal UserPrincipal principal) {
 		try {
-			return ResponseEntity
-				.ok(ratingDTOAssembler.toModel(ratingService.getRatingById(id, principal)));
+			return ResponseEntity.ok(ratingDTOAssembler.toModel(ratingService.getRatingById(id, principal)));
 		} catch (Exception e) {
 			logger.debug("Exception {} while fetching rating by id", e.getMessage());
 			throw e;
@@ -108,18 +104,14 @@ public class RatingController {
 	 */
 	@PostMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> createRating(
-		@PathVariable("id") long idUser,
-		@RequestParam(value = "idReq", required = false) Long idReq,
-		@RequestBody @Valid RatingDTO rating, BindingResult bindingResult,
-		@AuthenticationPrincipal UserPrincipal principal
+		@PathVariable("id") long idUser, @RequestParam(value = "idReq", required = false) Long idReq, @RequestBody @Valid RatingDTO rating,
+		BindingResult bindingResult, @AuthenticationPrincipal UserPrincipal principal
 	) {
 		if (bindingResult.hasErrors()) hasErrors(bindingResult);
 
 		try {
 			Rating saved = ratingService.create(rating, idUser, idReq, principal);
-			return ResponseEntity
-				.created(URI.create("/api/ratings" + saved.getIdRating()))
-				.body(ratingDTOAssembler.toModel(saved));
+			return ResponseEntity.created(URI.create("/api/ratings" + saved.getIdRating())).body(ratingDTOAssembler.toModel(saved));
 		} catch (Exception e) {
 			logger.debug("Exception {} while creating rating", e.getMessage());
 			throw e;
@@ -136,16 +128,13 @@ public class RatingController {
 
 	@PutMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> updateRating(
-		@PathVariable("id") long idRating, @RequestBody @Valid RatingDTO ratingDTO,
-		BindingResult bindingResult, @AuthenticationPrincipal UserPrincipal principal
+		@PathVariable("id") long idRating, @RequestBody @Valid RatingDTO ratingDTO, BindingResult bindingResult,
+		@AuthenticationPrincipal UserPrincipal principal
 	) {
 		if (bindingResult.hasErrors()) hasErrors(bindingResult);
 
 		try {
-			return ResponseEntity
-				.ok(
-					ratingDTOAssembler.toModel(ratingService.update(ratingDTO, idRating, principal))
-				);
+			return ResponseEntity.ok(ratingDTOAssembler.toModel(ratingService.update(ratingDTO, idRating, principal)));
 		} catch (Exception e) {
 			logger.debug("Exception {} while updating rating", e.getMessage());
 			throw e;
@@ -160,12 +149,9 @@ public class RatingController {
 	 * @return the response entity
 	 */
 	@DeleteMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> deleteRating(
-		@PathVariable("id") long idRating, @AuthenticationPrincipal UserPrincipal principal
-	) {
+	public ResponseEntity<?> deleteRating(@PathVariable("id") long idRating, @AuthenticationPrincipal UserPrincipal principal) {
 		try {
-			return ResponseEntity
-				.ok(ratingDTOAssembler.toModel(ratingService.deleteById(idRating, principal)));
+			return ResponseEntity.ok(ratingDTOAssembler.toModel(ratingService.deleteById(idRating, principal)));
 		} catch (Exception e) {
 			logger.debug("Exception {} while updating rating", e.getMessage());
 			throw e;

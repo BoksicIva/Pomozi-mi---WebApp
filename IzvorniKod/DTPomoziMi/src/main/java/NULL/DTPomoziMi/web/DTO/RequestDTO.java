@@ -56,7 +56,7 @@ public class RequestDTO extends RepresentationModel<RequestDTO> {
 
 	@Valid
 	private LocationDTO location;
-	
+
 	@Past
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime execTstmp;

@@ -8,15 +8,10 @@ import org.springframework.stereotype.Component;
 @Component
 @PropertySources(
 	{ @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true),
-		@PropertySource(
-			value = "classpath:/config/application.properties", ignoreResourceNotFound = true
-		), @PropertySource(value = "file:./application.properties", ignoreResourceNotFound = true),
-		@PropertySource(
-			value = "file:./config/*/application.properties", ignoreResourceNotFound = true
-		),
-		@PropertySource(
-			value = "file:./config/application.properties", ignoreResourceNotFound = true
-		) }
+		@PropertySource(value = "classpath:/config/application.properties", ignoreResourceNotFound = true),
+		@PropertySource(value = "file:./application.properties", ignoreResourceNotFound = true),
+		@PropertySource(value = "file:./config/*/application.properties", ignoreResourceNotFound = true),
+		@PropertySource(value = "file:./config/application.properties", ignoreResourceNotFound = true) }
 )
 public class JwtConstants {
 
@@ -45,10 +40,7 @@ public class JwtConstants {
 	}
 
 	@Value("${secret.key}")
-	public void setSecretKey(String secretKey) {
-		if (secretKey == null) throwException("secret.key");
-		SECRET_KEY = secretKey;
-	}
+	public void setSecretKey(String secretKey) { if (secretKey == null) throwException("secret.key"); SECRET_KEY = secretKey; }
 
 	@Value("${jwt.cookie.name}")
 	public void setJwtCookieName(String jwtCookieName) {

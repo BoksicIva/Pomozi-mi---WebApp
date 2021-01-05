@@ -3,6 +3,7 @@ package NULL.DTPomoziMi.exception.handling;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
@@ -41,14 +42,12 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
 		return new ResponseEntity<>(createProps(e, HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
 	}
-	
+
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<?> handleException(Exception e) {
 		e.printStackTrace();
 
-		return new ResponseEntity<>(
-			createProps(e, HttpStatus.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR
-		);
+		return new ResponseEntity<>(createProps(e, HttpStatus.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler(EntityMissingException.class)
@@ -57,7 +56,14 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
 		return new ResponseEntity<>(createProps(e, HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
 	}
-	
+
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+		e.printStackTrace();
+
+		return new ResponseEntity<>(createProps(e, HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+	}
+
 	@ExceptionHandler(PropertyReferenceException.class)
 	public ResponseEntity<?> handlePropertyReferenceException(PropertyReferenceException e) {
 		e.printStackTrace();
@@ -69,9 +75,7 @@ public class ExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 	public ResponseEntity<?> handleIllegalAccessException(IllegalAccessException e) {
 		e.printStackTrace();
 
-		return new ResponseEntity<>(
-			createProps(e, HttpStatus.UNAUTHORIZED), HttpStatus.UNAUTHORIZED
-		);
+		return new ResponseEntity<>(createProps(e, HttpStatus.UNAUTHORIZED), HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler(IllegalActionException.class)

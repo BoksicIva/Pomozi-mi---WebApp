@@ -21,10 +21,7 @@ public class RatingDTOAssembler extends RepresentationModelAssemblerSupport<Rati
 	private final ModelMapper modelMapper;
 
 	@Autowired
-	public RatingDTOAssembler(
-		ModelMapper modelMapper, UserDTOModelAssembler userAssembler,
-		RequestDTOAssembler requestAssembler
-	) {
+	public RatingDTOAssembler(ModelMapper modelMapper, UserDTOModelAssembler userAssembler, RequestDTOAssembler requestAssembler) {
 		super(UsersController.class, RatingDTO.class);
 		this.modelMapper = modelMapper;
 		configureRatingToRatingDTO(userAssembler, requestAssembler);
@@ -38,15 +35,13 @@ public class RatingDTOAssembler extends RepresentationModelAssemblerSupport<Rati
 		return ratingDTO;
 	}
 
-	private void configureRatingToRatingDTO(
-		UserDTOModelAssembler userAssembler, RequestDTOAssembler requestAssembler
-	) {
+	private void configureRatingToRatingDTO(UserDTOModelAssembler userAssembler, RequestDTOAssembler requestAssembler) {
 
-		Converter<User, UserDTO> userConverter = context -> (context.getSource() == null ? null
-			: userAssembler.toModel(context.getSource()));
+		Converter<User, UserDTO> userConverter
+			= context -> (context.getSource() == null ? null : userAssembler.toModel(context.getSource()));
 
-		Converter<Request, RequestDTO> requestConverter = context -> (context.getSource() == null
-			? null : requestAssembler.toModel(context.getSource()));
+		Converter<Request, RequestDTO> requestConverter
+			= context -> (context.getSource() == null ? null : requestAssembler.toModel(context.getSource()));
 
 		modelMapper.addMappings(new PropertyMap<Rating, RatingDTO>() {
 			@Override

@@ -10,9 +10,7 @@ public class IllegalAccessException extends RuntimeException {
 
 	public IllegalAccessException() { super(); }
 
-	public IllegalAccessException(
-		String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace
-	) {
+	public IllegalAccessException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
 

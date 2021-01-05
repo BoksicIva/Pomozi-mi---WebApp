@@ -36,9 +36,7 @@ public class CandidacyServiceImpl implements CandidacyService {
 
 	@Override
 	public Candidacy fetch(Long id) {
-		return candidacyRepo
-			.findById(id)
-			.orElseThrow(() -> new EntityMissingException(Candidacy.class, id));
+		return candidacyRepo.findById(id).orElseThrow(() -> new EntityMissingException(Candidacy.class, id));
 	}
 
 	@Override
@@ -72,7 +70,7 @@ public class CandidacyServiceImpl implements CandidacyService {
 		}
 		user.addCandidacy(can);
 		candidacyRepo.save(can);
-		
+
 		can.getUsers().forEach(u -> u.setLocation(null));
 		return can;
 	}

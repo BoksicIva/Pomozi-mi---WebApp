@@ -21,10 +21,7 @@ public class RequestDTOAssembler extends RepresentationModelAssemblerSupport<Req
 	private final ModelMapper modelMapper;
 
 	@Autowired
-	public RequestDTOAssembler(
-		ModelMapper modelMapper, UserDTOModelAssembler userAssembler,
-		LocationDTOAssembler locationAssembler
-	) {
+	public RequestDTOAssembler(ModelMapper modelMapper, UserDTOModelAssembler userAssembler, LocationDTOAssembler locationAssembler) {
 		super(RequestController.class, RequestDTO.class);
 		this.modelMapper = modelMapper;
 		configureRequestToRequestDTO(userAssembler, locationAssembler);
@@ -38,15 +35,13 @@ public class RequestDTOAssembler extends RepresentationModelAssemblerSupport<Req
 		return requestDTO;
 	}
 
-	private void configureRequestToRequestDTO(
-		UserDTOModelAssembler userAssembler, LocationDTOAssembler locationAssembler
-	) {
+	private void configureRequestToRequestDTO(UserDTOModelAssembler userAssembler, LocationDTOAssembler locationAssembler) {
 
-		Converter<User, UserDTO> userConverter = context -> (context.getSource() == null ? null
-			: userAssembler.toModel(context.getSource()));
+		Converter<User, UserDTO> userConverter
+			= context -> (context.getSource() == null ? null : userAssembler.toModel(context.getSource()));
 
-		Converter<Location, LocationDTO> locationConverter = context -> (context.getSource() == null
-			? null : locationAssembler.toModel(context.getSource()));
+		Converter<Location, LocationDTO> locationConverter
+			= context -> (context.getSource() == null ? null : locationAssembler.toModel(context.getSource()));
 
 		modelMapper.addMappings(new PropertyMap<Request, RequestDTO>() {
 			@Override

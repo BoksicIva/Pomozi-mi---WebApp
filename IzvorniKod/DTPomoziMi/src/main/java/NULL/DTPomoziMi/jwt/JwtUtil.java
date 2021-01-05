@@ -31,14 +31,10 @@ public class JwtUtil {
 
 	public String extractUsername(String token) { return extractClaim(token, Claims::getSubject); }
 
-	public Date extractExpiration(String token) {
-		return extractClaim(token, Claims::getExpiration);
-	}
+	public Date extractExpiration(String token) { return extractClaim(token, Claims::getExpiration); }
 
 	@SuppressWarnings("unchecked")
-	public List<String> extractRoles(String token) {
-		return (List<String>) extractClaim(token, claims -> claims.get(CLAIM_ROLES));
-	}
+	public List<String> extractRoles(String token) { return (List<String>) extractClaim(token, claims -> claims.get(CLAIM_ROLES)); }
 
 	public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
 		Claims claims = extractAllClaims(token);
@@ -49,21 +45,11 @@ public class JwtUtil {
 		return Jwts.parser().setSigningKey(JwtConstants.SECRET_KEY).parseClaimsJws(token).getBody();
 	}
 
-	private boolean isTokenExpired(String token) {
-		return extractExpiration(token).before(new Date());
-	}
+	private boolean isTokenExpired(String token) { return extractExpiration(token).before(new Date()); }
 
 	public String generateToken(UserPrincipal principal) {
 		Map<String, Object> claims = new HashMap<>();
-		claims
-			.put(
-				CLAIM_ROLES,
-				principal
-					.getAuthorities()
-					.stream()
-					.map(ga -> ga.getAuthority())
-					.collect(Collectors.toList())
-			);
+		claims.put(CLAIM_ROLES, principal.getAuthorities().stream().map(ga -> ga.getAuthority()).collect(Collectors.toList()));
 		claims.put(CLAIM_ID, principal.getUser().getIdUser());
 		return createToken(claims, principal.getUsername(), JwtConstants.JWT_EXPIRATION);
 	}

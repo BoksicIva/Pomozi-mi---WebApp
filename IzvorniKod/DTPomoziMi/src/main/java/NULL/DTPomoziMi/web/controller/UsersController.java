@@ -78,11 +78,9 @@ public class UsersController {
 	public ResponseEntity<?> getUsers(
 		@PageableDefault Pageable pageable, PagedResourcesAssembler<User> assembler,
 		@RequestParam(value = "firstName", required = false) String firstName,
-		@RequestParam(value = "lastName", required = false) String lastName,
-		@RequestParam(value = "email", required = false) String email,
+		@RequestParam(value = "lastName", required = false) String lastName, @RequestParam(value = "email", required = false) String email,
 		@RequestParam(value = "phone", required = false) String phone,
-		@RequestParam(value = "generalSearch", required = false) String generalSearch,
-		@AuthenticationPrincipal UserPrincipal principal
+		@RequestParam(value = "generalSearch", required = false) String generalSearch, @AuthenticationPrincipal UserPrincipal principal
 	) {
 		try {
 			Specification<User> specs = firstNameLike(firstName)
@@ -96,11 +94,7 @@ public class UsersController {
 				.toModel(
 					pageUser, userDTOModelAssembler,
 					linkTo(
-						methodOn(UsersController.class)
-							.getUsers(
-								null, null, firstName, lastName, email, phone, generalSearch,
-								principal
-							)
+						methodOn(UsersController.class).getUsers(null, null, firstName, lastName, email, phone, generalSearch, principal)
 					).withSelfRel()
 				);
 			pagedModel.add(getLinks(0));
@@ -120,12 +114,9 @@ public class UsersController {
 	 * @return the user
 	 */
 	@GetMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> getUser(
-		@PathVariable("id") long userID, @AuthenticationPrincipal UserPrincipal principal
-	) {
+	public ResponseEntity<?> getUser(@PathVariable("id") long userID, @AuthenticationPrincipal UserPrincipal principal) {
 		try {
-			UserDTO user
-				= userDTOModelAssembler.toModel(userService.getUserByID(userID, principal));
+			UserDTO user = userDTOModelAssembler.toModel(userService.getUserByID(userID, principal));
 			user.add(getLinks(userID));
 
 			return new ResponseEntity<UserDTO>(user, HttpStatus.OK);
@@ -143,7 +134,7 @@ public class UsersController {
 	 */
 	@Secured("ROLE_ADMIN")
 	@PostMapping(value = "/blockUnblock/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> blockUnblockUser(@PathVariable(name = "id") long IdUser, @RequestParam(name="enabled") boolean enabled) {
+	public ResponseEntity<?> blockUnblockUser(@PathVariable(name = "id") long IdUser, @RequestParam(name = "enabled") boolean enabled) {
 		try {
 			UserDTO user = userDTOModelAssembler.toModel(userService.blockUnblockUser(IdUser, enabled));
 			user.add(getLinks(IdUser));
@@ -153,9 +144,7 @@ public class UsersController {
 			throw e;
 		}
 	}
-	
-	
-	
+
 	@DeleteMapping(value = "{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> deleteUser(@PathVariable(name = "id") long IdUser, @AuthenticationPrincipal UserPrincipal principal) {
 		try {
@@ -189,14 +178,13 @@ public class UsersController {
 
 	@PutMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> updateUser(
-		@PathVariable("id") long id, @RequestBody @Valid UserDTO userDTO,
-		BindingResult bindingResult, @AuthenticationPrincipal UserPrincipal principal
+		@PathVariable("id") long id, @RequestBody @Valid UserDTO userDTO, BindingResult bindingResult,
+		@AuthenticationPrincipal UserPrincipal principal
 	) {
 		if (bindingResult.hasErrors()) hasErrors(bindingResult);
 
 		try {
-			UserDTO user
-				= userDTOModelAssembler.toModel(userService.updateUser(userDTO, id, principal));
+			UserDTO user = userDTOModelAssembler.toModel(userService.updateUser(userDTO, id, principal));
 			user.add(getLinks(id));
 			return ResponseEntity.ok(user);
 		} catch (Exception e) {
@@ -206,9 +194,7 @@ public class UsersController {
 	}
 
 	@GetMapping(value = "chainOfTrust/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> getChainOfTrust(
-		@PathVariable long id, @AuthenticationPrincipal UserPrincipal principal
-	) {
+	public ResponseEntity<?> getChainOfTrust(@PathVariable long id, @AuthenticationPrincipal UserPrincipal principal) {
 		try {
 			CollectionModel<?> model = CollectionModel.of(userService.getChainOfTrust(id, principal));
 			model.add(linkTo(methodOn(getClass()).getChainOfTrust(id, principal)).withSelfRel());
@@ -235,14 +221,7 @@ public class UsersController {
 
 		String[] parts = str.split("\\s+");
 
-		for (String part : parts) {
-			spec = spec
-				.and(
-					firstNameLike(part)
-						.or(lastNameLike(part))
-						.or(emailLike(part).or(phoneLike(part)))
-				);
-		}
+		for (String part : parts) { spec = spec.and(firstNameLike(part).or(lastNameLike(part)).or(emailLike(part).or(phoneLike(part)))); }
 		return spec;
 	}
 
@@ -252,39 +231,25 @@ public class UsersController {
 	}
 
 	private Link linkGetUsers() {
-		return linkTo(methodOn(getClass()).getUsers(null, null, null, null, null, null, null, null))
-			.withRel("users")
-			.withType("get");
+		return linkTo(methodOn(getClass()).getUsers(null, null, null, null, null, null, null, null)).withRel("users").withType("get");
 	}
 
-	private Link linkGetUser(long id) {
-		return linkTo(methodOn(getClass()).getUser(id, null)).withRel("one").withType("get");
-	}
+	private Link linkGetUser(long id) { return linkTo(methodOn(getClass()).getUser(id, null)).withRel("one").withType("get"); }
 
 	private Link linkBlockUser(long id) {
 		return linkTo(methodOn(getClass()).blockUnblockUser(id, true)).withRel("blockUnblock").withType("post");
 	}
 
-	private Link linkGetStatistics(long id) {
-		return linkTo(methodOn(getClass()).getStatistics(id)).withRel("statistics").withType("get");
-	}
+	private Link linkGetStatistics(long id) { return linkTo(methodOn(getClass()).getStatistics(id)).withRel("statistics").withType("get"); }
 
 	private Link linkUpdateUser(long id) {
-		return linkTo(methodOn(getClass()).updateUser(id, null, null, null))
-			.withRel("update")
-			.withType("put");
-	}
-	
-	private Link linkDeleteUser(long id) {
-		return linkTo(methodOn(getClass()).deleteUser(id, null))
-			.withRel("delete")
-			.withType("delete");
+		return linkTo(methodOn(getClass()).updateUser(id, null, null, null)).withRel("update").withType("put");
 	}
 
+	private Link linkDeleteUser(long id) { return linkTo(methodOn(getClass()).deleteUser(id, null)).withRel("delete").withType("delete"); }
+
 	private Link linkChainOfTrust(long id) {
-		return linkTo(methodOn(getClass()).getChainOfTrust(id, null))
-			.withRel("chainOfTrust")
-			.withType("get");
+		return linkTo(methodOn(getClass()).getChainOfTrust(id, null)).withRel("chainOfTrust").withType("get");
 	}
 
 }

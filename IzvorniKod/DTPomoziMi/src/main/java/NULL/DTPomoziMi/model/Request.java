@@ -31,7 +31,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = {"ratings"})
+@ToString(exclude = { "ratings" })
 @Table(name = "zahtjev")
 @Entity(name = "zahtjev")
 public class Request implements Serializable {
@@ -76,11 +76,7 @@ public class Request implements Serializable {
 	@Column(name = "exectstmp")
 	private LocalDateTime execTstmp;
 
-	public Rating addRating(Rating rating) {
-		getRatings().add(rating);
-		rating.setRequest(this);
-		return rating;
-	}
+	public Rating addRating(Rating rating) { getRatings().add(rating); rating.setRequest(this); return rating; }
 
 	public Rating removeRating(Rating rating) {
 		getRatings().remove(rating);

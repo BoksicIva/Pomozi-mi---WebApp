@@ -20,15 +20,10 @@ public class UserPrincipal implements UserDetails {
 	public UserPrincipal(User user) { super(); this.user = user; }
 
 	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return mapToGrantedAuthorities(user.getEnumRoles());
-	}
+	public Collection<? extends GrantedAuthority> getAuthorities() { return mapToGrantedAuthorities(user.getEnumRoles()); }
 
 	private List<? extends GrantedAuthority> mapToGrantedAuthorities(List<Role> roles) {
-		return roles
-			.stream()
-			.map(r -> new SimpleGrantedAuthority(r.toString()))
-			.collect(Collectors.toList());
+		return roles.stream().map(r -> new SimpleGrantedAuthority(r.toString())).collect(Collectors.toList());
 	}
 
 	@Override

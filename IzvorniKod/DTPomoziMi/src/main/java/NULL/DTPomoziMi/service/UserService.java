@@ -61,14 +61,12 @@ public interface UserService {
 	 * @param specification the specification
 	 * @return the page
 	 */
-	Page<User> findUsers(
-		Pageable pageable, Specification<User> specification, UserPrincipal principal
-	);
+	Page<User> findUsers(Pageable pageable, Specification<User> specification, UserPrincipal principal);
 
 	/**
 	 * Block or unblock user.
 	 *
-	 * @param id the id
+	 * @param id      the id
 	 * @param enabled the enabled
 	 * @return the user
 	 * @throws EntityMissingException - if element with given <code>id</code> does

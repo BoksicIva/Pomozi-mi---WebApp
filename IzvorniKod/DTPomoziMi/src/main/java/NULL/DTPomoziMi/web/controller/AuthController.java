@@ -59,9 +59,7 @@ public class AuthController {
 	private UserDetailsService userDetailsService;
 
 	@PostMapping(value = "/registration", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> register(
-		@Valid UserRegisterDTO user, BindingResult bindingResult, HttpServletRequest request
-	) {
+	public ResponseEntity<?> register(@Valid UserRegisterDTO user, BindingResult bindingResult, HttpServletRequest request) {
 
 		if (bindingResult.hasErrors()) {
 			List<ObjectError> errors = bindingResult.getAllErrors();
@@ -75,19 +73,15 @@ public class AuthController {
 		try {
 			userService.registerUser(user);
 		} catch (DataIntegrityViolationException e) {
-			throw new UserAlreadyExistException(
-				"User with username: " + user.getEmail() + " already exists"
-			);
+			throw new UserAlreadyExistException("User with username: " + user.getEmail() + " already exists");
 		}
 
-		return ResponseEntity
-			.ok(messageSource.getMessage("auth.registration.success", null, request.getLocale()));
+		return ResponseEntity.ok(messageSource.getMessage("auth.registration.success", null, request.getLocale()));
 	}
 
 	@PostMapping(value = "/login", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> login(
-		@RequestParam("email") String email, @RequestParam("password") String password,
-		HttpServletResponse response
+		@RequestParam("email") String email, @RequestParam("password") String password, HttpServletResponse response
 	) throws Exception {
 
 		logger.debug("Login with username: {}", email);
@@ -95,13 +89,10 @@ public class AuthController {
 
 		Authentication auth;
 		try {
-			auth = authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+			auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 		} catch (AuthenticationException e) {
 			logger.debug("Incorect username: {} or password", email);
-			return new ResponseEntity<String>(
-				"Incorect username or password", HttpStatus.UNAUTHORIZED
-			); // TODO promjeni
+			return new ResponseEntity<String>("Incorect username or password", HttpStatus.UNAUTHORIZED); // TODO promjeni
 		}
 
 		UserPrincipal user = (UserPrincipal) auth.getPrincipal();

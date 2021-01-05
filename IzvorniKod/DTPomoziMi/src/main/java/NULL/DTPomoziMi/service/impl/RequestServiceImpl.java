@@ -65,16 +65,15 @@ public class RequestServiceImpl implements RequestService {
 		return requestRepo.save(req);
 	}
 
+	//location, description, phone, tstmp
 	@Override
 	public Request updateRequest(long idRequest, RequestDTO requestDTO, UserPrincipal principal) {
-		if (!requestDTO.getIdRequest().equals(idRequest))
-			throw new IllegalArgumentException("Request id must be preserved!");
+		if (!requestDTO.getIdRequest().equals(idRequest)) throw new IllegalArgumentException("Request id must be preserved!");
 
 		User user = principal.getUser();
 		Request req = fetch(idRequest);
-		
-		if (!user.getIdUser().equals(req.getAuthor().getIdUser()))
-			throw new IllegalAccessException("Only authors can modify requests!");
+
+		if (!user.getIdUser().equals(req.getAuthor().getIdUser())) throw new IllegalAccessException("Only authors can modify requests!");
 
 		LocationDTO location = requestDTO.getLocation();
 		Location loc = resolveLocation(location);
@@ -92,10 +91,8 @@ public class RequestServiceImpl implements RequestService {
 		Request req = fetch(idRequest);
 		User user = principal.getUser();
 
-		if (
-			!user.getIdUser().equals(req.getAuthor().getIdUser())
-				&& !user.getEnumRoles().contains(Role.ROLE_ADMIN)
-		) throw new IllegalAccessException("Missing permissions to delete the request!");
+		if (!user.getIdUser().equals(req.getAuthor().getIdUser()) && !user.getEnumRoles().contains(Role.ROLE_ADMIN))
+			throw new IllegalAccessException("Missing permissions to delete the request!");
 
 		if (req.getExecutor() != null) // samo aktivni se smiju obrisati samo tako...
 			throw new IllegalActionException("Cannot delete request that has an executor!");
@@ -110,23 +107,20 @@ public class RequestServiceImpl implements RequestService {
 		Request r = fetch(idRequest);
 		User user = principal.getUser();
 
-		if (
-			!user.getIdUser().equals(r.getAuthor().getIdUser())
-				&& !user.getEnumRoles().contains(Role.ROLE_ADMIN)
-		) throw new IllegalAccessException("Missing permissions to block the request!");
+		if (!user.getIdUser().equals(r.getAuthor().getIdUser()) && !user.getEnumRoles().contains(Role.ROLE_ADMIN))
+			throw new IllegalAccessException("Missing permissions to block the request!");
 
-		if(r.getStatus().equals(RequestStatus.FINALIZED))
-			throw new IllegalActionException("Can't block or unblock finalized request");
-			
+		if (r.getStatus().equals(RequestStatus.FINALIZED)) throw new IllegalActionException("Can't block or unblock finalized request");
+
 		RequestStatus status;
-		
-		if(!enabled)
+
+		if (!enabled)
 			status = RequestStatus.BLOCKED;
-		else if(r.getExecutor() != null)
+		else if (r.getExecutor() != null)
 			status = RequestStatus.EXECUTING;
 		else
 			status = RequestStatus.ACTIVE;
-		
+
 		r.setStatus(status);
 
 		return requestRepo.save(r);
@@ -137,8 +131,7 @@ public class RequestServiceImpl implements RequestService {
 		User user = principal.getUser();
 		Request r = fetch(idRequest);
 
-		if (!r.getStatus().equals(RequestStatus.ACTIVE))
-			throw new IllegalActionException("Cannot pick non active request for execution!");
+		if (!r.getStatus().equals(RequestStatus.ACTIVE)) throw new IllegalActionException("Cannot pick non active request for execution!");
 
 		r.setExecutor(user);
 		r.setStatus(RequestStatus.EXECUTING);
@@ -154,11 +147,8 @@ public class RequestServiceImpl implements RequestService {
 		if (!user.getIdUser().equals(r.getAuthor().getIdUser()))
 			throw new IllegalAccessException("Only author can mark request as executed!");
 
-		if (
-			!r.getStatus().equals(RequestStatus.EXECUTING)
-		) throw new IllegalActionException(
-			"Cannot mark a request without an executor as executed!"
-		);
+		if (!r.getStatus().equals(RequestStatus.EXECUTING))
+			throw new IllegalActionException("Cannot mark a request without an executor as executed!");
 
 		r.setStatus(RequestStatus.FINALIZED);
 		r.setExecTstmp(LocalDateTime.now());
@@ -174,8 +164,7 @@ public class RequestServiceImpl implements RequestService {
 		if (req.getExecutor() == null || !user.getIdUser().equals(req.getExecutor().getIdUser()))
 			throw new IllegalAccessException("Missing permission to change request status");
 
-		if (!req.getStatus().equals(RequestStatus.EXECUTING))
-			throw new IllegalActionException("Cannot backoff from request!");
+		if (!req.getStatus().equals(RequestStatus.EXECUTING)) throw new IllegalActionException("Cannot backoff from request!");
 
 		req.setStatus(RequestStatus.ACTIVE);
 		req.setExecutor(null);
@@ -185,9 +174,7 @@ public class RequestServiceImpl implements RequestService {
 
 	@Override
 	public Request fetch(long requestId) {
-		return requestRepo
-			.findById(requestId)
-			.orElseThrow(() -> new EntityMissingException(Request.class, requestId));
+		return requestRepo.findById(requestId).orElseThrow(() -> new EntityMissingException(Request.class, requestId));
 	}
 
 	@Override
@@ -197,8 +184,7 @@ public class RequestServiceImpl implements RequestService {
 
 		if (
 			user.getIdUser().equals(req.getAuthor().getIdUser())
-				|| (req.getExecutor() != null
-					&& user.getIdUser().equals(req.getExecutor().getIdUser()))
+				|| (req.getExecutor() != null && user.getIdUser().equals(req.getExecutor().getIdUser()))
 				|| user.getEnumRoles().contains(Role.ROLE_ADMIN)
 		) return req;
 
@@ -206,8 +192,7 @@ public class RequestServiceImpl implements RequestService {
 			hideInfo(req);
 		} else {
 			throw new IllegalAccessException(
-				"User with id: " + user.getIdUser() + "is trying to access request with id: "
-					+ req.getIdRequest() + " without permission."
+				"User with id: " + user.getIdUser() + "is trying to access request with id: " + req.getIdRequest() + " without permission."
 			);
 		}
 
@@ -215,87 +200,69 @@ public class RequestServiceImpl implements RequestService {
 	}
 
 	@Override
-	public Page<Request> getAllActiveRequests(
-		Pageable pageable, Double radius, UserPrincipal principal
-	) {
+	public Page<Request> getAllActiveRequests(Pageable pageable, Double radius, UserPrincipal principal) {
 		Specification<Request> specs = ReqSpecs.statusEqual(RequestStatus.ACTIVE);
-		
-		List<Request> actives
-			= requestRepo.findAll(specs, pageable.getSort()).stream().filter(r -> {
-				User user = principal.getUser();
-				boolean in = false;
-				if (r.getLocation() == null) // ako zahtjev nema lokaciju... moze
-					in = true;
-				else if (user.getLocation() != null && radius != null) { // ako user ima lokaciju i radius je dan
-					Location loc = user.getLocation();
-					double distance = calculateDistanceInKM(loc, r.getLocation());
-					in = distance <= radius;
-				}
-				return in;
-			}).collect(Collectors.toList());
-	
+
+		List<Request> actives = requestRepo.findAll(specs, pageable.getSort()).stream().filter(r -> {
+			User user = principal.getUser();
+			boolean in = false;
+			if (r.getLocation() == null) // ako zahtjev nema lokaciju... moze
+				in = true;
+			else if (user.getLocation() != null && radius != null) { // ako user ima lokaciju i radius je dan
+				Location loc = user.getLocation();
+				double distance = calculateDistanceInKM(loc, r.getLocation());
+				in = distance <= radius;
+			}
+			return in;
+		}).collect(Collectors.toList());
+
 		long start = pageable.getOffset();
-		long end = (start + pageable.getPageSize()) > actives.size() ? actives.size()
-			: (start + pageable.getPageSize());
-	
+		long end = (start + pageable.getPageSize()) > actives.size() ? actives.size() : (start + pageable.getPageSize());
+
 		if (start >= end) return new PageImpl<>(new ArrayList<>(), pageable, 0);
-	
+
 		return new PageImpl<>(actives.subList((int) start, (int) end), pageable, actives.size());
 	}
 
 	@Override
-	public Map<String, CollectionModel<RequestDTO>> getAuthoredRequests(
-		long userID, UserPrincipal principal
-	) {
+	public Map<String, CollectionModel<RequestDTO>> getAuthoredRequests(long userID, UserPrincipal principal) {
 		User user = principal.getUser(); // principal exists in the context because user has to be authenticated before accessing this point
-		if (
-			!user.getIdUser().equals(userID)
-		) throw new IllegalAccessException("ID of logged in user is not the same as given userID!");
-	
+		if (!user.getIdUser().equals(userID)) throw new IllegalAccessException("ID of logged in user is not the same as given userID!");
+
 		Specification<Request> spec = ReqSpecs.authorEqual(user);
-		
+
 		List<Request> active = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.ACTIVE)));
 		List<Request> finalized = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.FINALIZED)));
 		List<Request> blocked = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.BLOCKED)));
 		List<Request> executing = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.EXECUTING)));
-	
+
 		Map<String, CollectionModel<RequestDTO>> map = new HashMap<>();
-	
+
 		map.put(RequestStatus.ACTIVE.toString(), requestDTOAssembler.toCollectionModel(active));
-		map
-			.put(
-				RequestStatus.FINALIZED.toString(), requestDTOAssembler.toCollectionModel(finalized)
-			);
+		map.put(RequestStatus.FINALIZED.toString(), requestDTOAssembler.toCollectionModel(finalized));
 		map.put(RequestStatus.BLOCKED.toString(), requestDTOAssembler.toCollectionModel(blocked));
 		map.put(RequestStatus.EXECUTING.toString(), requestDTOAssembler.toCollectionModel(executing));
-	
+
 		return map;
 	}
 
 	@Override
-	public Map<String, CollectionModel<RequestDTO>> getRequestsByExecutor(
-		Long userId, UserPrincipal principal
-	) {
+	public Map<String, CollectionModel<RequestDTO>> getRequestsByExecutor(Long userId, UserPrincipal principal) {
 		User user = principal.getUser(); // principal exists in the context because user has to be authenticated before accessing this point
-		if (
-			!user.getIdUser().equals(userId)
-		) throw new IllegalAccessException("ID of logged in user is not the same as given userID!");
-		
+		if (!user.getIdUser().equals(userId)) throw new IllegalAccessException("ID of logged in user is not the same as given userID!");
+
 		Specification<Request> spec = ReqSpecs.executorEqual(user);
-	
+
 		List<Request> finalized = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.FINALIZED)));
 		List<Request> blocked = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.BLOCKED)));
 		List<Request> executing = requestRepo.findAll(spec.and(ReqSpecs.statusEqual(RequestStatus.EXECUTING)));
-	
+
 		Map<String, CollectionModel<RequestDTO>> map = new HashMap<>();
-	
-		map
-			.put(
-				RequestStatus.FINALIZED.toString(), requestDTOAssembler.toCollectionModel(finalized)
-			);
+
+		map.put(RequestStatus.FINALIZED.toString(), requestDTOAssembler.toCollectionModel(finalized));
 		map.put(RequestStatus.BLOCKED.toString(), requestDTOAssembler.toCollectionModel(blocked));
 		map.put(RequestStatus.EXECUTING.toString(), requestDTOAssembler.toCollectionModel(executing));
-		
+
 		return map;
 	}
 
@@ -315,8 +282,7 @@ public class RequestServiceImpl implements RequestService {
 		lat2 = Math.toRadians(lat2);
 
 		// apply formulae 
-		double a = Math.pow(Math.sin(dLat / 2), 2)
-			+ Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
+		double a = Math.pow(Math.sin(dLat / 2), 2) + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
 		double rad = 6371; //radius zemlje
 		double c = 2 * Math.asin(Math.sqrt(a));
 		return rad * c;
@@ -325,8 +291,7 @@ public class RequestServiceImpl implements RequestService {
 	private Location resolveLocation(LocationDTO dto) {
 		if (dto != null) { // ako je dana lokacija onda provjeri postoji li vec spremljena pa ju dodaj u req ili... ako ne onda spremi i dodaj u req 
 
-			Location loc
-				= locationService.findByLatitudeAndLongitude(dto.getLatitude(), dto.getLongitude());
+			Location loc = locationService.findByLatitudeAndLongitude(dto.getLatitude(), dto.getLongitude());
 
 			if (loc == null) loc = locationService.save(dto);
 

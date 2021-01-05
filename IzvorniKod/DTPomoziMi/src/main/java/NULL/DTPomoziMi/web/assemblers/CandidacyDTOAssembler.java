@@ -19,16 +19,12 @@ import NULL.DTPomoziMi.web.DTO.UserDTO;
 import NULL.DTPomoziMi.web.controller.CandidacyController;
 
 @Component
-public class CandidacyDTOAssembler extends RepresentationModelAssemblerSupport<
-	Candidacy, CandidacyDTO> {
+public class CandidacyDTOAssembler extends RepresentationModelAssemblerSupport<Candidacy, CandidacyDTO> {
 
 	private final ModelMapper modelMapper;
 
 	@Autowired
-	public CandidacyDTOAssembler(
-		ModelMapper modelMapper, LocationDTOAssembler locationAssembler,
-		UserDTOModelAssembler userAssembler
-	) {
+	public CandidacyDTOAssembler(ModelMapper modelMapper, LocationDTOAssembler locationAssembler, UserDTOModelAssembler userAssembler) {
 		super(CandidacyController.class, CandidacyDTO.class);
 		this.modelMapper = modelMapper;
 		configureCandidacyToCandidacyDTO(locationAssembler, userAssembler);
@@ -42,16 +38,13 @@ public class CandidacyDTOAssembler extends RepresentationModelAssemblerSupport<
 		return candidacyDTO;
 	}
 
-	private void configureCandidacyToCandidacyDTO(
-		LocationDTOAssembler locationAssembler, UserDTOModelAssembler userAssembler
-	) {
+	private void configureCandidacyToCandidacyDTO(LocationDTOAssembler locationAssembler, UserDTOModelAssembler userAssembler) {
 
-		Converter<Location, LocationDTO> locationConverter = context -> (context.getSource() == null
-			? null : locationAssembler.toModel(context.getSource()));
+		Converter<Location, LocationDTO> locationConverter
+			= context -> (context.getSource() == null ? null : locationAssembler.toModel(context.getSource()));
 
 		Converter<Collection<User>, CollectionModel<UserDTO>> usersConverter
-			= context -> context.getSource() == null ? null
-				: userAssembler.toCollectionModel(context.getSource());
+			= context -> context.getSource() == null ? null : userAssembler.toCollectionModel(context.getSource());
 
 		modelMapper.addMappings(new PropertyMap<Candidacy, CandidacyDTO>() {
 			@Override

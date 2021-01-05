@@ -27,7 +27,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = {"candidacies", "users", "requests"})
+@ToString(exclude = { "candidacies", "users", "requests" })
 @Entity(name = "lokacija")
 @Table(name = "lokacija")
 public class Location implements Serializable {
@@ -36,7 +36,7 @@ public class Location implements Serializable {
 
 	@Include
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_lokacija")
 	private Long IdLocation;
 

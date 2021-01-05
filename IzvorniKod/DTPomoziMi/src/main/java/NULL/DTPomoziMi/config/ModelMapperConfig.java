@@ -22,6 +22,6 @@ public class ModelMapperConfig {
 		return modelMapper;
 	}
 
-// ostatak konfiguracije je u assemblerima jer nisam mogao to ovdje odraditi...
+	// ostatak konfiguracije je u assemblerima jer nisam mogao to ovdje odraditi...
 
 }

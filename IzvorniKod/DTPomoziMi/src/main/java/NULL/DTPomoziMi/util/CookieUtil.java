@@ -8,8 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class CookieUtil {
 	public static void create(
-		HttpServletResponse httpServletResponse, String name, String value, Boolean secure,
-		int maxAge, boolean httpOnly
+		HttpServletResponse httpServletResponse, String name, String value, Boolean secure, int maxAge, boolean httpOnly
 	) {
 		Cookie cookie = new Cookie(name, value);
 		cookie.setSecure(secure);

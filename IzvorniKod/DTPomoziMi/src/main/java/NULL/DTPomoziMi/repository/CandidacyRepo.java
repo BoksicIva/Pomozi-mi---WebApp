@@ -10,5 +10,5 @@ import NULL.DTPomoziMi.model.Candidacy;
 public interface CandidacyRepo extends PagingAndSortingRepository<Candidacy, Long>, JpaSpecificationExecutor<Candidacy> {
 
 	List<Candidacy> findByYear(int year);
-	
+
 }

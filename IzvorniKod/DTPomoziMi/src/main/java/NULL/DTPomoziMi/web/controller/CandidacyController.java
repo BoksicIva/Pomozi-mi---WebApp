@@ -40,17 +40,18 @@ public class CandidacyController {
 	private CandidacyService candidacyService;
 
 	/**
-	 * Gets the candidacies for a year. If year is not given then all candidacies are returned.
+	 * Gets the candidacies for a year. If year is not given then all candidacies
+	 * are returned.
 	 *
-	 * @param year the year
-	 * @param pageable the pageable
+	 * @param year      the year
+	 * @param pageable  the pageable
 	 * @param assembler the assembler
 	 * @return the candidacies
 	 */
 	@GetMapping(value = "", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> getCandidacies(
-		@RequestParam(value = "year", required = false) Integer year,
-		@PageableDefault Pageable pageable, PagedResourcesAssembler<Candidacy> assembler
+		@RequestParam(value = "year", required = false) Integer year, @PageableDefault Pageable pageable,
+		PagedResourcesAssembler<Candidacy> assembler
 	) {
 		try {
 			Specification<Candidacy> spec = CandidacySpecs.yearEqual(year);
@@ -63,17 +64,17 @@ public class CandidacyController {
 			throw e;
 		}
 	}
-	
+
 	/**
 	 * Candidate yourself.
 	 *
-	 * @param year the year
-	 * @param pageable the pageable
+	 * @param year      the year
+	 * @param pageable  the pageable
 	 * @param assembler the assembler
 	 * @return the response entity
 	 */
 	@PostMapping(value = "", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> candidateYourself(@AuthenticationPrincipal UserPrincipal principal){
+	public ResponseEntity<?> candidateYourself(@AuthenticationPrincipal UserPrincipal principal) {
 		try {
 			return ResponseEntity.ok(candAssembler.toModel(candidacyService.candidateYourself(principal)));
 		} catch (Exception e) {
@@ -89,11 +90,9 @@ public class CandidacyController {
 	 * @return the response entity
 	 */
 	@DeleteMapping(value = "", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> deleteCandidacy(@AuthenticationPrincipal UserPrincipal principal
-	) {
+	public ResponseEntity<?> deleteCandidacy(@AuthenticationPrincipal UserPrincipal principal) {
 		try {
-			return ResponseEntity
-				.ok(candAssembler.toModel(candidacyService.deleteCandidacy(principal)));
+			return ResponseEntity.ok(candAssembler.toModel(candidacyService.deleteCandidacy(principal)));
 		} catch (Exception e) {
 			logger.debug("Exception {} while deleting candidacy", e.getMessage());
 			throw e;

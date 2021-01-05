@@ -39,11 +39,7 @@ public class RatingServiceImpl implements RatingService {
 	private RequestService requestService;
 
 	@Override
-	public Rating fetch(Long id) {
-		return ratingRepo
-			.findById(id)
-			.orElseThrow(() -> new EntityMissingException(Rating.class, id));
-	}
+	public Rating fetch(Long id) { return ratingRepo.findById(id).orElseThrow(() -> new EntityMissingException(Rating.class, id)); }
 
 	@Override
 	public Rating getRatingById(Long id, UserPrincipal principal) {
@@ -52,8 +48,7 @@ public class RatingServiceImpl implements RatingService {
 		Rating r = fetch(id);
 
 		if (
-			!r.getRated().getIdUser().equals(user.getIdUser())
-				&& !r.getRator().getIdUser().equals(user.getIdUser())
+			!r.getRated().getIdUser().equals(user.getIdUser()) && !r.getRator().getIdUser().equals(user.getIdUser())
 				&& !user.getEnumRoles().contains(Role.ROLE_ADMIN)
 		) r.setRequest(null);
 
@@ -80,10 +75,8 @@ public class RatingServiceImpl implements RatingService {
 		Request req = null;
 		if (idRequest != null) {
 			req = requestService.fetch(idRequest);
-			if (
-				!req.getAuthor().getIdUser().equals(idUser)
-					&& !req.getExecutor().getIdUser().equals(idUser)
-			) throw new IllegalAccessException("Only authors and executors can rate requests!");
+			if (!req.getAuthor().getIdUser().equals(idUser) && !req.getExecutor().getIdUser().equals(idUser))
+				throw new IllegalAccessException("Only authors and executors can rate requests!");
 
 			if (!req.getStatus().equals(RequestStatus.FINALIZED))
 				throw new IllegalActionException("Cannot rate request that is not finalized!");

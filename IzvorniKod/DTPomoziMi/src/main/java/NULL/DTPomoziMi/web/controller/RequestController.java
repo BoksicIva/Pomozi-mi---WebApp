@@ -70,11 +70,10 @@ public class RequestController { // TODO linkovi...
 	 */
 	@PatchMapping(value = "/blockUnblock/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> blockUnblockRequest(
-		@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal, @RequestParam(name="enabled") boolean enabled
+		@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal, @RequestParam(name = "enabled") boolean enabled
 	) {
 		try {
-			RequestDTO blocked
-				= requestDTOassembler.toModel(requestService.blockUnblockRequest(id, principal, enabled));
+			RequestDTO blocked = requestDTOassembler.toModel(requestService.blockUnblockRequest(id, principal, enabled));
 			blocked.add(getLinks(id));
 			return new ResponseEntity<>(blocked, HttpStatus.OK);
 		} catch (Exception e) {
@@ -93,8 +92,8 @@ public class RequestController { // TODO linkovi...
 	 */
 	@PostMapping(value = "", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> createRequest(
-		@RequestBody @Valid CreateRequestDTO requestDTO, BindingResult bindingResult,
-		HttpServletRequest request, @AuthenticationPrincipal UserPrincipal principal
+		@RequestBody @Valid CreateRequestDTO requestDTO, BindingResult bindingResult, HttpServletRequest request,
+		@AuthenticationPrincipal UserPrincipal principal
 	) {
 		if (bindingResult.hasErrors()) hasErrors(bindingResult);
 
@@ -102,9 +101,7 @@ public class RequestController { // TODO linkovi...
 			Request saved = requestService.createRequest(requestDTO, principal);
 			RequestDTO dto = requestDTOassembler.toModel(saved);
 			dto.add(getLinks(saved.getIdRequest()));
-			return ResponseEntity
-				.created(URI.create("/api/requests/" + saved.getIdRequest()))
-				.body(dto);
+			return ResponseEntity.created(URI.create("/api/requests/" + saved.getIdRequest())).body(dto);
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
 			throw e;
@@ -122,9 +119,7 @@ public class RequestController { // TODO linkovi...
 	 * @return the response entity
 	 */
 	@DeleteMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> deleteRequest(
-		@PathVariable("id") long requestId, @AuthenticationPrincipal UserPrincipal principal
-	) {
+	public ResponseEntity<?> deleteRequest(@PathVariable("id") long requestId, @AuthenticationPrincipal UserPrincipal principal) {
 		try {
 			Request deleted = requestService.deleteRequest(requestId, principal);
 			RequestDTO dto = requestDTOassembler.toModel(deleted);
@@ -150,8 +145,7 @@ public class RequestController { // TODO linkovi...
 	@GetMapping(value = "/active", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> getActive(
 		@PageableDefault Pageable pageable, PagedResourcesAssembler<Request> assembler,
-		@RequestParam(name = "radius", required = false) Double radius,
-		@AuthenticationPrincipal UserPrincipal principal
+		@RequestParam(name = "radius", required = false) Double radius, @AuthenticationPrincipal UserPrincipal principal
 	) {
 		try {
 			Page<Request> page = requestService.getAllActiveRequests(pageable, radius, principal);
@@ -159,10 +153,7 @@ public class RequestController { // TODO linkovi...
 			PagedModel<RequestDTO> pagedModel = assembler
 				.toModel(
 					page, requestDTOassembler,
-					linkTo(
-						methodOn(RequestController.class)
-							.getActive(pageable, null, radius, principal)
-					).withSelfRel()
+					linkTo(methodOn(RequestController.class).getActive(pageable, null, radius, principal)).withSelfRel()
 				);
 
 			pagedModel.add(getLinks(0));
@@ -182,17 +173,10 @@ public class RequestController { // TODO linkovi...
 	 * @return the authored requests
 	 */
 	@GetMapping(value = "/authored/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> getAuthoredRequests(
-		@PathVariable(name = "id") Long userId, @AuthenticationPrincipal UserPrincipal principal
-	) {
+	public ResponseEntity<?> getAuthoredRequests(@PathVariable(name = "id") Long userId, @AuthenticationPrincipal UserPrincipal principal) {
 		try {
-			EntityModel<?> model
-				= EntityModel.of(requestService.getAuthoredRequests(userId, principal));
-			model
-				.add(
-					linkTo(methodOn(getClass()).getAuthoredRequests(userId, principal))
-						.withSelfRel()
-				);
+			EntityModel<?> model = EntityModel.of(requestService.getAuthoredRequests(userId, principal));
+			model.add(linkTo(methodOn(getClass()).getAuthoredRequests(userId, principal)).withSelfRel());
 			model.add(getLinks(0));
 
 			return ResponseEntity.ok(model);
@@ -201,19 +185,14 @@ public class RequestController { // TODO linkovi...
 			throw e;
 		}
 	}
-	
+
 	@GetMapping(value = "/byExecutor/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> getRequestsByExecutor(
 		@PathVariable(name = "id") Long userId, @AuthenticationPrincipal UserPrincipal principal
 	) {
 		try {
-			EntityModel<?> model
-				= EntityModel.of(requestService.getRequestsByExecutor(userId, principal));
-			model
-				.add(
-					linkTo(methodOn(getClass()).getRequestsByExecutor(userId, principal))
-						.withSelfRel()
-				);
+			EntityModel<?> model = EntityModel.of(requestService.getRequestsByExecutor(userId, principal));
+			model.add(linkTo(methodOn(getClass()).getRequestsByExecutor(userId, principal)).withSelfRel());
 			model.add(getLinks(0));
 
 			return ResponseEntity.ok(model);
@@ -230,12 +209,9 @@ public class RequestController { // TODO linkovi...
 	 * @return the request
 	 */
 	@GetMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<RequestDTO> getRequest(
-		@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal
-	) {
+	public ResponseEntity<RequestDTO> getRequest(@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal) {
 		try {
-			RequestDTO req
-				= requestDTOassembler.toModel(requestService.getRequestbyId(id, principal));
+			RequestDTO req = requestDTOassembler.toModel(requestService.getRequestbyId(id, principal));
 
 			req.add(getLinks(id));
 
@@ -253,12 +229,9 @@ public class RequestController { // TODO linkovi...
 	 * @return the response entity
 	 */
 	@PatchMapping(value = "/markExecuted/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> markExecuted(
-		@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal
-	) {
+	public ResponseEntity<?> markExecuted(@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal) {
 		try {
-			RequestDTO req
-				= requestDTOassembler.toModel(requestService.markExecuted(id, principal));
+			RequestDTO req = requestDTOassembler.toModel(requestService.markExecuted(id, principal));
 			req.add(getLinks(id));
 			return ResponseEntity.ok(req);
 		} catch (Exception e) {
@@ -276,12 +249,9 @@ public class RequestController { // TODO linkovi...
 	 * @return the response entity
 	 */
 	@PatchMapping(value = "pickForExecution/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> pickForExecution(
-		@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal
-	) {
+	public ResponseEntity<?> pickForExecution(@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal) {
 		try {
-			RequestDTO executed
-				= requestDTOassembler.toModel(requestService.pickForExecution(id, principal));
+			RequestDTO executed = requestDTOassembler.toModel(requestService.pickForExecution(id, principal));
 			executed.add(getLinks(id));
 			return new ResponseEntity<>(executed, HttpStatus.OK);
 		} catch (Exception e) {
@@ -291,9 +261,7 @@ public class RequestController { // TODO linkovi...
 	}
 
 	@PatchMapping(value = "backOff/{id}", produces = { "application/json; charset=UTF-8" })
-	public ResponseEntity<?> backOff(
-		@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal
-	) {
+	public ResponseEntity<?> backOff(@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal) {
 		try {
 			RequestDTO dto = requestDTOassembler.toModel(requestService.backOff(id, principal));
 			dto.add(getLinks(id));
@@ -313,14 +281,13 @@ public class RequestController { // TODO linkovi...
 	 */
 	@PutMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> updateRequest(
-		@PathVariable("id") long id, @RequestBody @Valid RequestDTO requestDTO,
-		BindingResult bindingResult, @AuthenticationPrincipal UserPrincipal principal
+		@PathVariable("id") long id, @RequestBody @Valid RequestDTO requestDTO, BindingResult bindingResult,
+		@AuthenticationPrincipal UserPrincipal principal
 	) {
 		if (bindingResult.hasErrors()) hasErrors(bindingResult);
 
 		try {
-			RequestDTO updated = requestDTOassembler
-				.toModel(requestService.updateRequest(id, requestDTO, principal));
+			RequestDTO updated = requestDTOassembler.toModel(requestService.updateRequest(id, requestDTO, principal));
 			updated.add(getLinks(id));
 			return new ResponseEntity<>(updated, HttpStatus.OK);
 		} catch (Exception e) {
@@ -339,71 +306,45 @@ public class RequestController { // TODO linkovi...
 	}
 
 	private Link[] getLinks(long id) {
-		return new Link[] { linkCreate(), linkOne(id), linkUpdate(id), linkDelete(id),
-			linkBlock(id), linkPick(id), linkExecuted(id), linkBackoff(id), linkActive(id),
-			linkAuthored(id), linkByExecutor(id) };
+		return new Link[] { linkCreate(), linkOne(id), linkUpdate(id), linkDelete(id), linkBlock(id), linkPick(id), linkExecuted(id),
+			linkBackoff(id), linkActive(id), linkAuthored(id), linkByExecutor(id) };
 	}
 
 	private Link linkBlock(long id) {
-		return linkTo(methodOn(getClass()).blockUnblockRequest(id, null, true))
-			.withRel("blockUnblock")
-			.withType("patch");
+		return linkTo(methodOn(getClass()).blockUnblockRequest(id, null, true)).withRel("blockUnblock").withType("patch");
 	}
 
 	private Link linkCreate() {
-		return linkTo(methodOn(getClass()).createRequest(null, null, null, null))
-			.withRel("create")
-			.withType("post");
+		return linkTo(methodOn(getClass()).createRequest(null, null, null, null)).withRel("create").withType("post");
 	}
 
-	private Link linkDelete(long id) {
-		return linkTo(methodOn(getClass()).deleteRequest(id, null))
-			.withRel("delete")
-			.withType("delete");
-	}
+	private Link linkDelete(long id) { return linkTo(methodOn(getClass()).deleteRequest(id, null)).withRel("delete").withType("delete"); }
 
 	private Link linkActive(long id) {
-		return linkTo(
-			methodOn(getClass())
-				.getActive(PageRequest.of(0, 10, Sort.by("idRequest").ascending()), null, null, null)
-		).withRel("active").withType("get");
+		return linkTo(methodOn(getClass()).getActive(PageRequest.of(0, 10, Sort.by("idRequest").ascending()), null, null, null))
+			.withRel("active")
+			.withType("get");
 	}
 
 	private Link linkAuthored(long id) {
-		return linkTo(methodOn(getClass()).getAuthoredRequests(id, null))
-			.withRel("authored")
-			.withType("get");
-	}
-	
-	private Link linkByExecutor(long id) {
-		return linkTo(methodOn(getClass()).getRequestsByExecutor(id, null))
-			.withRel("byExecutor")
-			.withType("get");
+		return linkTo(methodOn(getClass()).getAuthoredRequests(id, null)).withRel("authored").withType("get");
 	}
 
-	private Link linkOne(long id) {
-		return linkTo(methodOn(getClass()).getRequest(id, null)).withRel("one").withType("get");
+	private Link linkByExecutor(long id) {
+		return linkTo(methodOn(getClass()).getRequestsByExecutor(id, null)).withRel("byExecutor").withType("get");
 	}
+
+	private Link linkOne(long id) { return linkTo(methodOn(getClass()).getRequest(id, null)).withRel("one").withType("get"); }
 
 	private Link linkExecuted(long id) {
-		return linkTo(methodOn(getClass()).markExecuted(id, null))
-			.withRel("markExecuted")
-			.withType("patch");
+		return linkTo(methodOn(getClass()).markExecuted(id, null)).withRel("markExecuted").withType("patch");
 	}
 
-	private Link linkPick(long id) {
-		return linkTo(methodOn(getClass()).pickForExecution(id, null))
-			.withRel("pick")
-			.withType("patch");
-	}
+	private Link linkPick(long id) { return linkTo(methodOn(getClass()).pickForExecution(id, null)).withRel("pick").withType("patch"); }
 
-	private Link linkBackoff(long id) {
-		return linkTo(methodOn(getClass()).backOff(id, null)).withRel("backoff").withType("patch");
-	}
+	private Link linkBackoff(long id) { return linkTo(methodOn(getClass()).backOff(id, null)).withRel("backoff").withType("patch"); }
 
 	private Link linkUpdate(long id) {
-		return linkTo(methodOn(getClass()).updateRequest(id, null, null, null))
-			.withRel("update")
-			.withType("put");
+		return linkTo(methodOn(getClass()).updateRequest(id, null, null, null)).withRel("update").withType("put");
 	}
 }

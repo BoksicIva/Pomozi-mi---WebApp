@@ -39,9 +39,7 @@ public class ProdSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return super.authenticationManagerBean();
-	}
+	public AuthenticationManager authenticationManagerBean() throws Exception { return super.authenticationManagerBean(); }
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -68,12 +66,7 @@ public class ProdSecurityConfig extends WebSecurityConfigurerAdapter {
 			.anyRequest()
 			.authenticated();
 
-		http
-			.formLogin()
-			.disable()
-			.logout()
-			.logoutUrl("/logout")
-			.logoutSuccessHandler(myLogoutHandler);
+		http.formLogin().disable().logout().logoutUrl("/logout").logoutSuccessHandler(myLogoutHandler);
 
 		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 

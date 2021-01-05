@@ -1,81 +1,96 @@
 package NULL.DTPomoziMi.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.ActiveProfiles;
+
+import NULL.DTPomoziMi.exception.IllegalAccessException;
+import NULL.DTPomoziMi.model.User;
 import NULL.DTPomoziMi.security.UserPrincipal;
 import NULL.DTPomoziMi.service.UserService;
 import NULL.DTPomoziMi.util.UserPrincipalGetter;
 import NULL.DTPomoziMi.web.DTO.UserDTO;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
+import NULL.DTPomoziMi.web.assemblers.UserDTOModelAssembler;
 
-import NULL.DTPomoziMi.exception.IllegalAccessException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("dev")
-
 public class UpdateUserTest {
 
-    @Autowired
-    private UserService service;
+	@Autowired
+	private UserService service;
 
-    private UserPrincipal principal;
+	@Autowired
+	private UserDTOModelAssembler assembler;
 
-    private UserDTO userDTO;
+	private UserPrincipal principal;
 
-    @BeforeEach
-    void setup(){
-        userDTO = new UserDTO();
-        userDTO.setIdUser(11l);
-        userDTO.setFirstName("Marija");
-        userDTO.setLastName("Oreč");
-        userDTO.setEmail("marija.orec@gmail.com");
-    }
+	private UserDTO userDTO;
 
-    //korisnik ima pristup uredivanju profila
-    @Test
-    @WithUserDetails(value="marija.orec@gmail.com", userDetailsServiceBeanName="myUserDetailsService")
-    @Transactional
-    void test1()
-    {
-        principal = UserPrincipalGetter.getPrincipal();
-        assertEquals(principal.getUser(), service.updateUser(userDTO, 11l, principal));
-    }
+	public void setup() { userDTO = assembler.toModel(service.fetch(11)); }
 
-    //korisnik nema pristup uredivanju profila
-    @Test
-    @WithUserDetails(value="matea.lipovac@gmail.com", userDetailsServiceBeanName="myUserDetailsService")
-    @Transactional
-    void test2()
-    {
-        principal = UserPrincipalGetter.getPrincipal();
-        assertThrows(IllegalAccessException.class, ()->service.updateUser(userDTO, 11l, principal));
-    }
-    //userDTO i id se ne poklapaju
-    @Test
-    @WithUserDetails(value="marija.orec@gmail.com", userDetailsServiceBeanName="myUserDetailsService")
-    @Transactional
-    void test3()
-    {
-        principal = UserPrincipalGetter.getPrincipal();
-        assertThrows(IllegalArgumentException.class, ()->service.updateUser(userDTO, 3l, principal));
-    }
+	//korisnik ima pristup uredivanju profila
+	@Test
+	@WithUserDetails(value = "marija.orec@gmail.com", userDetailsServiceBeanName = "myUserDetailsService")
+	public void test1() {
+		setup();
+		principal = UserPrincipalGetter.getPrincipal();
 
-    //neprijavljen korisnik
-    @Test
-    void test4()
-    {
-        principal = UserPrincipalGetter.getPrincipal();
-        assertThrows(AuthenticationCredentialsNotFoundException.class, ()->service.updateUser(userDTO, 11l, principal));
-    }
+		userDTO.setEmail("bananko@gmail.com");
+		userDTO.setFirstName("Janko");
+		userDTO.setLastName("bananko");
+		userDTO.setPicture("aaa");
+
+		service.updateUser(userDTO, 11, principal);
+
+		User user = service.fetch(11);
+
+		assertEquals(user.getEmail(), userDTO.getEmail());
+		assertEquals(user.getFirstName(), userDTO.getFirstName());
+		assertEquals(user.getLastName(), userDTO.getLastName());
+		assertEquals(user.getPicture(), userDTO.getPicture());
+		assertEquals(user.getIdUser(), userDTO.getIdUser());
+	}
+
+	// korisnik je postavio već postojeći email
+	@Test
+	@WithUserDetails(value = "bananko@gmail.com", userDetailsServiceBeanName = "myUserDetailsService")
+	public void test2() {
+		setup();
+		principal = UserPrincipalGetter.getPrincipal();
+
+		userDTO.setEmail("matea.lipovac@gmail.com");
+		assertThrows(DataIntegrityViolationException.class, () -> service.updateUser(userDTO, 11, principal));
+	}
+
+	//korisnik nema pristup uredivanju profila
+	@Test
+	@WithUserDetails(value = "matea.lipovac@gmail.com", userDetailsServiceBeanName = "myUserDetailsService")
+	public void test3() {
+		setup();
+		principal = UserPrincipalGetter.getPrincipal();
+		assertThrows(IllegalAccessException.class, () -> service.updateUser(userDTO, 11, principal));
+	}
+
+	//userDTO i id se ne poklapaju
+	@Test
+	@WithUserDetails(value = "bananko@gmail.com", userDetailsServiceBeanName = "myUserDetailsService")
+	public void test4() {
+		setup();
+		principal = UserPrincipalGetter.getPrincipal();
+		assertThrows(IllegalArgumentException.class, () -> service.updateUser(userDTO, 3, principal));
+	}
+
+	//neprijavljen korisnik
+	@Test
+	public void test5() {
+		principal = UserPrincipalGetter.getPrincipal();
+		assertThrows(AuthenticationCredentialsNotFoundException.class, () -> service.updateUser(userDTO, 11, principal));
+	}
 }

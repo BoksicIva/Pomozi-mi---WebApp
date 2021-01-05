@@ -40,9 +40,7 @@ public class IllegalActionException extends RuntimeException {
 	 * @param enableSuppression  the enable suppression
 	 * @param writableStackTrace the writable stack trace
 	 */
-	public IllegalActionException(
-		String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace
-	) {
+	public IllegalActionException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
 

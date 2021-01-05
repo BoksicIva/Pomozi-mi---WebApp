@@ -5,7 +5,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import NULL.DTPomoziMi.model.Request;
 
-public interface RequestRepo extends PagingAndSortingRepository<Request, Long>, JpaSpecificationExecutor<Request>{
-	
+public interface RequestRepo extends PagingAndSortingRepository<Request, Long>, JpaSpecificationExecutor<Request> {
 
 }

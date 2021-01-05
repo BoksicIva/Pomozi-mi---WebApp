@@ -21,10 +21,7 @@ public enum CroatianCharacterData implements CharacterData {
 	 * @param code       Error code.
 	 * @param charString Characters as string.
 	 */
-	CroatianCharacterData(final String code, final String charString) {
-		errorCode = code;
-		characters = charString;
-	}
+	CroatianCharacterData(final String code, final String charString) { errorCode = code; characters = charString; }
 
 	@Override
 	public String getErrorCode() { return errorCode; }

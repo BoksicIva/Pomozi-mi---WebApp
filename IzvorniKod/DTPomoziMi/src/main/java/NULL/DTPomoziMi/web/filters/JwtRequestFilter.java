@@ -64,8 +64,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			try {
 				logger.debug("Extracting email from refresh token: {}", e.getMessage());
 
-				if (refreshToken != null && !refreshToken.isBlank())
-					emailFromRefreshToken = jwtUtil.extractUsername(refreshToken);
+				if (refreshToken != null && !refreshToken.isBlank()) emailFromRefreshToken = jwtUtil.extractUsername(refreshToken);
 
 			} catch (JwtException ex) {
 				deleteCookies(response);
@@ -101,9 +100,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 	}
 
-	private void setAuthAndGenerateToken(
-		String email, boolean generate, HttpServletResponse response
-	) {
+	private void setAuthAndGenerateToken(String email, boolean generate, HttpServletResponse response) {
 		logger.debug("Setting auth");
 
 		UserDetails user = null;
@@ -117,9 +114,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
 				= new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
-			SecurityContextHolder
-				.getContext()
-				.setAuthentication(usernamePasswordAuthenticationToken);
+			SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
 			if (generate) { generateToken(response, user); }
 		}

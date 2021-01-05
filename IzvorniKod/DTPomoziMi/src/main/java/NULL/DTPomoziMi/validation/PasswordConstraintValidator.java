@@ -25,8 +25,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 
 		PasswordValidator val = new PasswordValidator(
 			resolver, new LengthRule(8, 50), new CharacterRule(CroatianCharacterData.UpperCase, 1),
-			new CharacterRule(EnglishCharacterData.Digit, 1),
-			new CharacterRule(EnglishCharacterData.Special, 1), new WhitespaceRule()
+			new CharacterRule(EnglishCharacterData.Digit, 1), new CharacterRule(EnglishCharacterData.Special, 1), new WhitespaceRule()
 		);
 
 		RuleResult result = val.validate(new PasswordData(s));
@@ -35,9 +34,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 		String message = val.getMessages(result).stream().collect(Collectors.joining("] | ["));
 
 		constraintValidatorContext.disableDefaultConstraintViolation();
-		constraintValidatorContext
-			.buildConstraintViolationWithTemplate(message)
-			.addConstraintViolation();
+		constraintValidatorContext.buildConstraintViolationWithTemplate(message).addConstraintViolation();
 
 		return false;
 	}

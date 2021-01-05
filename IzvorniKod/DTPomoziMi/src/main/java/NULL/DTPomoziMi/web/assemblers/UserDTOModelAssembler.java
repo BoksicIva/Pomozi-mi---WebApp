@@ -34,8 +34,8 @@ public class UserDTOModelAssembler extends RepresentationModelAssemblerSupport<U
 	}
 
 	private void configureUserToUserDTO(LocationDTOAssembler locationAssembler) {
-		Converter<Location, LocationDTO> locationConverter = context -> (context.getSource() == null
-			? null : locationAssembler.toModel(context.getSource()));
+		Converter<Location, LocationDTO> locationConverter
+			= context -> (context.getSource() == null ? null : locationAssembler.toModel(context.getSource()));
 
 		modelMapper.addMappings(new PropertyMap<User, UserDTO>() {
 			@Override

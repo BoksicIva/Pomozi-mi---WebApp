@@ -37,10 +37,12 @@ public class UserDTO extends RepresentationModel<UserDTO> {
 	@NotNull
 	@Email(message = "{UserDTO.email}")
 	private String email;
-	
+
 	boolean enabled;
 
 	@Valid
 	private LocationDTO location;
+	
+	String picture;
 
 }

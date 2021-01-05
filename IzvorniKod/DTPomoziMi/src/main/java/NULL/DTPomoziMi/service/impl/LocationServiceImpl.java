@@ -27,9 +27,7 @@ public class LocationServiceImpl implements LocationService {
 	private LocationRepo locationRepo;
 
 	@Override
-	public Location save(LocationDTO entity) {
-		return locationRepo.save(modelMapper.map(entity, Location.class));
-	}
+	public Location save(LocationDTO entity) { return locationRepo.save(modelMapper.map(entity, Location.class)); }
 
 	@Override
 	public Location save(Location entity) { return locationRepo.save(entity); }
@@ -38,10 +36,7 @@ public class LocationServiceImpl implements LocationService {
 	@Override
 	public Iterable<Location> saveAll(Iterable<LocationDTO> entities) {
 		Stream<LocationDTO> stream = StreamSupport.stream(entities.spliterator(), false);
-		return locationRepo
-			.saveAll(
-				stream.map(l -> modelMapper.map(l, Location.class)).collect(Collectors.toList())
-			);
+		return locationRepo.saveAll(stream.map(l -> modelMapper.map(l, Location.class)).collect(Collectors.toList()));
 	}
 
 	@PreAuthorize("isAuthenticated()")
@@ -50,11 +45,7 @@ public class LocationServiceImpl implements LocationService {
 
 	@PreAuthorize("isAuthenticated()")
 	@Override
-	public Location fetch(Long id) {
-		return locationRepo
-			.findById(id)
-			.orElseThrow(() -> new EntityMissingException(Location.class, id));
-	}
+	public Location fetch(Long id) { return locationRepo.findById(id).orElseThrow(() -> new EntityMissingException(Location.class, id)); }
 
 	@PreAuthorize("isAuthenticated()")
 	@Override
@@ -66,9 +57,7 @@ public class LocationServiceImpl implements LocationService {
 
 	@PreAuthorize("isAuthenticated()")
 	@Override
-	public Iterable<Location> findAllById(Iterable<Long> ids) {
-		return locationRepo.findAllById(ids);
-	}
+	public Iterable<Location> findAllById(Iterable<Long> ids) { return locationRepo.findAllById(ids); }
 
 	@PreAuthorize("isAuthenticated()")
 	@Override
@@ -76,18 +65,13 @@ public class LocationServiceImpl implements LocationService {
 
 	@PreAuthorize("isAuthenticated()")
 	@Override
-	public Location deleteById(Long id) {
-		Location location = fetch(id);
-		locationRepo.deleteById(id);
-		return location;
-	}
+	public Location deleteById(Long id) { Location location = fetch(id); locationRepo.deleteById(id); return location; }
 
 	@PreAuthorize("isAuthenticated()")
 	@Override
 	public Iterable<Location> deleteAll(Iterable<LocationDTO> entities) {
 		Stream<LocationDTO> stream = StreamSupport.stream(entities.spliterator(), false);
-		Iterable<Location> iterable = locationRepo
-			.findAllById(stream.map(l -> l.getIdLocation()).collect(Collectors.toList()));
+		Iterable<Location> iterable = locationRepo.findAllById(stream.map(l -> l.getIdLocation()).collect(Collectors.toList()));
 		locationRepo.deleteAll(iterable);
 		return iterable;
 	}

@@ -43,9 +43,7 @@ public class DevSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return super.authenticationManagerBean();
-	}
+	public AuthenticationManager authenticationManagerBean() throws Exception { return super.authenticationManagerBean(); }
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {

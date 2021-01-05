@@ -33,7 +33,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = {"candidacies", "ratedBy", "ratedOthers", "authoredReqs", "executedReqs"})
+@ToString(exclude = { "candidacies", "ratedBy", "ratedOthers", "authoredReqs", "executedReqs" })
 @Entity(name = "korisnik")
 @Table(name = "korisnik")
 public class User implements Serializable {
@@ -41,7 +41,7 @@ public class User implements Serializable {
 
 	@Include
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_korisnik")
 	private Long IdUser;
 
@@ -90,9 +90,7 @@ public class User implements Serializable {
 	@OneToMany(mappedBy = "executor", cascade = CascadeType.ALL)
 	private Set<Request> executedReqs = new HashSet<>();
 
-	public List<Role> getEnumRoles() {
-		return roles.stream().map(r -> r.getRole()).collect(Collectors.toList());
-	}
+	public List<Role> getEnumRoles() { return roles.stream().map(r -> r.getRole()).collect(Collectors.toList()); }
 
 	public Rating addRatedBy(Rating ratedBy) {
 		getRatedBy().add(ratedBy);

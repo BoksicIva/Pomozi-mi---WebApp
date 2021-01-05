@@ -26,13 +26,8 @@ public class Common {
 		Counter c = new Counter(0);
 		return list
 			.stream()
-			.reduce(
-				"[",
-				(partialRes, e) -> {
-					c.c++;
-					return partialRes + (c.c == 1 ? "" : ", ") + e.toString();
-				}, (s1, s2) -> s1 + s2
-			) + "]";
+			.reduce("[", (partialRes, e) -> { c.c++; return partialRes + (c.c == 1 ? "" : ", ") + e.toString(); }, (s1, s2) -> s1 + s2)
+			+ "]";
 	}
 
 }

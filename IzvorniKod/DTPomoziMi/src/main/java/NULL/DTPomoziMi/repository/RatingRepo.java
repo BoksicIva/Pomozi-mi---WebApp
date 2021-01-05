@@ -12,5 +12,5 @@ public interface RatingRepo extends PagingAndSortingRepository<Rating, Long> {
 
 	@Query("select o from ocjenjivanje o where o.rated.IdUser = :rated")
 	Page<Rating> findByRated(Pageable pageable, @Param("rated") long rated);
-	
+
 }

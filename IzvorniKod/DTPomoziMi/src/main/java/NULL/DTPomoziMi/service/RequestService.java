@@ -21,7 +21,7 @@ public interface RequestService {
 	 *
 	 * @param idRequest the id request
 	 * @param principal the principal
-	 * @param enabled the enabled
+	 * @param enabled   the enabled
 	 * @return the request
 	 * @throws EntityMissingException - if element with given <code>id</code> does
 	 *                                not exist
@@ -31,7 +31,7 @@ public interface RequestService {
 	/**
 	 * Creates the request.
 	 *
-	 * @param request the request
+	 * @param request   the request
 	 * @param principal the principal
 	 * @return the created request
 	 * @throws MappingException     - if a runtime error occurs while mapping DTO to
@@ -45,7 +45,7 @@ public interface RequestService {
 	 * Delete request.
 	 *
 	 * @param id_zahtjev the id zahtjev
-	 * @param principal the principal
+	 * @param principal  the principal
 	 * @return the request
 	 * @throws EntityMissingException - if element with given <code>id</code> does
 	 *                                not exist
@@ -65,8 +65,8 @@ public interface RequestService {
 	/**
 	 * Gets the all active requests.
 	 *
-	 * @param pageable the pageable
-	 * @param radius   the radius
+	 * @param pageable  the pageable
+	 * @param radius    the radius
 	 * @param principal the principal
 	 * @return the all active requests
 	 */
@@ -75,20 +75,18 @@ public interface RequestService {
 	/**
 	 * Gets the authored requests.
 	 *
-	 * @param userID the user ID
+	 * @param userID    the user ID
 	 * @param principal the principal
 	 * @return the authored requests
 	 */
-	Map<String, CollectionModel<RequestDTO>> getAuthoredRequests(
-		long userID, UserPrincipal principal
-	);
+	Map<String, CollectionModel<RequestDTO>> getAuthoredRequests(long userID, UserPrincipal principal);
 
 	/**
 	 * Gets request by id and checks if user is permitted to see such resource. If
 	 * not, then throws {@link IllegalAccessException}.
 	 *
 	 * @param id_zahtjev the id zahtjev
-	 * @param principal the principal
+	 * @param principal  the principal
 	 * @return the requestby id
 	 * @throws EntityMissingException - if element with given <code>id</code> does
 	 *                                not exist
@@ -123,7 +121,7 @@ public interface RequestService {
 	 *
 	 * @param idRequest  the id request
 	 * @param requestDTO the request DTO
-	 * @param principal the principal
+	 * @param principal  the principal
 	 * @return the request
 	 * @throws NullPointerException   if given {@literal request} is {@literal null}
 	 *                                reference
@@ -135,7 +133,7 @@ public interface RequestService {
 	/**
 	 * Back off from execution.
 	 *
-	 * @param id the id
+	 * @param id        the id
 	 * @param principal the principal
 	 * @return the request
 	 * @throws EntityMissingException - if element with given <code>id</code> does
@@ -146,7 +144,7 @@ public interface RequestService {
 	/**
 	 * Gets the requests by executor.
 	 *
-	 * @param userId the user id
+	 * @param userId    the user id
 	 * @param principal the principal
 	 * @return the requests by executor
 	 */
