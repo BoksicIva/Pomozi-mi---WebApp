@@ -37,21 +37,22 @@
 \end{comment}
 
 		    \section{Ispitivanje programskog rješenja}
-			
+\begin{comment}
 			\textbf{\textit{dio 2. revizije}}\\
 			
 			 \textit{U ovom poglavlju je potrebno opisati provedbu ispitivanja implementiranih funkcionalnosti na razini komponenti i na razini cijelog sustava s prikazom odabranih ispitnih slučajeva. Studenti trebaju ispitati temeljnu funkcionalnost i rubne uvjete.}
-           
+\end{comment} 
+        
 %\begin{comment}
         \subsection{Ispitivanje komponenti}
 		    
 		    \textbf{\textit{dio 2. revizije}}\\
     
-			\textit { Provesli smo  ispitivanje-unit testing nad razredima koji implementiraju temeljne funkcionalnosti, a to su User i Request. Ispitali smo njihovih 7 metoda te njihove redovne slučajeve, rubne slučajeve i one koji izazivaju pogrešku.Pri testiranju su koristeni pripremljeni podatci u bazi koji se unose pri svakom pokretanju testa. }
+			\textit { Provesli smo  ispitivanje-unit testing nad razredima koji implementiraju temeljne funkcionalnosti, a to su User i Request. Ispitali smo njihovih 7 metoda te njihove redovne slučajeve, rubne slučajeve i one koji izazivaju pogrešku.Pri testiranju su korišteni pripremljeni podatci u bazi koji se unose automatski pri svakom pokretanju testa. }
 			
 			\medskip
 			
-			\noindent \textbf{Ispitni sličaj 1: Testiranje funkcionalnosti metode updateUser()}\\
+			\noindent \textbf{Ispitni slučaj 1: Testiranje funkcionalnosti metode updateUser()}\\
 			
 			\medskip
             \noindent\textbf{Ulaz:}
@@ -72,7 +73,7 @@
             
             \begin{figure}[H]
                  \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{slike/UpdateUserTest.jpeg}
-                \cntering
+                \centering
                 \caption{UpdateUserTest()}
             \end{figure}
             
@@ -208,7 +209,7 @@ public class UpdateUserTest {
             
             \begin{figure}[H]
                  \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{slike/UpdateRequestTest.jpeg}
-                \cntering
+                \centering
                 \caption{UpdateRequestTest()}
             \end{figure}
             
@@ -339,7 +340,7 @@ public class UpdateRequestTest {
             
             \begin{figure}[H]
                  \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{slike/PickForExecutionTest.jpeg}
-                \cntering
+                \centering
                 \caption{PickForExecutionTest()}
             \end{figure}
             
@@ -423,7 +424,7 @@ public class PickForExecutionTest {
             
             \begin{figure}[H]
                  \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{slike/GetUserByIdTest.jpeg}
-                \cntering
+                \centering
                 \caption{GetUserByIdTest()}
             \end{figure}
             
@@ -510,7 +511,7 @@ class GetUserByIdTest {
             
             \begin{figure}[H]
                  \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{slike/FetchTest.jpeg}
-                \cntering
+                \centering
                 \caption{FetchTest()}
             \end{figure}
             
@@ -597,7 +598,7 @@ public class FetchTest {
             
             \begin{figure}[H]
                  \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{slike/DeleteRequestTest.jpeg}
-                \cntering
+                \centering
                 \caption{DeleteRequestTest()}
             \end{figure}
             
@@ -708,7 +709,7 @@ public class DeleteRequestTest {
             
             \begin{figure}[H]
                  \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{slike/BlockUserTest.jpeg}
-                \cntering
+                \centering
                 \caption{BlockUserTest()}
             \end{figure}
             

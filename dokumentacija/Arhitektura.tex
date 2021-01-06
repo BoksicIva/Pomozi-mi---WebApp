@@ -67,13 +67,14 @@
 			\item Ocjenjivanje
 			\item ImaUlogu 
 			\item Uloga
+			\item Obavijest
 			
 		\end{packed_item}
 		
 			\subsection{Opis tablica}
 			
 					    \textbf{ Korisnik}
-		    \text Ovaj entitet sadržava sve važne informacije o korisniku aplikacije. Sadrži atribute: ID${\_}$Korisnik, ime, prezime, email, lozinka, aktivan, token, slika te ID${\_}$Lokacija. Ovaj entitet je u vezi \emph{One-to-Many} s entitetom Zahtjev preko atributa ID${\_}$Korisnik gdje korisnik ima dvije uloge, u vezi  \emph{Many-to-One} s entitetom Lokacija preko atributa ID${\_}$Lokacija, u vezi \emph{Many-to-Many} s entitetom Kandidatura preko vezne tablice Kandidiranje i atributa ID${\_}$Korisnik, u vezi \emph{One-to-Many} s entitetom Ocjenjivanje preko atributa ID${\_}$Korisnik gdje korisnik ima dvije uloge te u vezi \emph{Many-to-Many} s entitetom Uloga preko vezne tablice ImaUlogu i atributa ID${\_}$Korisnik
+		    \text Ovaj entitet sadržava sve važne informacije o korisniku aplikacije. Sadrži atribute: ID${\_}$Korisnik, ime, prezime, email, lozinka, aktivan, token, slika te ID${\_}$Lokacija. Ovaj entitet je u vezi \emph{One-to-Many} s entitetom Zahtjev preko atributa ID${\_}$Korisnik gdje korisnik ima dvije uloge, u vezi  \emph{Many-to-One} s entitetom Lokacija preko atributa ID${\_}$Lokacija, u vezi \emph{Many-to-Many} s entitetom Kandidatura preko vezne tablice Kandidiranje i atributa ID${\_}$Korisnik, u vezi \emph{One-to-Many} s entitetom Ocjenjivanje preko atributa ID${\_}$Korisnik gdje korisnik ima dvije uloge, u vezi \emph{Many-to-Many} s entitetom Uloga preko vezne tablice ImaUlogu i atributa ID${\_}$Korisnik te u vezi \emph{One-to-Many} s entitetom Obavijest preko atributa ID${\_}$Korisnik.
 				
 				\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
 					
@@ -98,7 +99,7 @@
 					
 				\end{longtabu}
 				    \textbf{Zahtjev}
-			    \text Ovaj entitet sadržava sve važne informacije o korisnikovu zahtjevu. Sadrži atribute: ID${\_}$Zahtjev, opis, tstmp, status, brojMobitela, ID${\_}$Autor, ID${\_}$Izvrsitelj, primljenaNotif, ID${\_}$Lokacija, execTstmp. Ovaj entitet je u vezi \emph{Many-to-one} s entitetom Lokacija preko atributa ID${\_}$Lokacija, također u vezi \emph{One-to-Many} s entitetom Ocjenjivanje preko atributa ID${\_}$Zahtjev te u dvije veze \emph{Many-to-One} s entitetom Korisnik preko atributa ID${\_}$Korisnik što rezultira pojavom atributa ID${\_}$Autor i ID${\_}$Izvrsitelj u tablici Zahtjev.  
+			    \text Ovaj entitet sadržava sve važne informacije o korisnikovu zahtjevu. Sadrži atribute: ID${\_}$Zahtjev, opis, tstmp, status, brojMobitela, ID${\_}$Autor, ID${\_}$Izvrsitelj, potvrden, ID${\_}$Lokacija, execTstmp. Ovaj entitet je u vezi \emph{Many-to-one} s entitetom Lokacija preko atributa ID${\_}$Lokacija, također u vezi \emph{One-to-Many} s entitetom Ocjenjivanje preko atributa ID${\_}$Zahtjev te u dvije veze \emph{Many-to-One} s entitetom Korisnik preko atributa ID${\_}$Korisnik što rezultira pojavom atributa ID${\_}$Autor i ID${\_}$Izvrsitelj u tablici Zahtjev.  
 			
 				\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
 					
@@ -118,7 +119,7 @@
 					brojMobitela & VARCHAR & broj mobitela autora zahtjeva \\ \hline
 					\colorbox{LightBlue}{\underline{ID${\_}$Autora}} & BIGINT & jedinstveni identifikator korisnika(autora zahtjeva) \\ \hline
 					\colorbox{LightBlue}{\underline{ID${\_}$Izvrsitelj}} & BIGINT & jedinstveni identifikator korisnika(izvršitelja zahtjeva) \\ \hline
-					primljenaNotif & BOOLEAN & zastavica status notifikacije \\ \hline
+					potvrden & BOOLEAN & zastavica status potvrđen \\ \hline
 					\colorbox{LightBlue}{\underline{ID${\_}$Lokacija}} & BIGINT & identifikator lokacije \\ \hline
 					execTstmp & TIMESTAMP & točka u vremenu kada je zahtjev izvršen \\ \hline
 					
@@ -254,6 +255,32 @@
 				
 			\end{longtabu}
 		
+		\newpage
+		
+			\textbf{Obavijest}
+			\text je tablica koja sadržava obavijesti korisnika. Sadrži atribute: ID${\_}$Obavijest, obavijest, primljena, tstmp i ID${\_}$Korisnik. Ovaj entitet je u vezi \emph{Many-to-One} s entitetom Korisnik preko atributa ID${\_}$Korisnik.
+			
+			\begin{longtabu} to \textwidth {|X[6, l]|X[6, l]|X[20, l]|}
+				
+				\hline \multicolumn{3}{|c|}{\textbf{Obavijest}}	 \\[3pt] \hline
+				\endfirsthead
+				
+				\hline \multicolumn{3}{|c|}{\textbf{Obavijest}}	 \\[3pt] \hline
+				\endhead
+				
+				\hline 
+				\endlastfoot
+				\colorbox{LightGreen}{\textbf{\underline{ID${\_}$Obavijest}}} & BIGSERIAL	& jedinstveni identifikator 	 	\\ \hline
+				obavijest & VARCHAR	&  text obavijesti		\\ \hline
+				primljena & BOOLEAN	&  zastavica primljenosti poruke		\\ \hline
+				tstmp & TIMESTAMP	&  timestamp slanja obavijesti		\\ \hline
+				\colorbox{LightBlue}{\textbf{\underline{ID${\_}$Korisnik}}} & BIGINT	& identifikator korisnika primatelja	 	\\ \hline
+				
+				
+				
+				
+			\end{longtabu}
+		
 		   \newpage
 			\subsection{Dijagram baze podataka}
 			
@@ -376,11 +403,11 @@
 		
 			\textbf{\textit{dio 2. revizije}}\\
 			
-			\text   Dijagram komponenti prikazan na slici \ref{fig:4.12} opisuje organizaciju i meduovisnost
+			\text   Dijagram komponenti prikazan na slici \ref{fig:4.12} opisuje organizaciju i međuovisnost
             komponenti, interne strukture i odnose prema okolini. Sustavu se pristupa preko dva različita sučelja. Preko sučelja za dohvat HTML, CSS i JS datoteka poslužuju se
             datoteke koje pripadaju \emph{frontend} dijelu aplikacije. Router je komponenta koja na
             upit s url odreduje koja datoteka će se poslužiti na sučelje.Sve JavaScript datoteke ovise o React biblioteci iz koje dohvaćaju gotove komponente kao što su gumbi, forme i slično.REST API poslužuje
-            podatke koji pripadaju \emph{backend} dijelu aplikacije. Pomoću JDBC dohvaćaju se tablice iz baze podataka te se ostvaruje SQL API.Podaci koji su dohvaćeni iz baze oblikuju se pomoću komponenete Model te se prosljeđujue dalje po MVC arhitekturi.DTO(Data Transfer Object) omata podatake te se prosljeđuje prema \emph{frontend} strani koja ih prikladno prikazuje.Za autorizaciju REST servis koirti Spring Security.
+            podatke koji pripadaju \emph{backend} dijelu aplikacije. Pomoću JPA-a dohvaćaju se tablice iz baze podataka.Podaci  u bazi oblikuju se pomoću komponenete Model te se prosljeđuju dalje po REST arhitekturi. DTO(Data Transfer Object) omata podatke te se prosljeđuje prema \emph{frontend} strani koja ih prikladno prikazuje. Za autorizaciju REST servis koristi Spring Security.
 			
 						%unos slike
 		\begin{figure}[H]
