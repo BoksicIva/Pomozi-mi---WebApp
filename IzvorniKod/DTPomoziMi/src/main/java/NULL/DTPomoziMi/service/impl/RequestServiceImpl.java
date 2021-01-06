@@ -186,7 +186,7 @@ public class RequestServiceImpl implements RequestService {
 	}
 
 	@Override
-	public void confirmExecution(long id, boolean confirm, UserPrincipal principal) {
+	public Request confirmExecution(long id, boolean confirm, UserPrincipal principal) {
 		User user = principal.getUser();
 		Request r = fetch(id);
 
@@ -205,18 +205,22 @@ public class RequestServiceImpl implements RequestService {
 				);
 			r.setConfirmed(true);
 		} else {
-			r.setExecutor(null);
-			r.setStatus(RequestStatus.ACTIVE);
-			r.setConfirmed(false);
+			
 			publisher
 				.publishMessageEvent(
 					"Korisnik: " + user.getFirstName() + " " + user.getLastName()
 						+ " je odbio Vaš zahtjev za izvršavanjem zahtjeva s opisom: " + r.getDescription(),
 					r.getExecutor().getIdUser()
 				);
+			
+			r.setExecutor(null);
+			r.setStatus(RequestStatus.ACTIVE);
+			r.setConfirmed(false);
 		}
 
-		requestRepo.save(r);
+		r = requestRepo.save(r);
+	
+		return r;
 	}
 
 	@Override

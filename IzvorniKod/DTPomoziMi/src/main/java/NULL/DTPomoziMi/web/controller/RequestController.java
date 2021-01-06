@@ -270,8 +270,9 @@ public class RequestController { // TODO linkovi...
 		@PathVariable("id") long id, @RequestParam("confirm") boolean confirm, @AuthenticationPrincipal UserPrincipal principal
 	) {
 		try {
-			requestService.confirmExecution(id, confirm, principal);
-			return ResponseEntity.noContent().build();
+			RequestDTO dto = requestDTOassembler.toModel(requestService.confirmExecution(id, confirm, principal));
+			dto.add(getLinks(id));
+			return ResponseEntity.ok(dto);
 		} catch (Exception e) {
 			logger.debug(e.getMessage());
 			throw e;

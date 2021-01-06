@@ -156,6 +156,7 @@ public interface RequestService {
 	 * @param id the id
 	 * @param confirm the confirm
 	 * @param principal the principal
+	 * @return the request
 	 */
-	void confirmExecution(long id, boolean confirm, UserPrincipal principal);
+	Request confirmExecution(long id, boolean confirm, UserPrincipal principal);
 }
