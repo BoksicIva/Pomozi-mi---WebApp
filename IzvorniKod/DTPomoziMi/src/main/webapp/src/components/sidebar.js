@@ -1,19 +1,100 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
-//import * as ImIcons from "react-icons/im";
 import { Link } from "react-router-dom";
+import { withStyles } from "@material-ui/core/styles";
 import { SidebarData } from "./SidebarData";
 import LogoutService from "../service/login-service";
 import sidebarStyle from "./style/sidebar.module.css";
 import { IconContext } from "react-icons";
 import { Typography } from "@material-ui/core";
 import UserService from "../service/user-service";
+import UserService from "../service/user-service";
+import NotificationsIcon from "@material-ui/icons/Notifications";
+import Badge from "@material-ui/core/Badge";
+import IconButton from "@material-ui/core/IconButton";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+
+const StyledMenu = withStyles({
+  paper: {
+    border: "1px solid #d3d4d5",
+  },
+})((props) => (
+  <Menu
+    elevation={0}
+    getContentAnchorEl={null}
+    anchorOrigin={{
+      vertical: "bottom",
+      horizontal: "center",
+    }}
+    transformOrigin={{
+      vertical: "top",
+      horizontal: "center",
+    }}
+    {...props}
+  />
+));
+
+const StyledMenuItem = withStyles((theme) => ({
+  root: {
+    "&:focus": {
+      backgroundColor: theme.palette.primary.main,
+      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+        color: theme.palette.common.white,
+      },
+    },
+  },
+}))(MenuItem);
+
+const ITEM_HEIGHT = 48;
 
 function Navbar(props) {
   const [sidebar, setSidebar] = useState(false);
+  const [value, setValue] = useState(0);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [notifs, setNotifs] = useState([]);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    let count = 0;
+    for (let notif of notifs) {
+      count++;
+      UserService.setReadNotifs(notif.idNotification);
+    }
+    setValue(0);
+  };
 
   const showSidebar = () => setSidebar(!sidebar);
+
+  useEffect(() => {
+    const userId = UserService.getUserContext().id;
+    UserService.getNotifications(userId)
+      .then((response) => {
+        let count = 0;
+        if (response.data._embedded !== undefined) {
+          console.log(response.data._embedded.notifications);
+          setNotifs(response.data._embedded.notifications);
+          console.log(response.data._embedded.notifications.length);
+          for (let notif of response.data._embedded.notifications) {
+            if (notif.recived === false) {
+              count++;
+            }
+          }
+
+          setValue(count);
+          console.log(response);
+        }
+      })
+      .catch((error) => {
+        alert(error);
+      });
+  }, []);
 
   const handleLogOut = () => {
     localStorage.removeItem("username");
@@ -27,16 +108,17 @@ function Navbar(props) {
       });
   };
 
-  function isLogout(props) {
+  function isLogout(prop) {
     let logout;
+
     if (props === "Odjava") {
       logout = (
         <span className={sidebarStyle.span_class} onClick={handleLogOut}>
-          {props}
+          {prop}
         </span>
       );
     } else {
-      logout = <span className={sidebarStyle.span_class}>{props}</span>;
+      logout = <span className={sidebarStyle.span_class}>{prop}</span>;
     }
     return logout;
   }
@@ -52,6 +134,43 @@ function Navbar(props) {
             <FaIcons.FaBars onClick={showSidebar} />
           </Link>
 
+          <IconButton
+            aria-label="show 17 new notifications"
+            color="inherit"
+            onClick={handleClick}
+          >
+            <Badge badgeContent={value} color="secondary">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton>
+          <Menu
+            id="long-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={open}
+            onClose={handleClose}
+            PaperProps={{
+              style: {
+                maxHeight: ITEM_HEIGHT * 10,
+                width: "70ch",
+                whiteSpace: "break-spaces",
+              },
+            }}
+          >
+            {notifs.map((notif) => (
+              <>
+                <MenuItem
+                  key={notif.idNotification}
+                  style={{
+                    whiteSpace: "break-spaces",
+                  }}
+                  onClick={handleClose}
+                >
+                  {notif.message}
+                </MenuItem>
+              </>
+            ))}
+          </Menu>
           <a href="/home" style={{ textDecoration: "none" }}>
             <Typography
               variant="h4"
@@ -82,18 +201,20 @@ function Navbar(props) {
             {SidebarData.map((item, index) => {
               let logout = isLogout(item.title);
               return (
-                <li key={index} className={sidebarStyle.nav_text}>
-                  <Link
-                    to={
-                      item.title === "Profil"
-                        ? item.path + "/" + UserService.getUserContext().id
-                        : item.path
-                    }
-                  >
-                    {item.icon}
-                    {logout}
-                  </Link>
-                </li>
+                <>
+                  <li key={index} className={sidebarStyle.nav_text}>
+                    <Link
+                      to={
+                        item.title === "Profil"
+                          ? item.path + "/" + UserService.getUserContext().id
+                          : item.path
+                      }
+                    >
+                      {item.icon}
+                      {logout}
+                    </Link>
+                  </li>
+                </>
               );
             })}
           </span>

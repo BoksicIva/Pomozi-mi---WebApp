@@ -28,11 +28,12 @@ import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import "fontsource-roboto";
 import PropTypes from "prop-types";
 import SwipeableViews from "react-swipeable-views";
+import ReportIcon from "@material-ui/icons/Report";
+import ReportOffIcon from "@material-ui/icons/Report";
+
 import UserService from "../service/user-service";
 import Sidebar from "./sidebar";
 import CreateIcon from "@material-ui/icons/Create";
-import ReportIcon from "@material-ui/icons/Report";
-import ReportOffIcon from "@material-ui/icons/ReportOff";
 import StarBorderIcon from "@material-ui/icons/StarBorder";
 import GroupIcon from "@material-ui/icons/Group";
 import Star from "@material-ui/icons/Star";
@@ -208,6 +209,7 @@ const Profile = (props) => {
   const [isUser, setUser] = useState(false);
   const [isAdmin, setAdmin] = useState(false);
   const [isBlocked, setBlocked] = useState(false);
+
   const [rating, setRating] = useState({
     ratingComment: null,
     ratingGrade: null,
@@ -258,7 +260,6 @@ const Profile = (props) => {
   const handleAbout = () => {
     setAbout(!about);
   };
-
   const handleBlock = (value) => () => {
     UserService.blockUser(props.match.params.id, value)
       .then((response) => {
@@ -273,10 +274,12 @@ const Profile = (props) => {
     const user = UserService.getUserContext();
     UserService.getUser(props.match.params.id)
       .then((response) => {
+        console.log(response);
         setUserData(response.data);
         if (response.data.enabled === false) {
           setBlocked(true);
         }
+        console.log(user.id == props.match.params.id);
         if (user.id == props.match.params.id) {
           setUser(true);
         }
@@ -447,7 +450,10 @@ const Profile = (props) => {
             <br />
             ADRESA: {dialogReq ? dialogReq.location.adress : null}
             <br />
-            KONTAKT: <a href={"tel:" + (dialogReq ? dialogReq.phone : null)}>{dialogReq ? dialogReq.phone : null}</a>
+            KONTAKT:{" "}
+            <a href={"tel:" + (dialogReq ? dialogReq.phone : null)}>
+              {dialogReq ? dialogReq.phone : null}
+            </a>
           </DialogContentText>
           <TextField
             label="Opis zahtjeva"
@@ -760,149 +766,172 @@ const Profile = (props) => {
               </Typography>
             </Container>
           </Container>
-        </Container>
-
-        {showChain ? (
-          <Container
-            maxWidth="lg"
-            disableGutters={true}
-            className={classes.chainContainer}
-          >
-            <Typography
-              variant="h5"
-              color="secondary"
-              style={{ marginBottom: 5 }}
-            >
-              Chain of trust:
-            </Typography>
-            <GridList cellHeight="auto" className={classes.gridList}>
-              {chainOfTrust
-                ? chainOfTrust._embedded
-                  ? Object.keys(chainOfTrust._embedded).length === 0 &&
-                    chainOfTrust._embedded.constructor === Object
-                    ? null
-                    : chainOfTrust._embedded.ratings.map(mapRatings)
-                  : null
-                : null}
-            </GridList>
-          </Container>
-        ) : null}
-
-        {!isUser ? null : (
-          <Container
-            className={classes.requestsContainer}
-            maxWidth="lg"
-            disableGutters={true}
-          >
-            <Paper className={classes.tabs}>
-              <Tabs
-                value={value}
-                onChange={handleChange}
-                indicatorColor="primary"
-                textColor="primary"
-                variant="fullWidth"
-                aria-label="full width tabs example"
-                classes={{ indicator: classes.scrollIndicator }}
+          {isUser ? null : isAdmin ? (
+            isBlocked ? (
+              <IconButton
+                aria-label="block"
+                title="Blokiraj korisnika"
+                onClick={handleBlock("true")}
               >
-                <Tab
-                  label="Aktivni zahtjevi"
-                  {...a11yProps(0)}
-                  classes={{ wrapper: classes.tabWrapper }}
-                />
-                <Tab
-                  label="Izvršeni zahtjevi"
-                  {...a11yProps(1)}
-                  classes={{ wrapper: classes.tabWrapper }}
-                />
-                <Tab
-                  label="Zahtjevi u obradi"
-                  {...a11yProps(2)}
-                  classes={{ wrapper: classes.tabWrapper }}
-                />
-                <Tab
-                  label="Blokirani zahtjevi"
-                  {...a11yProps(3)}
-                  classes={{ wrapper: classes.tabWrapper }}
-                />
-              </Tabs>
-            </Paper>
-          </Container>
-        )}
+                <ReportOffIcon fontSize="large" />
+              </IconButton>
+            ) : (
+              <IconButton
+                aria-label="block"
+                title="Blokiraj korisnika"
+                onClick={handleBlock("false")}
+              >
+                <ReportIcon fontSize="large" />
+              </IconButton>
+            )
+          ) : null}
 
-        {!isUser ? (
-          <Container
-            style={{ marginBottom: 20 }}
-            maxWidth="lg"
-            disableGutters={true}
-          >
-            <img
-              src={require("../images/profileImage.jpg")}
-              style={{ width: "100%" }}
-            />
-          </Container>
-        ) : (
-          <Container
-            className={classes.requestsContainer}
-            maxWidth="lg"
-            disableGutters={true}
-          >
-            <SwipeableViews
-              axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-              index={value}
-              onChangeIndex={handleChangeIndex}
-              style={{ width: "100%" }}
+          {showChain ? (
+            <Container
+              maxWidth="lg"
+              disableGutters={true}
+              className={classes.chainContainer}
             >
-              <TabPanel value={value} index={0} dir={theme.direction}>
-                <List className={classes.list}>
-                  {requests
-                    ? requests.ACTIVE
-                      ? Object.keys(requests.ACTIVE).length === 0 &&
-                        requests.ACTIVE.constructor === Object
-                        ? null
-                        : requests.ACTIVE._embedded.requests.map(mapRequests)
-                      : null
-                    : null}
-                </List>
-              </TabPanel>
-              <TabPanel value={value} index={1} dir={theme.direction}>
-                <List>
-                  {requests
-                    ? requests.FINALIZED
-                      ? Object.keys(requests.FINALIZED).length === 0 &&
-                        requests.FINALIZED.constructor === Object
-                        ? null
-                        : requests.FINALIZED._embedded.requests.map(mapRequests)
-                      : null
-                    : null}
-                </List>
-              </TabPanel>
-              <TabPanel value={value} index={2} dir={theme.direction}>
-                <List className={classes.list}>
-                  {requests
-                    ? requests.EXECUTING
-                      ? Object.keys(requests.EXECUTING).length === 0 &&
-                        requests.EXECUTING.constructor === Object
-                        ? null
-                        : requests.EXECUTING._embedded.requests.map(mapRequests)
-                      : null
-                    : null}
-                </List>
-              </TabPanel>
-              <TabPanel value={value} index={3} dir={theme.direction}>
-                <List className={classes.list}>
-                  {requests
-                    ? requests.BLOCKED
-                      ? Object.keys(requests.BLOCKED).length === 0 &&
-                        requests.BLOCKED.constructor === Object
-                        ? null
-                        : requests.BLOCKED._embedded.requests.map(mapRequests)
-                      : null
-                    : null}
-                </List>
-              </TabPanel>
-            </SwipeableViews>
-          </Container>
-        )}
+              <Typography
+                variant="h5"
+                color="secondary"
+                style={{ marginBottom: 5 }}
+              >
+                Chain of trust:
+              </Typography>
+              <GridList cellHeight="auto" className={classes.gridList}>
+                {chainOfTrust
+                  ? chainOfTrust._embedded
+                    ? Object.keys(chainOfTrust._embedded).length === 0 &&
+                      chainOfTrust._embedded.constructor === Object
+                      ? null
+                      : chainOfTrust._embedded.ratings.map(mapRatings)
+                    : null
+                  : null}
+              </GridList>
+            </Container>
+          ) : null}
+
+          {!isUser ? null : (
+            <Container
+              className={classes.requestsContainer}
+              maxWidth="lg"
+              disableGutters={true}
+            >
+              <Paper className={classes.tabs}>
+                <Tabs
+                  value={value}
+                  onChange={handleChange}
+                  indicatorColor="primary"
+                  textColor="primary"
+                  variant="fullWidth"
+                  aria-label="full width tabs example"
+                  classes={{ indicator: classes.scrollIndicator }}
+                >
+                  <Tab
+                    label="Aktivni zahtjevi"
+                    {...a11yProps(0)}
+                    classes={{ wrapper: classes.tabWrapper }}
+                  />
+                  <Tab
+                    label="Izvršeni zahtjevi"
+                    {...a11yProps(1)}
+                    classes={{ wrapper: classes.tabWrapper }}
+                  />
+                  <Tab
+                    label="Zahtjevi u obradi"
+                    {...a11yProps(2)}
+                    classes={{ wrapper: classes.tabWrapper }}
+                  />
+                  <Tab
+                    label="Blokirani zahtjevi"
+                    {...a11yProps(3)}
+                    classes={{ wrapper: classes.tabWrapper }}
+                  />
+                </Tabs>
+              </Paper>
+            </Container>
+          )}
+
+          {!isUser ? (
+            <Container
+              style={{ marginBottom: 20 }}
+              maxWidth="lg"
+              disableGutters={true}
+            >
+              <img
+                src={require("../images/profileImage.jpg")}
+                style={{ width: "100%" }}
+              />
+            </Container>
+          ) : (
+            <Container
+              className={classes.requestsContainer}
+              maxWidth="lg"
+              disableGutters={true}
+            >
+              <SwipeableViews
+                axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+                index={value}
+                onChangeIndex={handleChangeIndex}
+                style={{ width: "100%" }}
+              >
+                <TabPanel value={value} index={0} dir={theme.direction}>
+                  <List className={classes.list}>
+                    {requests
+                      ? requests.ACTIVE
+                        ? Object.keys(requests.ACTIVE).length === 0 &&
+                          requests.ACTIVE.constructor === Object
+                          ? null
+                          : requests.ACTIVE._embedded.requests.map(mapRequests)
+                        : null
+                      : null}
+                  </List>
+                </TabPanel>
+                <TabPanel value={value} index={1} dir={theme.direction}>
+                  <List>
+                    {requests
+                      ? requests.FINALIZED
+                        ? Object.keys(requests.FINALIZED).length === 0 &&
+                          requests.FINALIZED.constructor === Object
+                          ? null
+                          : requests.FINALIZED._embedded.requests.map(
+                              mapRequests
+                            )
+                        : null
+                      : null}
+                  </List>
+                </TabPanel>
+                <TabPanel value={value} index={2} dir={theme.direction}>
+                  <List className={classes.list}>
+                    {requests
+                      ? requests.EXECUTING
+                        ? Object.keys(requests.EXECUTING).length === 0 &&
+                          requests.EXECUTING.constructor === Object
+                          ? null
+                          : requests.EXECUTING._embedded.requests.map(
+                              mapRequests
+                            )
+                        : null
+                      : null}
+                  </List>
+                </TabPanel>
+                <TabPanel value={value} index={3} dir={theme.direction}>
+                  <List className={classes.list}>
+                    {requests
+                      ? requests.BLOCKED
+                        ? Object.keys(requests.BLOCKED).length === 0 &&
+                          requests.BLOCKED.constructor === Object
+                          ? null
+                          : requests.BLOCKED._embedded.requests.map(mapRequests)
+                        : null
+                      : null}
+                  </List>
+                </TabPanel>
+              </SwipeableViews>
+            </Container>
+          )}
+        </Container>
       </div>
     </div>
   );
