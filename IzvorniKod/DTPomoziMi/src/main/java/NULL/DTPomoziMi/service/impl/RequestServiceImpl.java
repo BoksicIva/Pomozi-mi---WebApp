@@ -206,6 +206,7 @@ public class RequestServiceImpl implements RequestService {
 			r.setConfirmed(true);
 		} else {
 			r.setExecutor(null);
+			r.setStatus(RequestStatus.ACTIVE);
 			r.setConfirmed(false);
 			publisher
 				.publishMessageEvent(
