@@ -17,6 +17,14 @@ class RequestService {
     deleteRequest(id){
         return http.delete("/requests/" + id, {});
     }
+
+    confirmRequest(id) {
+      return http.patch("/requests/confirmExecution/" + id + "?confirm=true", {});
+    }
+
+    blockRequest(id) {
+      return http.patch("/requests/confirmExecution/" + id + "?confirm=false", {});
+    }
   
   }
   

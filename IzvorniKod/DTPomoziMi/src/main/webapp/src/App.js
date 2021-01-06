@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import './App.modules.css';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import UserService from "./service/user-service";
 
 const Login = lazy(() => import("./components/login"));
 const Home = lazy(() => import("./components/home"));
@@ -14,6 +15,10 @@ const Profile = lazy(() => import("./components/profile"));
 const AccessibleFocusOutline = lazy(() =>
   import("./components/accessibleFocusOutline")
 );
+
+if (UserService.getUserContext() === null && !window.location.href.endsWith("login") && !window.location.href.endsWith("register")) {
+  window.location.assign("/login");
+}
 
 function App() {
   return (

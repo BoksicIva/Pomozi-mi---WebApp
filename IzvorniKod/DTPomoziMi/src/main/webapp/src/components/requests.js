@@ -28,6 +28,9 @@ import {
 import DeleteIcon from '@material-ui/icons/Delete';
 import UserService from '../service/user-service';
 
+if (UserService.getUserContext() === null) {
+    window.location.assign("/login");
+}
 
 const useStyles = makeStyles((theme) => ({
     root: {
