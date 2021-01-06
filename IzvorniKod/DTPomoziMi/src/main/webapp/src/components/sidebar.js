@@ -119,17 +119,17 @@ function Navbar(props) {
       });
   };
 
-  function isLogout(props) {
+  function isLogout(prop) {
     let logout;
     
     if (props === "Odjava") {
       logout = (
         <span className={sidebarStyle.span_class} onClick={handleLogOut}>
-          {props}
+          {prop}
         </span>
       );
     } else {
-      logout = <span className={sidebarStyle.span_class}>{props}</span>;
+      logout = <span className={sidebarStyle.span_class}>{prop}</span>;
     }
     return logout;
   }
@@ -206,19 +206,12 @@ function Navbar(props) {
               let logout = isLogout(item.title);
               return (
                 <>
-
+                
                 <li key={index} className={sidebarStyle.nav_text}>
-                  {(item.title === "Profil") ?
                   <Link to={item.title === "Profil" ? item.path + "/" + UserService.getUserContext().id : item.path}>
                     {item.icon}
                     {logout}
                   </Link>
-                  : (item.title === "Odjava") ? <Link onClick={handleLogOut}>{item.icon}
-                  {logout}</Link> :                   <Link to={item.title}>
-                    {item.icon}
-                    {logout}
-                  </Link>
-            }
                 </li>
                 </>
               );
