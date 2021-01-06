@@ -72,6 +72,9 @@ public class Request implements Serializable {
 
 	@Column(name = "exectstmp")
 	private LocalDateTime execTstmp;
+	
+	@Column(name = "potvrden")
+	private boolean confirmed;
 
 	public Rating addRating(Rating rating) { getRatings().add(rating); rating.setRequest(this); return rating; }
 

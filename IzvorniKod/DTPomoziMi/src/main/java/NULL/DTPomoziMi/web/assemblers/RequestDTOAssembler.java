@@ -55,6 +55,7 @@ public class RequestDTOAssembler extends RepresentationModelAssemblerSupport<Req
 				map().setStatus(source.getStatus());
 				map().setTstmp(source.getTstmp());
 				map().setExecTstmp(source.getExecTstmp());
+				map().setConfirmed(source.isConfirmed());
 			}
 		});
 

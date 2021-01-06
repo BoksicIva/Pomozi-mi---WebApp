@@ -64,6 +64,7 @@ public class RequestServiceImpl implements RequestService {
 
 		req.setAuthor(principal.getUser());
 		req.setStatus(RequestStatus.ACTIVE);
+		req.setConfirmed(false);
 
 		return requestRepo.save(req);
 	}
@@ -138,7 +139,7 @@ public class RequestServiceImpl implements RequestService {
 			publisher
 				.publishMessageEvent(
 					"Zahtijev autora " + author.getFirstName() + " " + author.getLastName() + " s opisom: " + r.getDescription()
-						+ " je upravo odblokiran, a vi ste izvršitelj.",
+						+ ", čiji ste izvršitelj, je upravo odblokiran.",
 					r.getExecutor().getIdUser()
 				);
 		} else
@@ -164,11 +165,57 @@ public class RequestServiceImpl implements RequestService {
 		publisher
 			.publishMessageEvent(
 				"Vaš zahtjev s opisom: " + r.getDescription() + " je upravo odabran za izvšavanje od strane korisnika: "
-					+ user.getFirstName() + " " + user.getLastName() + " " + user.getEmail(),
+					+ user.getFirstName() + " " + user.getLastName() + " molimo prihvatite/odbijte pomoć navedenog korisnika.",
 				r.getAuthor().getIdUser()
 			);
 
+		publisher
+			.publishMessageEvent(
+				"Upravo ste zahtjev s opisom: " + r.getDescription() + " autora: " + r.getAuthor().getFirstName() + " "
+					+ r.getAuthor().getLastName() + " odabrali za izvšavanje. Molimo pričekajte da korisnik prihvati Vašu pomoć.",
+				user.getIdUser()
+			);
+
+		r = requestRepo.save(r);
+
+		r.setPhone(null);
+		r.getAuthor().setLocation(null);
+		r.getAuthor().setEmail(null);
+
 		return requestRepo.save(r);
+	}
+
+	@Override
+	public void confirmExecution(long id, boolean confirm, UserPrincipal principal) {
+		User user = principal.getUser();
+		Request r = fetch(id);
+
+		if (!r.getStatus().equals(RequestStatus.EXECUTING))
+			throw new IllegalActionException("Cannot confirm non executing request for execution!");
+
+		if (!r.getAuthor().getIdUser().equals(user.getIdUser()))
+			throw new IllegalActionException("Cannot confirm execution for someone else's request!");
+
+		if (confirm) {
+			publisher
+				.publishMessageEvent(
+					"Korisnik: " + user.getFirstName() + " " + user.getLastName() + "(mail-adresa: " + user.getEmail() + ", broj mobitela: "
+						+ r.getPhone() + ")" + "je potvrdio Vas kao izvršitelja zahtjeva s opisom: " + r.getDescription(),
+					r.getExecutor().getIdUser()
+				);
+			r.setConfirmed(true);
+		} else {
+			r.setExecutor(null);
+			r.setConfirmed(false);
+			publisher
+				.publishMessageEvent(
+					"Korisnik: " + user.getFirstName() + " " + user.getLastName()
+						+ " je odbio Vaš zahtjev za izvršavanjem zahtjeva s opisom: " + r.getDescription(),
+					r.getExecutor().getIdUser()
+				);
+		}
+
+		requestRepo.save(r);
 	}
 
 	@Override
@@ -179,7 +226,7 @@ public class RequestServiceImpl implements RequestService {
 		if (!user.getIdUser().equals(r.getAuthor().getIdUser()))
 			throw new IllegalAccessException("Only author can mark request as executed!");
 
-		if (!r.getStatus().equals(RequestStatus.EXECUTING))
+		if (!r.getStatus().equals(RequestStatus.EXECUTING) || !r.isConfirmed())
 			throw new IllegalActionException("Cannot mark a request without an executor as executed!");
 
 		publisher

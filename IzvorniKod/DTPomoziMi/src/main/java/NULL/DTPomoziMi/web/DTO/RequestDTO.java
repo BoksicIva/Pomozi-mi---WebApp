@@ -60,4 +60,6 @@ public class RequestDTO extends RepresentationModel<RequestDTO> {
 	@Past
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime execTstmp;
+	
+	private boolean confirmed;
 }

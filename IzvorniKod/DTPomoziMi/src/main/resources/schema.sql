@@ -55,6 +55,7 @@ CREATE TABLE Zahtjev
   ID_Autor BIGINT NOT NULL,
   ID_Izvrsitelj BIGINT, -- ako nije null, a izvrsen false, onda odabran...
   execTstmp TIMESTAMP,
+  potvrden BOOLEAN NOT NULL,
   PRIMARY KEY (ID_Zahtjev),
   FOREIGN KEY (ID_Autor) REFERENCES Korisnik(ID_Korisnik) ON DELETE CASCADE,
   FOREIGN KEY (ID_Izvrsitelj) REFERENCES Korisnik(ID_Korisnik) ON DELETE SET NULL,

@@ -112,10 +112,7 @@ public class RequestController { // TODO linkovi...
 	 * Delete request.
 	 *
 	 * @param requestId     the request id
-	 * @param user          the user
-	 * @param requestDTO    the request DTO
-	 * @param bindingResult the binding result
-	 * @param request       the request
+	 * @param principal the principal
 	 * @return the response entity
 	 */
 	@DeleteMapping(value = "/{id}", produces = { "application/json; charset=UTF-8" })
@@ -260,6 +257,27 @@ public class RequestController { // TODO linkovi...
 		}
 	}
 
+	/**
+	 * Confirm execution.
+	 *
+	 * @param id        the id
+	 * @param confirm   if true then confirm, else remove executor
+	 * @param principal the principal
+	 * @return the response entity
+	 */
+	@PatchMapping(value = "confirmExecution/{id}", produces = { "application/json; charset=UTF-8" })
+	public ResponseEntity<?> confirmExecution(
+		@PathVariable("id") long id, @RequestParam("confirm") boolean confirm, @AuthenticationPrincipal UserPrincipal principal
+	) {
+		try {
+			requestService.confirmExecution(id, confirm, principal);
+			return ResponseEntity.noContent().build();
+		} catch (Exception e) {
+			logger.debug(e.getMessage());
+			throw e;
+		}
+	}
+
 	@PatchMapping(value = "backOff/{id}", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> backOff(@PathVariable("id") long id, @AuthenticationPrincipal UserPrincipal principal) {
 		try {
@@ -306,7 +324,7 @@ public class RequestController { // TODO linkovi...
 	}
 
 	private Link[] getLinks(long id) {
-		return new Link[] { linkCreate(), linkOne(id), linkUpdate(id), linkDelete(id), linkBlock(id), linkPick(id), linkExecuted(id),
+		return new Link[] { linkCreate(), linkOne(id), linkUpdate(id), linkDelete(id), linkBlock(id), linkPick(id), confirmExecution(id), linkExecuted(id),
 			linkBackoff(id), linkActive(id), linkAuthored(id), linkByExecutor(id) };
 	}
 
@@ -346,5 +364,9 @@ public class RequestController { // TODO linkovi...
 
 	private Link linkUpdate(long id) {
 		return linkTo(methodOn(getClass()).updateRequest(id, null, null, null)).withRel("update").withType("put");
+	}
+
+	private Link confirmExecution(long id) {
+		return linkTo(methodOn(getClass()).confirmExecution(id, true, null)).withRel("confirmExecution").withType("patch");
 	}
 }

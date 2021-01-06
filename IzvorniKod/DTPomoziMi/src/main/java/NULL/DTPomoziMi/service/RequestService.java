@@ -149,4 +149,13 @@ public interface RequestService {
 	 * @return the requests by executor
 	 */
 	Map<String, CollectionModel<RequestDTO>> getRequestsByExecutor(Long userId, UserPrincipal principal);
+
+	/**
+	 * Confirm execution.
+	 *
+	 * @param id the id
+	 * @param confirm the confirm
+	 * @param principal the principal
+	 */
+	void confirmExecution(long id, boolean confirm, UserPrincipal principal);
 }
