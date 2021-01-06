@@ -10,6 +10,7 @@ const RequestLoader = lazy(() => import("./components/requestLoader"));
 const UserList = lazy(() => import("./components/userList"));
 const ReqList = lazy(() => import("./components/requests"));
 const Profile = lazy(() => import("./components/profile"));
+
 //ova komponenta je dodana da se maknu ruzni crni okviri na svakom <a> i <button> sve dok se prvi put ne stisne TAB
 const AccessibleFocusOutline = lazy(() =>
   import("./components/accessibleFocusOutline")
@@ -21,6 +22,7 @@ function App() {
         <Suspense fallback={<div>Loading...</div>}>
           <AccessibleFocusOutline>
             <Switch>
+            
               <Route path="/profile/:id" component={Profile} />
               <Route path="/requests" component={ReqList} />
               <Route path="/page" component={RequestLoader} />

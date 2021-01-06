@@ -30,8 +30,6 @@ import PropTypes from "prop-types";
 import SwipeableViews from "react-swipeable-views";
 import UserService from "../service/user-service";
 import Sidebar from "./sidebar";
-import ReportIcon from '@material-ui/icons/Report';
-import ReportOffIcon from '@material-ui/icons/ReportOff';
 import CreateIcon from "@material-ui/icons/Create";
 import ReportIcon from "@material-ui/icons/Report";
 import ReportOffIcon from "@material-ui/icons/ReportOff";

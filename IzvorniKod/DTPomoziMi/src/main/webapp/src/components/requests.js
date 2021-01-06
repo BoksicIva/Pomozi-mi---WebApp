@@ -67,7 +67,11 @@ export default function RecipeReviewCard(props) {
     useEffect(() => {
         RequestService.getRequests(1)
             .then((response) => {
-                setRequests(response.data._embedded.requests);
+                if (response.data._embedded !== undefined) {
+                    console.log(response.data._embedded.requests);
+                    setRequests(response.data._embedded.requests);
+                }
+
                 const roles = UserService.getUserContext().roles;
                 for (let role of roles) {
                     if (role === "ROLE_ADMIN") {
@@ -75,7 +79,7 @@ export default function RecipeReviewCard(props) {
                     }
                 }
                 //setUsersTemp(response.data._embedded.users);
-                console.log(response.data._embedded.requests);
+                
                 //rows = response.data._embedded.users;
                 //console.log(rows);
                 //console.log(rows[0]);
@@ -89,9 +93,10 @@ export default function RecipeReviewCard(props) {
         googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
         libraries,
     });
+
     const handleDelete = value => () => {
         RequestService.deleteRequest(value.idRequest).then((response) => {
-            window.location.reload(false);
+            window.location.reload(true);
 
         })
             .catch((error) => {
@@ -108,6 +113,7 @@ export default function RecipeReviewCard(props) {
     const [lng, setLng] = React.useState('');
     const [isAdmin, setAdmin] = React.useState(false);
     const [noLoc, setLoc] = React.useState(false);
+    const [req, setReq] = React.useState();
 
     if (loadError) return "Error";
     if (!isLoaded) return "Loading...";
@@ -133,7 +139,7 @@ export default function RecipeReviewCard(props) {
     };
 
     const refreshPage = () => {
-        window.location.reload(false);
+        window.location.reload(true);
     }
 
     const handleExpandClick = () => {
@@ -145,12 +151,14 @@ export default function RecipeReviewCard(props) {
 
         RequestService.sendExecution(value.idRequest)
             .then((response) => {
-                if(value.location !== null){
-                setLat(value.location.latitude);
-                setLng(value.location.longitude);
-                setNotSent(false);
-                console.log(response);
-                }else if(value.location === null){
+                if (value.location !== null) {
+                    setLat(value.location.latitude);
+                    setLng(value.location.longitude);
+                    setReq(value);
+                    setNotSent(false);
+                    console.log(response);
+                } else if (value.location === null) {
+                    setReq(value);
                     setLoc(true);
                     setNotSent(false);
                 }
@@ -226,14 +234,14 @@ export default function RecipeReviewCard(props) {
                                         <Typography paragraph>
                                             Lokacija:
                                         </Typography>
-                                        
+
                                         <Typography paragraph>
-                                        Grad: {" " + ((request.location === null) ? "Grad nije zadan" : request.location.town)}
-                                        <br></br>
+                                            Grad: {" " + ((request.location === null) ? "Grad nije zadan" : request.location.town)}
+                                            <br></br>
                                         Adresa: {" " + ((request.location === null) ? "Adresa nije zadana" : request.location.adress)}
-                                    </Typography>
-                                            
-                                        
+                                        </Typography>
+
+
 
                                     </CardContent>
                                 </Collapse>
@@ -244,37 +252,45 @@ export default function RecipeReviewCard(props) {
                                 <button onClick={refreshPage}>Povratak na zahtjeve</button>
                             </div>
                             <h1>
-                                Zahtjev uspjesno poslan
+                                Zahtjev uspjesno poslan!
+                                
+
                     </h1>
+                    <Typography paragraph>
+                                Mobitel : {req.phone}
+                                </Typography>
+                    <Typography paragraph>
+                                Zahtjev : {req.description}
+                                </Typography>
                             {noLoc ? null :
-                            <>
-                            <h2>
-                                Lokacija zahtjeva:
+                                <>
+                                    <h2>
+                                        Lokacija zahtjeva:
                     </h2>
 
-                            <div>
-                                <GoogleMap mapContainerStyle={mapContainerStyle}
-                                    zoom={15}
-                                    center={{ lat: lat, lng: lng }}
-                                    options={options}
-                                    onClick={(event) => {
+                                    <div>
+                                        <GoogleMap mapContainerStyle={mapContainerStyle}
+                                            zoom={15}
+                                            center={{ lat: lat, lng: lng }}
+                                            options={options}
+                                            onClick={(event) => {
 
-                                        setLat(event.latLng.lat())
-                                        setLng(event.latLng.lng())
-                                    }}
-                                >
+                                                setLat(event.latLng.lat())
+                                                setLng(event.latLng.lng())
+                                            }}
+                                        >
 
-                                    <Marker
-                                        key={16}
-                                        position={{ lat: lat, lng: lng }}
-                                    />
-                                </GoogleMap>
-                            
-                            </div>
-                            </>
+                                            <Marker
+                                                key={16}
+                                                position={{ lat: lat, lng: lng }}
+                                            />
+                                        </GoogleMap>
+
+                                    </div>
+                                </>
                             }
                         </>
-                                
+
                     }
                 </Container>
             </div>

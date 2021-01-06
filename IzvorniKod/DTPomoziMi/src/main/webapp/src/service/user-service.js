@@ -48,6 +48,35 @@ class UserService {
   blockUser(id, en) {
     return http.post("./users/blockUnblock/" + id +"?enabled=" + en, {});
   }
+
+  blockRequest(id) {
+    return http.patch("./requests/blockUnblock/" + id + "?enabled=false", {});
+  }
+
+  unblockRequest(id) {
+    return http.patch("./requests/blockUnblock/" + id + "?enabled=true", {});
+  }
+
+  deleteRequest(id) {
+    return http.delete("./requests/" + id, {});
+  }
+
+  updateRequest(id, updatedRequest) {
+    return http.put("./requests/" + id, updatedRequest);
+  }
+
+  getChainOfTrust(id) {
+    return http.get("./users/chainOfTrust/" + id, {});
+  }
+
+  getNotifications(id) {
+    return http.get("/notifications/user/" + id , {});
+  }
+
+  setReadNotifs(id){
+    return http.patch("/notifications/" + id, {});
+  }
+
 }
 
 export default new UserService();
