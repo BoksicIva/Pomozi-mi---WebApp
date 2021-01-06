@@ -1,6 +1,7 @@
 package NULL.DTPomoziMi.model;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,7 +34,7 @@ public class Notification implements Serializable {
 	@Include
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id_zahtjev")
+	@Column(name = "id_obavijest")
 	private Long idNotification;
 	
 	@Column(name = "obavijest")
@@ -45,5 +46,7 @@ public class Notification implements Serializable {
 	@ManyToOne()
 	@JoinColumn(name = "id_korisnik")
 	private User user;
+	
+	private LocalDateTime tstmp;
 	
 }

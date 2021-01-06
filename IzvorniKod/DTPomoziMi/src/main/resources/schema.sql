@@ -100,6 +100,7 @@ CREATE TABLE Obavijest
   obavijest VARCHAR(2000) NOT NULL,
   primljena BOOLEAN NOT NULL,
   ID_Korisnik BIGINT NOT NULL,
+  tstmp TIMESTAMP NOT NULL,
   PRIMARY KEY (ID_Obavijest),
   FOREIGN KEY (ID_Korisnik) REFERENCES Korisnik(ID_Korisnik) ON DELETE CASCADE
 );

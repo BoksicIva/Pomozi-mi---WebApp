@@ -1,5 +1,7 @@
 package NULL.DTPomoziMi.web.DTO;
 
+import java.time.LocalDateTime;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
@@ -32,5 +34,7 @@ public class NotificationDTO extends RepresentationModel<NotificationDTO>{
 
 	@Valid
 	private UserDTO user;
+	
+	private LocalDateTime tstmp;
 	
 }

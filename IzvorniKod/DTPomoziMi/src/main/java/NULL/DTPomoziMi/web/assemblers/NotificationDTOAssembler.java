@@ -45,6 +45,7 @@ public class NotificationDTOAssembler extends RepresentationModelAssemblerSuppor
 				map().setMessage(source.getMessage());
 				map().setIdNotification(source.getIdNotification());
 				map().setReceived(source.getReceived());
+				map().setTstmp(source.getTstmp());
 			}
 		});
 

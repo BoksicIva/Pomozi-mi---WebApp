@@ -17,6 +17,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import NULL.DTPomoziMi.event.SendMessageEventPublisher;
 import NULL.DTPomoziMi.exception.EntityMissingException;
 import NULL.DTPomoziMi.exception.IllegalAccessException;
 import NULL.DTPomoziMi.exception.IllegalActionException;
@@ -49,6 +50,9 @@ public class RequestServiceImpl implements RequestService {
 
 	@Autowired
 	private RequestDTOAssembler requestDTOAssembler;
+
+	@Autowired
+	private SendMessageEventPublisher publisher;
 
 	@Override
 	public Request createRequest(CreateRequestDTO request, UserPrincipal principal) {
@@ -115,11 +119,29 @@ public class RequestServiceImpl implements RequestService {
 
 		RequestStatus status;
 
-		if (!enabled)
+		if (!enabled) {
 			status = RequestStatus.BLOCKED;
-		else if (r.getExecutor() != null)
+
+			if (r.getExecutor() != null) {
+				User author = r.getAuthor();
+				publisher
+					.publishMessageEvent(
+						"Zahtijev autora " + author.getFirstName() + " " + author.getLastName() + " s opisom: " + r.getDescription()
+							+ " je upravo blokiran.",
+						r.getExecutor().getIdUser()
+					);
+			}
+		} else if (r.getExecutor() != null) {
 			status = RequestStatus.EXECUTING;
-		else
+
+			User author = r.getAuthor();
+			publisher
+				.publishMessageEvent(
+					"Zahtijev autora " + author.getFirstName() + " " + author.getLastName() + " s opisom: " + r.getDescription()
+						+ " je upravo odblokiran, a vi ste izvršitelj.",
+					r.getExecutor().getIdUser()
+				);
+		} else
 			status = RequestStatus.ACTIVE;
 
 		r.setStatus(status);
@@ -139,6 +161,13 @@ public class RequestServiceImpl implements RequestService {
 		r.setExecutor(user);
 		r.setStatus(RequestStatus.EXECUTING);
 
+		publisher
+			.publishMessageEvent(
+				"Vaš zahtjev s opisom: " + r.getDescription() + " je upravo odabran za izvšavanje od strane korisnika: "
+					+ user.getFirstName() + " " + user.getLastName() + " " + user.getEmail(),
+				r.getAuthor().getIdUser()
+			);
+
 		return requestRepo.save(r);
 	}
 
@@ -152,6 +181,20 @@ public class RequestServiceImpl implements RequestService {
 
 		if (!r.getStatus().equals(RequestStatus.EXECUTING))
 			throw new IllegalActionException("Cannot mark a request without an executor as executed!");
+
+		publisher
+			.publishMessageEvent(
+				"Upravo ste zahtjev s opisom: " + r.getDescription()
+					+ " označili kao izvršen, molimo vas ocijenite izvršitelja prije nastavka korištenja aplikacije.",
+				user.getIdUser()
+			);
+
+		publisher
+			.publishMessageEvent(
+				"Zahtjev s opisom: " + r.getDescription()
+					+ " kojemu ste Vi izvršitelj je upravo označen kao izvršen, molimo vas ocijenite autora prije nastavka korištenja aplikacije.",
+				r.getExecutor().getIdUser()
+			);
 
 		r.setStatus(RequestStatus.FINALIZED);
 		r.setExecTstmp(LocalDateTime.now());
@@ -168,6 +211,13 @@ public class RequestServiceImpl implements RequestService {
 			throw new IllegalAccessException("Missing permission to change request status");
 
 		if (!req.getStatus().equals(RequestStatus.EXECUTING)) throw new IllegalActionException("Cannot backoff from request!");
+
+		publisher
+			.publishMessageEvent(
+				"Korisnik " + user.getFirstName() + " " + user.getLastName() + " je upravo odustao od izvšavanja vašeg zahtjeva s opisom: "
+					+ req.getDescription() + " i zahtjev je ponovno aktiviran.",
+				req.getAuthor().getIdUser()
+			);
 
 		req.setStatus(RequestStatus.ACTIVE);
 		req.setExecutor(null);

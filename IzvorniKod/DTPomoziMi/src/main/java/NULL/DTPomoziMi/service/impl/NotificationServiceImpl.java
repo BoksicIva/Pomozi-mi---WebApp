@@ -1,5 +1,7 @@
 package NULL.DTPomoziMi.service.impl;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +29,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Override
 	public Notification create(long idUser, NotificationDTO notif) {
-		Notification newN = new Notification(null, notif.getMessage(), false, userService.fetch(idUser));
+		Notification newN = new Notification(null, notif.getMessage(), false, userService.fetch(idUser), LocalDateTime.now());
 		return notificationRepo.save(newN);
 	}
 
@@ -53,6 +55,17 @@ public class NotificationServiceImpl implements NotificationService {
 	@Override
 	public Notification fetch(long id) {
 		return notificationRepo.findById(id).orElseThrow(() -> new EntityMissingException(Notification.class, id));
+	}
+
+	@Override
+	public void markSeen(long idNotif, UserPrincipal principal) {
+		Notification notif = fetch(idNotif);
+
+		if (!principal.getUser().getIdUser().equals(notif.getUser().getIdUser()))
+			throw new IllegalAccessException("Only reciever can see notifications");
+
+		notif.setReceived(true);
+		notificationRepo.save(notif);
 	}
 
 }

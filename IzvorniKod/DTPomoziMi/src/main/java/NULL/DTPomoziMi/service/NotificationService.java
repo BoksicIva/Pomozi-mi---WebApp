@@ -13,8 +13,8 @@ public interface NotificationService {
 	/**
 	 * Find by user.
 	 *
-	 * @param pageable the pageable
-	 * @param userID the user ID
+	 * @param pageable  the pageable
+	 * @param userID    the user ID
 	 * @param principal the principal
 	 * @return the page
 	 * @throws IllegalAccessException if trying to fetch someone elses notifications
@@ -53,5 +53,16 @@ public interface NotificationService {
 	 *                                not exist
 	 */
 	Notification create(long idUser, NotificationDTO notif);
+
+	/**
+	 * Mark seen.
+	 *
+	 * @param idNotif   the id notif
+	 * @param principal the principal
+	 * @throws EntityMissingException - if element with given <code>id</code> does
+	 *                                not exist
+	 * @throws IllegalAccessException if trying to mark someone elses notifications
+	 */
+	void markSeen(long idNotif, UserPrincipal principal);
 
 }
