@@ -181,6 +181,8 @@ export default function RecipeReviewCard(props) {
                 <Container>
                     {notSent ?
                         requests.map((request) => (
+                            <>
+                            <br></br>
                             <Card className={classes.root}>
                                 <CardHeader
                                     avatar={
@@ -188,12 +190,7 @@ export default function RecipeReviewCard(props) {
                                             R
                              </Avatar>
                                     }
-                                    action={
-                                        <IconButton aria-label="settings">
-                                            <MoreVertIcon />
-                                        </IconButton>
-
-                                    }
+                                  
                                     title={
 
                                         <Link onClick={(event) => { props.history.push("/profile/" + request.author.idUser) }}>{request.author.firstName + " " + request.author.lastName}</Link>
@@ -246,6 +243,8 @@ export default function RecipeReviewCard(props) {
                                     </CardContent>
                                 </Collapse>
                             </Card>
+                            <br></br>
+                            </>
                         )) :
                         <>
                             <div>
