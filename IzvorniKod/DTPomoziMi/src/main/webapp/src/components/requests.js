@@ -27,6 +27,10 @@ import {
 import DeleteIcon from '@material-ui/icons/Delete';
 import UserService from '../service/user-service';
 
+if (UserService.getUserContext() === null) {
+    window.location.assign("/login");
+}
+
 const useStyles = makeStyles((theme) => ({
     root: {
         width: '65vw',
@@ -62,6 +66,32 @@ const options = {
 };
 
 export default function RecipeReviewCard(props) {
+
+    useEffect(() => {
+        RequestService.getRequests(1)
+            .then((response) => {
+                if (response.data._embedded !== undefined) {
+                    console.log(response.data._embedded.requests);
+                    setRequests(response.data._embedded.requests);
+                }
+
+                const roles = UserService.getUserContext().roles;
+                for (let role of roles) {
+                    if (role === "ROLE_ADMIN") {
+                        setAdmin(true);
+                    }
+                }
+                //setUsersTemp(response.data._embedded.users);
+                
+                //rows = response.data._embedded.users;
+                //console.log(rows);
+                //console.log(rows[0]);
+            })
+            .catch((error) => {
+                alert(error);
+            })
+    }, []);
+
     const { isLoaded, loadError } = useLoadScript({
         googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
         libraries,
@@ -69,7 +99,7 @@ export default function RecipeReviewCard(props) {
 
     const handleDelete = value => () => {
         RequestService.deleteRequest(value.idRequest).then((response) => {
-            window.location.reload(false);
+            window.location.reload(true);
 
         })
             .catch((error) => {
@@ -86,6 +116,7 @@ export default function RecipeReviewCard(props) {
     const [lng, setLng] = React.useState('');
     const [isAdmin, setAdmin] = React.useState(false);
     const [noLoc, setLoc] = React.useState(false);
+    const [req, setReq] = React.useState();
 
     useEffect(() => {
         RequestService.getRequests(1)
@@ -130,7 +161,7 @@ export default function RecipeReviewCard(props) {
     };
 
     const refreshPage = () => {
-        window.location.reload(false);
+        window.location.reload(true);
     }
 
     const handleExpandClick = (index) => {
@@ -154,9 +185,11 @@ export default function RecipeReviewCard(props) {
                 if (value.location !== null) {
                     setLat(value.location.latitude);
                     setLng(value.location.longitude);
+                    setReq(value);
                     setNotSent(false);
                     console.log(response);
                 } else if (value.location === null) {
+                    setReq(value);
                     setLoc(true);
                     setNotSent(false);
                 }
@@ -242,30 +275,45 @@ export default function RecipeReviewCard(props) {
                             </>
                         )) :
                         <>
-                        <div>
-                            <button onClick={refreshPage}>Povratak na zahtjeve</button>
-                        </div>
-                        <h1>Zahtjev uspjesno poslan</h1>
-                        {noLoc ? null :   <>   <h2> Lokacija zahtjeva:</h2>
-                        <div>
-                            <GoogleMap mapContainerStyle={mapContainerStyle}
-                                zoom={15}
-                                center={{ lat: lat, lng: lng }}
-                                options={options}
-                                onClick={(event) => {
+                            <div>
+                                <button onClick={refreshPage}>Povratak na zahtjeve</button>
+                            </div>
+                            <h1>
+                                Zahtjev uspjesno poslan!
+                                
 
-                                    setLat(event.latLng.lat())
-                                    setLng(event.latLng.lng())
-                                }}
-                            >
+                    </h1>
+                    <Typography paragraph>
+                                Mobitel : {req.phone}
+                                </Typography>
+                    <Typography paragraph>
+                                Zahtjev : {req.description}
+                                </Typography>
+                            {noLoc ? null :
+                                <>
+                                    <h2>
+                                        Lokacija zahtjeva:
+                    </h2>
 
-                                <Marker
-                                    key={16}
-                                    position={{ lat: lat, lng: lng }}
-                                />
-                            </GoogleMap>
+                                    <div>
+                                        <GoogleMap mapContainerStyle={mapContainerStyle}
+                                            zoom={15}
+                                            center={{ lat: lat, lng: lng }}
+                                            options={options}
+                                            onClick={(event) => {
 
-                        </div>
+                                                setLat(event.latLng.lat())
+                                                setLng(event.latLng.lng())
+                                            }}
+                                        >
+
+                                            <Marker
+                                                key={16}
+                                                position={{ lat: lat, lng: lng }}
+                                            />
+                                        </GoogleMap>
+
+                                    </div>
                                 </>
                             }
                         </>
