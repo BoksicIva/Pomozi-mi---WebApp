@@ -814,33 +814,8 @@ const Profile = (props) => {
                 </IconButton>
               )
           ) : null}
-
-          {showChain ? (
-            <Container
-              maxWidth="lg"
-              disableGutters={true}
-              className={classes.chainContainer}
-            >
-              <Typography
-                variant="h5"
-                color="secondary"
-                style={{ marginBottom: 5 }}
-              >
-                Chain of trust:
-              </Typography>
-              <GridList cellHeight="auto" className={classes.gridList}>
-                {chainOfTrust
-                  ? chainOfTrust._embedded
-                    ? Object.keys(chainOfTrust._embedded).length === 0 &&
-                      chainOfTrust._embedded.constructor === Object
-                      ? null
-                      : chainOfTrust._embedded.ratings.map(mapRatings)
-                    : null
-                  : null}
-              </GridList>
-            </Container>
-          ) : null}
         </Container>
+
         {!isUser ? null : (
           <Container
             className={classes.requestsContainer}
@@ -913,17 +888,33 @@ const Profile = (props) => {
           </Container>
         )}
         {!isUser ? (
-          <Container
-            style={{ marginBottom: 20 }}
-            maxWidth="lg"
-            disableGutters={true}
-          >
-            <img
-              src={require("../images/profileImage.jpg")}
-              style={{ width: "100%" }}
-            />
-          </Container>
-        ) : (
+          showChain ? (
+            <Container
+              maxWidth="lg"
+              disableGutters={true}
+              className={classes.chainContainer}
+            >
+              <Typography
+                variant="h5"
+                color="secondary"
+                style={{ marginBottom: 5 }}
+              >
+                Chain of trust:
+              </Typography>
+              <GridList cellHeight="auto" className={classes.gridList}>
+                {chainOfTrust
+                  ? chainOfTrust._embedded
+                    ? Object.keys(chainOfTrust._embedded).length === 0 &&
+                      chainOfTrust._embedded.constructor === Object
+                      ? null
+                      : chainOfTrust._embedded.ratings.map(mapRatings)
+                    : null
+                  : null}
+              </GridList>
+            </Container>
+          ) : null)
+
+          : (
             <Container
               className={classes.requestsContainer}
               maxWidth="lg"
