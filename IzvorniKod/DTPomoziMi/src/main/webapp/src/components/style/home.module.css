@@ -19,7 +19,7 @@ body {
   }
 
 .background{
-  background-image: url('../../images/dots.png');
+  /*background-image: url('../../images/dots.png');*/
   background-color: rgb(255, 255, 255);
   background-repeat: no-repeat;
   height: 100vh;

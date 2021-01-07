@@ -45,6 +45,10 @@ class UserService {
     return http.get("./requests/authored/" + id, {});
   }
 
+  getByExecutor(id) {
+    return http.get("./requests/byExecutor/" + id, {});
+  }
+
   blockUser(id, en) {
     return http.post("./users/blockUnblock/" + id +"?enabled=" + en, {});
   }

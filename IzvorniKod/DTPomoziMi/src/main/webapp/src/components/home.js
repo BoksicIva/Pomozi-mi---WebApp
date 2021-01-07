@@ -18,6 +18,7 @@ export default function home(props) {
             <div className={homeStyle.msg}>Malo djelo velikog<span className={homeStyle.znacaja}> značaja </span>.
             </div> 
             <br></br>
+            <br></br>
             <Slideshow/> 
         </div>  
     </div>    

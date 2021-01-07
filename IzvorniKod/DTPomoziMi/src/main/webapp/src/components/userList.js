@@ -11,12 +11,14 @@ import Paper from '@material-ui/core/Paper';
 import style from './style/page.module.css'
 import Sidebar from './sidebar';
 import Userservice from "../service/login-service";
+import UserService from "../service/user-service";
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import { Link } from "react-router-dom";
+import Avatar from '@material-ui/core/Avatar';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -42,6 +44,7 @@ export default function BasicTable() {
   const [sort, setSort] = React.useState('');
   const [value, setValue] = React.useState('');
   const [UsersTemp, setUsersTemp] = useState([]);
+  const [userStatistics, setUserStatistics] = useState([]);
 
   const handleSubmit = (event) => {
     for (let user of UsersTemp) {
@@ -49,7 +52,7 @@ export default function BasicTable() {
       if (user.lastName.toLowerCase().includes(value.toLowerCase()) ||
         user.firstName.toLowerCase().includes(value.toLowerCase()) ||
         fullName.toLowerCase().includes(value.toLowerCase())) {
-          console.log(user._links.self.href);
+        console.log(user._links.self.href);
         rows.push(user);
       }
     }
@@ -111,8 +114,21 @@ export default function BasicTable() {
       .catch((error) => {
         alert(error);
       })
+
   }, []);
 
+  useEffect(() => {
+    Users.map((user) => {
+      UserService.getUserStatistics(user.idUser)
+      .then((response) => {
+        setUserStatistics(old => [...old, response.data.avgGrade]);
+      })
+      .catch((error) => {
+        alert(error);
+      });
+    });
+
+  },[Users]);
 
 
   return (
@@ -120,19 +136,6 @@ export default function BasicTable() {
       <Sidebar />
       <div className={style.empthy1}></div>
       <Container maxWidth="lg">
-        <FormControl className={classes.formControl}>
-          <InputLabel id="filter-select">Filtriraj korisnike po</InputLabel>
-          <Select
-            labelId="filter-select"
-            id="filter-select"
-            value={filter}
-
-          >
-            <MenuItem value={1}>kategoriji</MenuItem>
-            <MenuItem value={2}>Radijusu udaljenosti</MenuItem>
-
-          </Select>
-        </FormControl>
 
         <FormControl className={classes.formControl}>
           <InputLabel id="filter-select">Sortiraj korisnike po</InputLabel>
@@ -161,13 +164,17 @@ export default function BasicTable() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {Users.map((user) => (
+              {Users.map((user, index) => (
                 <TableRow key={user.idUser}>
                   <TableCell component="th" scope="row">
+                    {localStorage.getItem("photo") ?
+                      (<Avatar alt="avatar" src={localStorage.getItem("photo")} className={classes.avatar} />) :
+                      (<Avatar>{user.firstName.substring(0, 1)}</Avatar>)
+                    }
                     <Link to={"/profile/" + user.idUser}>{user.firstName + " " + user.lastName}</Link>
                   </TableCell>
                   <TableCell align="right">{user.email}</TableCell>
-                  <TableCell align="right">5</TableCell>
+                  <TableCell align="right">{userStatistics[index]}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

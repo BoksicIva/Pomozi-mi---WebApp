@@ -9,6 +9,7 @@ import sidebarStyle from "./style/sidebar.module.css";
 import { IconContext } from "react-icons";
 import { Typography } from "@material-ui/core";
 import UserService from '../service/user-service';
+import { browserHistory } from 'react-router-dom';
 
 function Navbar(props) {
   const [sidebar, setSidebar] = useState(false);
@@ -20,28 +21,24 @@ function Navbar(props) {
 
     LogoutService.logout()
       .then((response) => {
-        props.history.push("/login");
+        //props.history.push("/login");
+        window.location.assign("/login");
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
-  function isLogout(props) {
-    let logout;
-    if (props === "Odjava") {
-      logout = (
-        <span className={sidebarStyle.span_class} onClick={handleLogOut}>
-          {props}
-        </span>
-      );
+  const isLogout = (props, item) => {
+    if (!(props === "Odjava")) {
+      return <Link to={item.title === "Profil" ? item.path + "/" + UserService.getUserContext().id : item.path}>
+        {item.icon}
+        <span className={sidebarStyle.span_class}>{props}</span>
+      </Link>
     } else {
-      logout = <span className={sidebarStyle.span_class}>{props}</span>;
+      return <Link onClick={handleLogOut}>{item.icon}<span className={sidebarStyle.span_class} onClick={handleLogOut}>{props}</span></Link>;
     }
-    return logout;
   }
-
-
 
   return (
     <>
@@ -79,13 +76,11 @@ function Navbar(props) {
               </Link>
             </li>
             {SidebarData.map((item, index) => {
-              let logout = isLogout(item.title);
+              let elem = isLogout(item.title, item);
+
               return (
                 <li key={index} className={sidebarStyle.nav_text}>
-                  <Link to={item.title === "Profil" ? item.path + "/" + UserService.getUserContext().id : item.path}>
-                    {item.icon}
-                    {logout}
-                  </Link>
+                  {elem}
                 </li>
               );
             })}

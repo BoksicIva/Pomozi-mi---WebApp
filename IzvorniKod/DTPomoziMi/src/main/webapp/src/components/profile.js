@@ -69,6 +69,7 @@ function a11yProps(index) {
   };
 }
 
+
 const useStyles = makeStyles((theme) => ({
   profileInfo: {
     height: 300,
@@ -170,14 +171,18 @@ const Profile = (props) => {
   const [gradeDialog, setGradeDialog] = useState(false);
   const [about, setAbout] = useState(true);
   const [value, setValue] = useState(0);
+  const [swipeable1, setSwipeable1] = useState(0);
   const [userData, setUserData] = useState(null);
   const [userStatistics, setUserStatistics] = useState(null);
+  const [requestsByAuthor, setRequestsByAuthor] = useState(null);
+  const [requestsByExecutor, setRequestsByExecutor] = useState(null);
   const [requests, setRequests] = useState(null);
   const [dialogReq, setDialogReq] = useState(null);
   const [updateReqs, setUpdateReqs] = useState({});
   const [isUser, setUser] = useState(false);
   const [isAdmin, setAdmin] = useState(false);
   const [isBlocked, setBlocked] = useState(false);
+
 
   const [rating, setRating] = useState({
     ratingComment: null,
@@ -186,10 +191,20 @@ const Profile = (props) => {
 
   function handleChange(event, newValue) {
     setValue(newValue);
+    console.log("new value " + newValue)
   }
 
   function handleChangeIndex(index) {
     setValue(index);
+    console.log("index " + index)
+  }
+
+  function handleChangeIndex1(index) {
+    setSwipeable1(index);
+  }
+
+  function handleChange1(event, newValue) {
+    setSwipeable1(newValue);
   }
 
   const openPhotoDialog = () => {
@@ -271,7 +286,7 @@ const Profile = (props) => {
     if (props.match.params.id == user.id) {
       UserService.getAuthored(user.id)
         .then((response) => {
-          setRequests(response.data);
+          setRequestsByAuthor(response.data);
         })
         .catch((error) => {
           alert(error);
@@ -279,8 +294,27 @@ const Profile = (props) => {
     } else {
       setRequests();
     }
+
+    if (props.match.params.id == user.id) {
+      UserService.getByExecutor(user.id)
+        .then((response) => {
+          setRequestsByExecutor(response.data);
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    } else {
+      setRequests();
+    }
+
+
     console.log("Refreshao sam se");
   }, [updateReqs, props.match.params.id]);
+
+  useEffect(() => {
+    setRequests(swipeable1 == 0 ? requestsByAuthor : requestsByExecutor);
+  },[swipeable1, requestsByAuthor, requestsByExecutor]);
+
 
   const mapRequests = (request) => {
     return (
@@ -656,8 +690,37 @@ const Profile = (props) => {
               null
           }
 
+          </Container>
         </Container>
+        <Container
+          className={classes.requestsContainer}
+          maxWidth="lg"
+          disableGutters={true}
+        >
+          <Paper className={classes.tabs}>
+            <Tabs
+              value={swipeable1}
+              onChange={handleChange1}
+              indicatorColor="primary"
+              textColor="primary"
+              variant="fullWidth"
+              aria-label="full width tabs example"
+              classes={{ indicator: classes.scrollIndicator }}
+            >
+              <Tab
+                label="Korisnik je autor"
+                {...a11yProps(0)}
+                classes={{ wrapper: classes.tabWrapper }}
+              />
+              <Tab
+                label="Korisnik je izvršitelj"
+                {...a11yProps(1)}
+                classes={{ wrapper: classes.tabWrapper }}
+              />
+            </Tabs>
+          </Paper>
         </Container>
+
 
       <Container
         className={classes.requestsContainer}
@@ -666,32 +729,33 @@ const Profile = (props) => {
       >
         <Paper className={classes.tabs}>
           <Tabs
-            value={value}
+            value={swipeable1==0 ? value : (value-1)}
             onChange={handleChange}
             indicatorColor="primary"
             textColor="primary"
             variant="fullWidth"
             aria-label="full width tabs example"
             classes={{ indicator: classes.scrollIndicator }}
-          >
+          > 
+            {swipeable1==0 ?
             <Tab
               label="Aktivni zahtjevi"
               {...a11yProps(0)}
               classes={{ wrapper: classes.tabWrapper }}
-            />
+            /> : <></>}
             <Tab
               label="Izvršeni zahtjevi"
-              {...a11yProps(1)}
+              {...a11yProps(swipeable1==0 ? 1 : 0)}
               classes={{ wrapper: classes.tabWrapper }}
             />
             <Tab
               label="Zahtjevi u obradi"
-              {...a11yProps(2)}
+              {...a11yProps(swipeable1==0 ? 2 : 1)}
               classes={{ wrapper: classes.tabWrapper }}
             />
             <Tab
               label="Blokirani zahtjevi"
-              {...a11yProps(3)}
+              {...a11yProps(swipeable1==0 ? 3 : 2)}
               classes={{ wrapper: classes.tabWrapper }}
             />
           </Tabs>
@@ -708,6 +772,7 @@ const Profile = (props) => {
           onChangeIndex={handleChangeIndex}
           style={{ width: "100%" }}
         >
+          {swipeable1==0 ?
           <TabPanel value={value} index={0} dir={theme.direction}>
             <List className={classes.list}>
               {requests
@@ -719,8 +784,8 @@ const Profile = (props) => {
                   : null
                 : null}
             </List>
-          </TabPanel>
-          <TabPanel value={value} index={1} dir={theme.direction}>
+          </TabPanel> : <></>}
+          <TabPanel value={swipeable1==0 ? value : (value-1)} index={swipeable1==0 ? 1 : 0} dir={theme.direction}>
             <List>
               {requests
                 ? requests.FINALIZED
@@ -732,7 +797,7 @@ const Profile = (props) => {
                 : null}
             </List>
           </TabPanel>
-          <TabPanel value={value} index={2} dir={theme.direction}>
+          <TabPanel value={swipeable1==0 ? value : (value-1)} index={swipeable1==0 ? 2 : 1} dir={theme.direction}>
             <List className={classes.list}>
               {requests
                 ? requests.EXECUTING
@@ -744,7 +809,7 @@ const Profile = (props) => {
                 : null}
             </List>
           </TabPanel>
-          <TabPanel value={value} index={3} dir={theme.direction}>
+          <TabPanel value={swipeable1==0 ? value : (value-1)} index={swipeable1==0 ? 3 : 2} dir={theme.direction}>
             <List className={classes.list}>
               {requests
                 ? requests.BLOCKED

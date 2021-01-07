@@ -4,7 +4,6 @@ import clsx from 'clsx';
 import Card from '@material-ui/core/Card';
 import Link from '@material-ui/core/Link'
 import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import Collapse from '@material-ui/core/Collapse';
@@ -13,13 +12,13 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Sidebar from './sidebar';
 import RequestService from '../service/request-service';
 import Container from '@material-ui/core/Container';
 import style from "./style/page.module.css";
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button';
+
 import {
     GoogleMap,
     useLoadScript,
@@ -63,32 +62,11 @@ const options = {
 };
 
 export default function RecipeReviewCard(props) {
-
-    useEffect(() => {
-        RequestService.getRequests(1)
-            .then((response) => {
-                setRequests(response.data._embedded.requests);
-                const roles = UserService.getUserContext().roles;
-                for (let role of roles) {
-                    if (role === "ROLE_ADMIN") {
-                        setAdmin(true);
-                    }
-                }
-                //setUsersTemp(response.data._embedded.users);
-                console.log(response.data._embedded.requests);
-                //rows = response.data._embedded.users;
-                //console.log(rows);
-                //console.log(rows[0]);
-            })
-            .catch((error) => {
-                alert(error);
-            })
-    }, []);
-
     const { isLoaded, loadError } = useLoadScript({
         googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
         libraries,
     });
+
     const handleDelete = value => () => {
         RequestService.deleteRequest(value.idRequest).then((response) => {
             window.location.reload(false);
@@ -100,7 +78,7 @@ export default function RecipeReviewCard(props) {
     }
 
     const classes = useStyles();
-    const [expanded, setExpanded] = React.useState(false);
+    const [expanded, setExpanded] = React.useState([]);
     const [requests, setRequests] = React.useState([]);
     const [value, setValue] = React.useState('');
     const [notSent, setNotSent] = React.useState(true);
@@ -109,6 +87,29 @@ export default function RecipeReviewCard(props) {
     const [isAdmin, setAdmin] = React.useState(false);
     const [noLoc, setLoc] = React.useState(false);
 
+    useEffect(() => {
+        RequestService.getRequests(1)
+            .then((response) => {
+                setRequests(response.data._embedded.requests);
+                const roles = UserService.getUserContext().roles;
+                for (let role of roles) {
+                    if (role === "ROLE_ADMIN") {
+                        setAdmin(true);
+                    }
+                }
+                console.log(response.data._embedded.requests);
+            })
+            .catch((error) => {
+                alert(error);
+            })
+    }, []);
+
+    useEffect(() => {
+        requests.map(() => {
+            setExpanded(old => [...old, false]);
+        });
+    }, [requests]);
+
     if (loadError) return "Error";
     if (!isLoaded) return "Loading...";
 
@@ -116,11 +117,7 @@ export default function RecipeReviewCard(props) {
         RequestService.getRequests(value)
             .then((response) => {
                 setRequests(response.data._embedded.requests);
-                //setUsersTemp(response.data._embedded.users);
                 console.log(response.data._embedded.requests);
-                //rows = response.data._embedded.users;
-                //console.log(rows);
-                //console.log(rows[0]);
             })
             .catch((error) => {
                 alert(error);
@@ -136,8 +133,17 @@ export default function RecipeReviewCard(props) {
         window.location.reload(false);
     }
 
-    const handleExpandClick = () => {
-        setExpanded(!expanded);
+    const handleExpandClick = (index) => {
+        if(expanded === undefined || expanded === null || expanded.length == 0)
+            return false;
+
+        setExpanded(e => {
+            return e.map((item, i)=>{
+                if(i === index)
+                    return !item;
+                return item;
+            });
+        });
     };
 
     const handleRequestClick = value => () => {
@@ -145,12 +151,12 @@ export default function RecipeReviewCard(props) {
 
         RequestService.sendExecution(value.idRequest)
             .then((response) => {
-                if(value.location !== null){
-                setLat(value.location.latitude);
-                setLng(value.location.longitude);
-                setNotSent(false);
-                console.log(response);
-                }else if(value.location === null){
+                if (value.location !== null) {
+                    setLat(value.location.latitude);
+                    setLng(value.location.longitude);
+                    setNotSent(false);
+                    console.log(response);
+                } else if (value.location === null) {
                     setLoc(true);
                     setNotSent(false);
                 }
@@ -172,108 +178,98 @@ export default function RecipeReviewCard(props) {
                 </form>
                 <Container>
                     {notSent ?
-                        requests.map((request) => (
+                        requests.map((request, index) => (
                             <>
-                            <br></br>
-                            <Card className={classes.root}>
-                                <CardHeader
-                                    avatar={
-                                        <Avatar aria-label="recipe" className={classes.avatar}>
-                                            R
-                             </Avatar>
-                                    }
-                                  
-                                    title={
-
-                                        <Link onClick={(event) => { props.history.push("/profile/" + request.author.idUser) }}>{request.author.firstName + " " + request.author.lastName}</Link>
-                                    }
-                                    subheader={request.author.email}
-                                />
-                                <CardContent>
-                                    <Typography variant="body2" color="textSecondary" component="p">
-                                        {request.description}
-                                    </Typography>
-                                </CardContent>
-                                <CardActions disableSpacing>
-
-                                    <Button size="small" onClick={handleRequestClick(request)}>Izvrši zahtjev</Button>
-                                    {isAdmin ?
-                                        <IconButton aria-label="trash" onClick={handleDelete(request)}>
-                                            <DeleteIcon />
-                                        </IconButton>
-                                        : null}
-                                    <IconButton
-                                        className={clsx(classes.expand, {
-                                            [classes.expandOpen]: expanded,
-                                        })}
-                                        onClick={handleExpandClick}
-                                        aria-expanded={expanded}
-                                        aria-label="show more"
-                                    >
-                                        <ExpandMoreIcon />
-                                    </IconButton>
-                                </CardActions>
-                                <Collapse in={expanded} timeout="auto" unmountOnExit>
+                                <br></br>
+                                <Card className={classes.root}>
+                                    <CardHeader
+                                        avatar={
+                                            localStorage.getItem("photo") ?
+                                                (<Avatar alt="avatar" src={localStorage.getItem("photo")} className={classes.avatar} />)
+                                                : (<Avatar>{request.author.firstName.substring(0, 1)}</Avatar>) }
+                                       
+                                        title={
+                                            <Link onClick={(event) => { props.history.push("/profile/" + request.author.idUser) }}>{request.author.firstName + " " + request.author.lastName}</Link>}
+                                        subheader={request.author.email}
+                                    />
                                     <CardContent>
-                                        <Typography paragraph>Rok izvrsavanja:</Typography>
-
-                                        <Typography paragraph>
-                                            {((request.tstmp === null) ? "Nije postavljen rok" : request.tstmp)}
+                                        <Typography variant="body2" color="textSecondary" component="p">
+                                            {request.description}
                                         </Typography>
-                                        <Typography paragraph>
-                                            Lokacija:
-                                        </Typography>
-                                        
-                                        <Typography paragraph>
-                                        Grad: {" " + ((request.location === null) ? "Grad nije zadan" : request.location.town)}
-                                        <br></br>
-                                        Adresa: {" " + ((request.location === null) ? "Adresa nije zadana" : request.location.adress)}
-                                    </Typography>
-                                            
-                                        
-
                                     </CardContent>
-                                </Collapse>
-                            </Card>
-                            <br></br>
+                                    <CardActions disableSpacing>
+
+                                        <Button size="small" onClick={() => handleRequestClick(request)}>Izvrši zahtjev</Button>
+                                        {isAdmin ?
+                                            <IconButton aria-label="trash" onClick={handleDelete(request)}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                            : null}
+                                        <IconButton
+                                            className={clsx(classes.expand, {
+                                                [classes.expandOpen]: expanded[index],
+                                            })}
+                                            onClick={() => handleExpandClick(index)}
+                                            aria-expanded={expanded[index]}
+                                            aria-label="show more"
+                                        >
+                                            <ExpandMoreIcon />
+                                        </IconButton>
+                                    </CardActions>
+                                    <Collapse in={expanded[index]} timeout="auto" unmountOnExit>
+                                        <CardContent>
+                                            <Typography paragraph>Rok izvrsavanja:</Typography>
+
+                                            <Typography paragraph>
+                                                {((request.tstmp === null) ? "Nije postavljen rok" : request.tstmp)}
+                                            </Typography>
+                                            <Typography paragraph>
+                                                Lokacija:
+                                        </Typography>
+
+                                            <Typography paragraph>
+                                                Grad: {" " + ((request.location === null) ? "Grad nije zadan" : request.location.town)}
+                                                <br></br>
+                                        Adresa: {" " + ((request.location === null) ? "Adresa nije zadana" : request.location.adress)}
+                                            </Typography>
+
+
+
+                                        </CardContent>
+                                    </Collapse>
+                                </Card>
+                                <br></br>
                             </>
                         )) :
                         <>
-                            <div>
-                                <button onClick={refreshPage}>Povratak na zahtjeve</button>
-                            </div>
-                            <h1>
-                                Zahtjev uspjesno poslan
-                    </h1>
-                            {noLoc ? null :
-                            <>
-                            <h2>
-                                Lokacija zahtjeva:
-                    </h2>
+                        <div>
+                            <button onClick={refreshPage}>Povratak na zahtjeve</button>
+                        </div>
+                        <h1>Zahtjev uspjesno poslan</h1>
+                        {noLoc ? null :   <>   <h2> Lokacija zahtjeva:</h2>
+                        <div>
+                            <GoogleMap mapContainerStyle={mapContainerStyle}
+                                zoom={15}
+                                center={{ lat: lat, lng: lng }}
+                                options={options}
+                                onClick={(event) => {
 
-                            <div>
-                                <GoogleMap mapContainerStyle={mapContainerStyle}
-                                    zoom={15}
-                                    center={{ lat: lat, lng: lng }}
-                                    options={options}
-                                    onClick={(event) => {
+                                    setLat(event.latLng.lat())
+                                    setLng(event.latLng.lng())
+                                }}
+                            >
 
-                                        setLat(event.latLng.lat())
-                                        setLng(event.latLng.lng())
-                                    }}
-                                >
+                                <Marker
+                                    key={16}
+                                    position={{ lat: lat, lng: lng }}
+                                />
+                            </GoogleMap>
 
-                                    <Marker
-                                        key={16}
-                                        position={{ lat: lat, lng: lng }}
-                                    />
-                                </GoogleMap>
-                            
-                            </div>
-                            </>
+                        </div>
+                                </>
                             }
                         </>
-                                
+
                     }
                 </Container>
             </div>
