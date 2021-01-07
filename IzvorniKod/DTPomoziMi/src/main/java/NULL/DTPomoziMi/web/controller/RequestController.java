@@ -3,6 +3,7 @@
  */
 package NULL.DTPomoziMi.web.controller;
 
+import static NULL.DTPomoziMi.model.specification.ReqSpecs.autAttrLike;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
@@ -142,15 +144,24 @@ public class RequestController { // TODO linkovi...
 	@GetMapping(value = "/active", produces = { "application/json; charset=UTF-8" })
 	public ResponseEntity<?> getActive(
 		@PageableDefault Pageable pageable, PagedResourcesAssembler<Request> assembler,
-		@RequestParam(name = "radius", required = false) Double radius, @AuthenticationPrincipal UserPrincipal principal
+		@RequestParam(name = "radius", required = false) Double radius, @AuthenticationPrincipal UserPrincipal principal,
+		@RequestParam(value = "firstName", required = false) String firstName,
+		@RequestParam(value = "lastName", required = false) String lastName, @RequestParam(value = "email", required = false) String email,
+		@RequestParam(value = "generalSearch", required = false) String generalSearch
 	) {
 		try {
-			Page<Request> page = requestService.getAllActiveRequests(pageable, radius, principal);
+			
+			Specification<Request> specs = autAttrLike(firstName, "firstName")
+					.and(autAttrLike(lastName, "lastName"))
+					.and(autAttrLike(email, "email"))
+					.and(createGeneralSpecs(generalSearch));
+			
+			Page<Request> page = requestService.getAllActiveRequests(specs, pageable, radius, principal);
 
 			PagedModel<RequestDTO> pagedModel = assembler
 				.toModel(
 					page, requestDTOassembler,
-					linkTo(methodOn(RequestController.class).getActive(pageable, null, radius, principal)).withSelfRel()
+					linkTo(methodOn(RequestController.class).getActive(pageable, null, radius, principal, firstName, lastName, email, generalSearch)).withSelfRel()
 				);
 
 			pagedModel.add(getLinks(0));
@@ -160,6 +171,16 @@ public class RequestController { // TODO linkovi...
 			logger.debug(e.getMessage());
 			throw e;
 		}
+	}
+	
+	private Specification<Request> createGeneralSpecs(String str) {
+		Specification<Request> spec = autAttrLike(null, null); // ovaj je always true;
+		if (str == null) return spec; // nije bitno ak je null
+
+		String[] parts = str.split("\\s+");
+
+		for (String part : parts) { spec = spec.and(autAttrLike(part, "firstName").or(autAttrLike(part, "lastName")).or(autAttrLike(part, "email"))); }
+		return spec;
 	}
 
 	/**
@@ -340,7 +361,7 @@ public class RequestController { // TODO linkovi...
 	private Link linkDelete(long id) { return linkTo(methodOn(getClass()).deleteRequest(id, null)).withRel("delete").withType("delete"); }
 
 	private Link linkActive(long id) {
-		return linkTo(methodOn(getClass()).getActive(PageRequest.of(0, 10, Sort.by("idRequest").ascending()), null, null, null))
+		return linkTo(methodOn(getClass()).getActive(PageRequest.of(0, 10, Sort.by("idRequest").ascending()), null, null, null, null, null, null, null))
 			.withRel("active")
 			.withType("get");
 	}

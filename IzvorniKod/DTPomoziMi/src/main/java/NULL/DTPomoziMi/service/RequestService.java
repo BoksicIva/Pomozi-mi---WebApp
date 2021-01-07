@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.mapping.MappingException;
 import org.springframework.hateoas.CollectionModel;
 
@@ -65,12 +66,13 @@ public interface RequestService {
 	/**
 	 * Gets the all active requests.
 	 *
+	 * @param specs the specs
 	 * @param pageable  the pageable
 	 * @param radius    the radius
 	 * @param principal the principal
 	 * @return the all active requests
 	 */
-	Page<Request> getAllActiveRequests(Pageable pageable, Double radius, UserPrincipal principal);
+	Page<Request> getAllActiveRequests(Specification<Request> specs, Pageable pageable, Double radius, UserPrincipal principal);
 
 	/**
 	 * Gets the authored requests.

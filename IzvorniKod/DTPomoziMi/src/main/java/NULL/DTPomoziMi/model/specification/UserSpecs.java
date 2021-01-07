@@ -30,12 +30,4 @@ public class UserSpecs {
 		};
 	}
 
-	public static Specification<User> phoneLike(String phone) {
-		return (root, query, builder) -> {
-			if (phone == null) return builder.conjunction();// nemoj filtrirat ak je null
-
-			return builder.like(builder.lower(root.<String>get("email")), "%" + phone.toLowerCase() + "%");
-		};
-	}
-
 }

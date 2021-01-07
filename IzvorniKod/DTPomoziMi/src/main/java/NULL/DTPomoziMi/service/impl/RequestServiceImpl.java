@@ -1,16 +1,13 @@
 package NULL.DTPomoziMi.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.hateoas.CollectionModel;
@@ -53,7 +50,7 @@ public class RequestServiceImpl implements RequestService {
 
 	@Autowired
 	private SendMessageEventPublisher publisher;
-
+	
 	@Override
 	public Request createRequest(CreateRequestDTO request, UserPrincipal principal) {
 		Request req = modelMapper.map(request, Request.class);
@@ -305,30 +302,13 @@ public class RequestServiceImpl implements RequestService {
 	}
 
 	@Override
-	public Page<Request> getAllActiveRequests(Pageable pageable, Double radius, UserPrincipal principal) {
-		Specification<Request> specs = ReqSpecs.statusEqual(RequestStatus.ACTIVE);
-
+	public Page<Request> getAllActiveRequests(Specification<Request> specs, Pageable pageable, Double radius, UserPrincipal principal) {
+		if(radius == null) radius = 0.0;
+		
+		specs = specs.and(ReqSpecs.getByStatusOrderByLocation(RequestStatus.ACTIVE, principal.getUser().getLocation(), radius));
 		specs = specs.and(ReqSpecs.<Request, User>atributeEqualNotEqual("author", principal.getUser(), false)); // author != prijavljeni korisnik
-
-		List<Request> actives = requestRepo.findAll(specs, pageable.getSort()).stream().filter(r -> {
-			User user = principal.getUser();
-			boolean in = false;
-			if (r.getLocation() == null) // ako zahtjev nema lokaciju... moze
-				in = true;
-			else if (user.getLocation() != null && radius != null) { // ako user ima lokaciju i radius je dan
-				Location loc = user.getLocation();
-				double distance = calculateDistanceInKM(loc, r.getLocation());
-				in = distance <= radius;
-			}
-			return in;
-		}).collect(Collectors.toList());
-
-		long start = pageable.getOffset();
-		long end = (start + pageable.getPageSize()) > actives.size() ? actives.size() : (start + pageable.getPageSize());
-
-		if (start >= end) return new PageImpl<>(new ArrayList<>(), pageable, 0);
-
-		return new PageImpl<>(actives.subList((int) start, (int) end), pageable, actives.size());
+		
+		return requestRepo.findAll(specs, pageable);
 	}
 
 	@Override
@@ -375,25 +355,25 @@ public class RequestServiceImpl implements RequestService {
 
 	private void hideInfo(Request req) { req.setPhone(null); }
 
-	private double calculateDistanceInKM(Location l1, Location l2) {
-		double lat1 = l1.getLatitude().doubleValue(), lon1 = l1.getLongitude().doubleValue();
-		double lat2 = l2.getLatitude().doubleValue(), lon2 = l2.getLongitude().doubleValue();
-
-		//Haversine formula 
-		// distance between latitudes and longitudes
-		double dLat = Math.toRadians(lat2 - lat1);
-		double dLon = Math.toRadians(lon2 - lon1);
-
-		// convert to radians 
-		lat1 = Math.toRadians(lat1);
-		lat2 = Math.toRadians(lat2);
-
-		// apply formulae 
-		double a = Math.pow(Math.sin(dLat / 2), 2) + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
-		double rad = 6371; //radius zemlje
-		double c = 2 * Math.asin(Math.sqrt(a));
-		return rad * c;
-	}
+//	public static double calculateDistanceInKM(Location l1, Location l2) {
+//		double lat1 = l1.getLatitude().doubleValue(), lon1 = l1.getLongitude().doubleValue();
+//		double lat2 = l2.getLatitude().doubleValue(), lon2 = l2.getLongitude().doubleValue();
+//
+//		//Haversine formula 
+//		// distance between latitudes and longitudes
+//		double dLat = Math.toRadians(lat2 - lat1);
+//		double dLon = Math.toRadians(lon2 - lon1);
+//
+//		// convert to radians 
+//		lat1 = Math.toRadians(lat1);
+//		lat2 = Math.toRadians(lat2);
+//
+//		// apply formulae 
+//		double a = Math.pow(Math.sin(dLat / 2), 2) + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
+//		double rad = 6371; //radius zemlje
+//		double c = 2 * Math.asin(Math.sqrt(a));
+//		return rad * c;
+//	}
 
 	private Location resolveLocation(LocationDTO dto) {
 		if (dto != null) { // ako je dana lokacija onda provjeri postoji li vec spremljena pa ju dodaj u req ili... ako ne onda spremi i dodaj u req 

@@ -3,7 +3,6 @@ package NULL.DTPomoziMi.web.controller;
 import static NULL.DTPomoziMi.model.specification.UserSpecs.emailLike;
 import static NULL.DTPomoziMi.model.specification.UserSpecs.firstNameLike;
 import static NULL.DTPomoziMi.model.specification.UserSpecs.lastNameLike;
-import static NULL.DTPomoziMi.model.specification.UserSpecs.phoneLike;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -79,13 +78,12 @@ public class UsersController {
 		@PageableDefault Pageable pageable, PagedResourcesAssembler<User> assembler,
 		@RequestParam(value = "firstName", required = false) String firstName,
 		@RequestParam(value = "lastName", required = false) String lastName, @RequestParam(value = "email", required = false) String email,
-		@RequestParam(value = "phone", required = false) String phone,
 		@RequestParam(value = "generalSearch", required = false) String generalSearch, @AuthenticationPrincipal UserPrincipal principal
 	) {
 		try {
 			Specification<User> specs = firstNameLike(firstName)
 				.and(lastNameLike(lastName))
-				.and(emailLike(email).and(phoneLike(phone)))
+				.and(emailLike(email))
 				.and(createGeneralSpecs(generalSearch));
 
 			Page<User> pageUser = userService.findUsers(pageable, specs, principal);
@@ -94,7 +92,7 @@ public class UsersController {
 				.toModel(
 					pageUser, userDTOModelAssembler,
 					linkTo(
-						methodOn(UsersController.class).getUsers(null, null, firstName, lastName, email, phone, generalSearch, principal)
+						methodOn(UsersController.class).getUsers(null, null, firstName, lastName, email, generalSearch, principal)
 					).withSelfRel()
 				);
 			pagedModel.add(getLinks(0));
@@ -221,7 +219,7 @@ public class UsersController {
 
 		String[] parts = str.split("\\s+");
 
-		for (String part : parts) { spec = spec.and(firstNameLike(part).or(lastNameLike(part)).or(emailLike(part).or(phoneLike(part)))); }
+		for (String part : parts) { spec = spec.and(firstNameLike(part).or(lastNameLike(part)).or(emailLike(part))); }
 		return spec;
 	}
 
@@ -231,7 +229,7 @@ public class UsersController {
 	}
 
 	private Link linkGetUsers() {
-		return linkTo(methodOn(getClass()).getUsers(null, null, null, null, null, null, null, null)).withRel("users").withType("get");
+		return linkTo(methodOn(getClass()).getUsers(null, null, null, null, null, null, null)).withRel("users").withType("get");
 	}
 
 	private Link linkGetUser(long id) { return linkTo(methodOn(getClass()).getUser(id, null)).withRel("one").withType("get"); }
