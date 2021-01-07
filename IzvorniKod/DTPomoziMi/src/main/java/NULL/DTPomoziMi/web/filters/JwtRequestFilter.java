@@ -80,8 +80,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				valid = true;
 			}
 		}
-
-		if (!valid && emailFromRefreshToken != null && UserPrincipalGetter.getPrincipal() == null) {
+		else if (!valid && emailFromRefreshToken != null && UserPrincipalGetter.getPrincipal() == null) {
 			logger.debug("Validating refresh token");
 
 			if (jwtUtil.validateRefreshToken(refreshToken)) {
@@ -95,6 +94,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 				deleteCookies(response);
 			}
+		}else {
+			deleteCookies(response);
 		}
 
 		filterChain.doFilter(request, response);

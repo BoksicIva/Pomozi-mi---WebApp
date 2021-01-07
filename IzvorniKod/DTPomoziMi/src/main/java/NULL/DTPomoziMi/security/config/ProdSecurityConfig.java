@@ -67,6 +67,10 @@ public class ProdSecurityConfig extends WebSecurityConfigurerAdapter {
 			.permitAll()
 			.antMatchers(HttpMethod.POST, "/api/auth/*")
 			.permitAll()
+			.antMatchers(HttpMethod.GET, "/profile/*", "/static/**", "/register", "/login", "/home" ,"/list", "/page", "/requests", "/profile/*", "/"
+//					"**/*.css", "**/*.ico", "**/*.css", "**/*.js", 
+//					"**/*.json", "**/*.png", "**/*.jpg", "**/*.woff*", "**/*.ttf*"
+					).permitAll()
 			.anyRequest()
 			.authenticated();
 
@@ -88,15 +92,23 @@ public class ProdSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(WebSecurity web) {
-		web.ignoring().antMatchers("/");
-		web.ignoring().antMatchers("/*.ico");
-		web.ignoring().antMatchers("/*.js");
-		web.ignoring().antMatchers("/*.json");
-		web.ignoring().antMatchers("/*.png");
-		web.ignoring().antMatchers("/static/**");
-		web.ignoring().antMatchers("/register");
-		web.ignoring().antMatchers("/login");
-		web.ignoring().antMatchers("/home");
+//		web.ignoring().antMatchers("/");
+		web.ignoring().antMatchers("*.ico");
+		web.ignoring().antMatchers("*.css");
+		web.ignoring().antMatchers("*.js");
+		web.ignoring().antMatchers("*.json");
+		web.ignoring().antMatchers("*.png");
+		web.ignoring().antMatchers("*.jpg");
+		web.ignoring().antMatchers("*.woff*");
+		web.ignoring().antMatchers("*.ttf*");
+		web.ignoring().antMatchers("static/*");
+//		web.ignoring().antMatchers("/register");
+//		web.ignoring().antMatchers("/login");
+//		web.ignoring().antMatchers("/home");
+//		web.ignoring().antMatchers("/list");
+//		web.ignoring().antMatchers("/page");
+//		web.ignoring().antMatchers("/requests");
+//		web.ignoring().antMatchers("/profile/*");
 	}
 
 	@Bean
