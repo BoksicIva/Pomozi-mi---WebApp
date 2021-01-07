@@ -224,12 +224,10 @@ const Profile = (props) => {
 
   function handleChange(event, newValue) {
     setValue(newValue);
-    console.log("new value " + newValue)
   }
 
   function handleChangeIndex(index) {
     setValue(index);
-    console.log("index " + index)
   }
 
   function handleChangeIndex1(index) {

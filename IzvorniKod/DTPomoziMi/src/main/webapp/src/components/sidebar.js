@@ -1,3 +1,8 @@
+import NotificationsIcon from "@material-ui/icons/Notifications";
+import Badge from "@material-ui/core/Badge";
+import IconButton from "@material-ui/core/IconButton";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 import React, { useState, useEffect } from "react";
 import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
@@ -8,13 +13,10 @@ import LogoutService from "../service/login-service";
 import sidebarStyle from "./style/sidebar.module.css";
 import { IconContext } from "react-icons";
 import { Typography } from "@material-ui/core";
-import UserService from "../service/user-service";
-import UserService from "../service/user-service";
-import NotificationsIcon from "@material-ui/icons/Notifications";
-import Badge from "@material-ui/core/Badge";
-import IconButton from "@material-ui/core/IconButton";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
+import UserService from "../service/user-service";;
+
+
+const ITEM_HEIGHT = 48;
 
 const StyledMenu = withStyles({
   paper: {
@@ -47,8 +49,6 @@ const StyledMenuItem = withStyles((theme) => ({
   },
 }))(MenuItem);
 
-const ITEM_HEIGHT = 48;
-
 function Navbar(props) {
   const [sidebar, setSidebar] = useState(false);
   const [value, setValue] = useState(0);
@@ -70,7 +70,7 @@ function Navbar(props) {
     setValue(0);
   };
 
-  const showSidebar = () => setSidebar(!sidebar);
+   const showSidebar = () => setSidebar(!sidebar);
 
   useEffect(() => {
     const userId = UserService.getUserContext().id;
@@ -131,7 +131,7 @@ function Navbar(props) {
             <FaIcons.FaBars onClick={showSidebar} />
           </Link>
 
-          <IconButton
+           <IconButton
             aria-label="show 17 new notifications"
             color="inherit"
             onClick={handleClick}
@@ -139,8 +139,8 @@ function Navbar(props) {
             <Badge badgeContent={value} color="secondary">
               <NotificationsIcon />
             </Badge>
-          </IconButton>
-          <Menu
+          </IconButton> 
+           <Menu
             id="long-menu"
             anchorEl={anchorEl}
             keepMounted
@@ -167,7 +167,7 @@ function Navbar(props) {
                 </MenuItem>
               </>
             ))}
-          </Menu>
+                </Menu> 
           <a href="/home" style={{ textDecoration: "none" }}>
             <Typography
               variant="h4"
@@ -181,7 +181,7 @@ function Navbar(props) {
               Mi
             </Typography>
           </a>
-        </div>
+        </div> 
         <nav
           className={
             sidebar
