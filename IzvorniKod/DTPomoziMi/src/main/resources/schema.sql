@@ -106,3 +106,52 @@ CREATE TABLE Obavijest
   FOREIGN KEY (ID_Korisnik) REFERENCES Korisnik(ID_Korisnik) ON DELETE CASCADE
 );
 
+CREATE OR REPLACE ALIAS CALCULATE_DISTANCE AS '
+double calculateDistanceInKM(BigDecimal latb1, BigDecimal lonb1, BigDecimal latb2, BigDecimal lonb2) {
+		if(latb1 == null || lonb1 == null || latb2 == null || lonb2 == null)
+			return 0;
+
+		double lat1 = latb1.doubleValue(), lon1 = lonb1.doubleValue();
+		double lat2 = latb2.doubleValue(), lon2 = lonb2.doubleValue();
+
+		//Haversine formula 
+		// distance between latitudes and longitudes
+		double dLat = Math.toRadians(lat2 - lat1);
+		double dLon = Math.toRadians(lon2 - lon1);
+
+		// convert to radians 
+		lat1 = Math.toRadians(lat1);
+		lat2 = Math.toRadians(lat2);
+
+		// apply formulae 
+		double a = Math.pow(Math.sin(dLat / 2), 2) + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
+		double rad = 6371; //radius zemlje
+		double c = 2 * Math.asin(Math.sqrt(a));
+		return rad * c;
+	} ';
+
+	/*CREATE OR REPLACE FUNCTION CALCULATE_DISTANCE(lat1 NUMERIC(30,26), lon1 NUMERIC(30,26), lat2 NUMERIC(30,26), lon2 NUMERIC(30,26))
+RETURNS float AS $dist$
+    declare
+    	dist float;
+        dLat float;
+        dLon float;
+       	rlat1 float;
+       	rlat2 float;
+    BEGIN
+	    dist = 0;
+	   
+        dLat = pi() * (lat2 - lat1) / 180;
+        dLon = pi() * (lon2 - lon1) / 180;
+        
+        rlat1 = pi() * lat1 / 180;
+        rlat2 = pi() * lat2 / 180;
+        
+        dist = power(sin(dLat / 2), 2) + power(sin(dLon / 2), 2) * cos(rlat1) * cos(rlat2);
+        dist = 2 * asin(sqrt(dist));
+        dist = dist * 6371;
+       
+        return dist;
+    END; $dist$ 
+LANGUAGE plpgsql;
+*/
