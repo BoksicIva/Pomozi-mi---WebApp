@@ -177,9 +177,8 @@ public class RequestServiceImpl implements RequestService {
 
 		r.setPhone(null);
 		r.getAuthor().setLocation(null);
-		r.getAuthor().setEmail(null);
 
-		return requestRepo.save(r);
+		return r;
 	}
 
 	@Override

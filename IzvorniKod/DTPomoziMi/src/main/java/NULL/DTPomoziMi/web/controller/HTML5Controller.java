@@ -11,7 +11,12 @@ public class HTML5Controller {
 	 * already) are React routes, and should forward to the home page:
 	 */
 
-	@RequestMapping(value = "/{path:^[^.]*$}")
-	public String redirect() { return "forward:/"; }
+	@RequestMapping(value = "/{path:^[^\\.]*$}")
+	public String redirect() {
+		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		
+		return "forward:/"; 
+		
+	}
 
 }

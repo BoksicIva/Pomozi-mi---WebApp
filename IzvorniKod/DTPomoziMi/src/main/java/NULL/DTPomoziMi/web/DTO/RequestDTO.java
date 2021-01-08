@@ -1,6 +1,8 @@
 package NULL.DTPomoziMi.web.DTO;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
@@ -56,6 +58,8 @@ public class RequestDTO extends RepresentationModel<RequestDTO> {
 
 	@Valid
 	private LocationDTO location;
+	
+	private Set<RatingDTO> ratings = new HashSet<>();
 
 	@Past
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
