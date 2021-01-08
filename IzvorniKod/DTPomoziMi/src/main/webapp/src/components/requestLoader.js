@@ -156,8 +156,15 @@ export const Dash = props => {
                                 if (checked) {
                                     var addParts = address.split(",");
                                     location.adress = addParts[0];
-                                    location.state = addParts[3].trim();
-                                    location.town = addParts[2].trim();
+
+                                    if(addParts.length() == 4){
+                                        location.state = addParts[3].trim();
+                                        location.town = addParts[1].trim() + ", " + addParts[2].trim();
+                                    }else{
+                                        location.state = addParts[2].trim();
+                                        location.town = addParts[1].trim();
+                                    }
+                                    
                                     location.longitude = long;
                                     location.latitude = lat;
                                 } else {

@@ -209,7 +209,7 @@ export default function RecipeReviewCard(props) {
 
                 </form>
                 <Container>
-                    {notSent ?
+                    {(notSent && requests != null) ?
                         requests.map((request, index) => (
                             <>
                                 <br></br>
