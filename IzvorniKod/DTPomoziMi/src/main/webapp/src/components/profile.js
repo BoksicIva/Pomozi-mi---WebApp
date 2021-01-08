@@ -319,13 +319,13 @@ const Profile = (props) => {
     return true;
   }
 
-  const getRatedId = (req) => {
+  const getRated = (req) => {
     const user = getLoggedInUser();
 
     if (user.id !== req.author.idUser)
       return req.author.idUser
 
-    return req.executor.idUser;
+    return req.executor;
   }
 
   useEffect(() => {
@@ -704,7 +704,10 @@ const Profile = (props) => {
       >
         <DialogTitle>
           Ocijenite korisnika:
-          {userData ? " " + userData.firstName + " " + userData.lastName : null}
+          {gradeDialog.req ?
+            (" " + getRated(gradeDialog.req).firstName + " " + getRated(gradeDialog.req).lastName)
+            :
+            (userData ? " " + userData.firstName + " " + userData.lastName : null)}
         </DialogTitle>
         <DialogContent style={{ justifyContent: "center" }}>
           <Rating
@@ -745,7 +748,7 @@ const Profile = (props) => {
                   rate: rating.ratingGrade,
                 });
               else
-                RatingService.rateRequest(getRatedId(gradeDialog.req), gradeDialog.req.idRequest, {
+                RatingService.rateRequest(getRated(gradeDialog.req).id, gradeDialog.req.idRequest, {
                   comment: rating.ratingComment,
                   rate: rating.ratingGrade,
                 });

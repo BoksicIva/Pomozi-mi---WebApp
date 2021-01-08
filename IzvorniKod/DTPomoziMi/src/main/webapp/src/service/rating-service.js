@@ -6,7 +6,7 @@ class RatingService {
   }
 
   rateRequest(idUser, idReq, rating) {
-    return http.post("./ratings/" + idUser + "?idReq=" + rating);
+    return http.post("./ratings/" + idUser + "?idReq=" + idReq, rating);
   }
 }
 
