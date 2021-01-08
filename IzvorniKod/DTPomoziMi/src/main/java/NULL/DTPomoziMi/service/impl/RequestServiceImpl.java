@@ -307,7 +307,10 @@ public class RequestServiceImpl implements RequestService {
 		specs = specs.and(ReqSpecs.getByStatusOrderByLocation(RequestStatus.ACTIVE, principal.getUser().getLocation(), radius));
 		specs = specs.and(ReqSpecs.<Request, User>atributeEqualNotEqual("author", principal.getUser(), false)); // author != prijavljeni korisnik
 		
-		return requestRepo.findAll(specs, pageable);
+		Page<Request> page = requestRepo.findAll(specs, pageable);
+		page.forEach(r -> {r.setPhone(null); r.getAuthor().setLocation(null);});
+		
+		return page;
 	}
 
 	@Override
