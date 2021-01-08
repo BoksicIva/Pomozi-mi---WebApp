@@ -164,7 +164,7 @@ export default function RecipeReviewCard(props) {
     }
 
     const handleExpandClick = (index) => {
-        if(expanded === undefined || expanded === null || expanded.length == 0)
+        if(expanded == null || expanded.length === 0)
             return false;
 
         setExpanded(e => {
@@ -176,7 +176,7 @@ export default function RecipeReviewCard(props) {
         });
     };
 
-    const handleRequestClick = value => () => {
+    const handleRequestClick = value => {
         console.log(value);
 
         RequestService.sendExecution(value.idRequest)

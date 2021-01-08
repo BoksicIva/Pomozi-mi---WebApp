@@ -30,6 +30,7 @@ import PropTypes from "prop-types";
 import SwipeableViews from "react-swipeable-views";
 import ReportIcon from "@material-ui/icons/Report";
 import ReportOffIcon from "@material-ui/icons/Report";
+import StarRateRoundedIcon from "@material-ui/icons/StarRateRounded";
 
 import UserService from "../service/user-service";
 import Sidebar from "./sidebar";
@@ -199,7 +200,7 @@ const Profile = (props) => {
   const [photoDialog, setPhotoDialog] = useState(false);
   const [reqDialog, setReqDialog] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
-  const [gradeDialog, setGradeDialog] = useState(false);
+  const [gradeDialog, setGradeDialog] = useState({ req: null, open: false });
   const [about, setAbout] = useState(true);
   const [value, setValue] = useState(0);
   const [swipeable1, setSwipeable1] = useState(0);
@@ -213,7 +214,6 @@ const Profile = (props) => {
   const [isUser, setUser] = useState(false);
   const [isAdmin, setAdmin] = useState(false);
   const [isBlocked, setBlocked] = useState(false);
-
 
   const [rating, setRating] = useState({
     ratingComment: null,
@@ -262,12 +262,12 @@ const Profile = (props) => {
     setDeleteDialog(false);
   };
 
-  const openGradeDialog = () => {
-    setGradeDialog(true);
+  const openGradeDialog = (request) => {
+    setGradeDialog({ req: request, open: true });
   };
 
   const closeGradeDialog = () => {
-    setGradeDialog(false);
+    setGradeDialog({ req: null, open: false });
   };
 
   const handleAbout = () => {
@@ -283,8 +283,54 @@ const Profile = (props) => {
       });
   };
 
+  var loggedInUser;
+
+  const getLoggedInUser = () => {
+    if (loggedInUser == null)
+      loggedInUser = UserService.getUserContext();
+
+    return loggedInUser;
+  }
+
+  const checkIfAuthor = (req) => {
+    const user = getLoggedInUser();
+
+    console.log("aaa");
+    if (req == null)
+      return false;
+    console.log("bbb");
+    return user.id === req.author.idUser;
+  }
+
+  const checkUserDidNotRate = (req) => {
+    const user = getLoggedInUser();
+
+    if (req == null) return false;
+    if (user == null) return false;
+
+    if (req.ratings == null)
+      return true;
+
+    req.ratings.map(rating => {
+      if (rating.rator.idUser == user.id)
+        return false;
+    });
+
+    return true;
+  }
+
+  const getRatedId = (req) => {
+    const user = getLoggedInUser();
+
+    if (user.id !== req.author.idUser)
+      return req.author.idUser
+
+    return req.executor.idUser;
+  }
+
   useEffect(() => {
-    const user = UserService.getUserContext();
+    loggedInUser = UserService.getUserContext();
+    const user = loggedInUser;
     UserService.getUser(props.match.params.id)
       .then((response) => {
         console.log(response);
@@ -357,17 +403,17 @@ const Profile = (props) => {
       <>
         <ListItem
           key={request.idRequest}
-          button={
-            request.status === "ACTIVE" || request.status === "BLOCKED"
-              ? true
-              : false
-          }
+          // button={
+          //   request.status === "ACTIVE" || request.status === "BLOCKED"
+          //     ? true
+          //     : false
+          // }
           onClick={() => {
-            if (request.status === "ACTIVE" || request.status === "BLOCKED") {
-              console.log(request);
-              setDialogReq(request);
-              openReqDialog();
-            }
+            // if (request.status === "ACTIVE" || request.status === "BLOCKED") {
+            console.log(request);
+            setDialogReq(request);
+            openReqDialog();
+            // }
           }}
         >
           <ListItemAvatar>
@@ -389,7 +435,7 @@ const Profile = (props) => {
               </React.Fragment>
             }
           />
-          {request.status === "EXECUTING" ? (
+          {(request.status === "EXECUTING" && request.confirmed == false && checkIfAuthor(request)) ? (
             <>
               <IconButton
                 color="primary"
@@ -433,6 +479,20 @@ const Profile = (props) => {
               </IconButton>
             </>
           ) : null}
+          {request.status === "FINALIZED" && checkUserDidNotRate(request) ? (
+            <IconButton
+              color="primary"
+              classes={{
+                label: classes.visibilityLabel,
+                root: classes.visibilityRoot,
+              }}
+              onClick={() => openGradeDialog(request)}
+              className={classes.visibilityButton}
+            >
+              <StarRateRoundedIcon onClick="" />
+            </IconButton>
+          ) : null}
+
         </ListItem>
         <Divider variant="inset" component="li" />
       </>
@@ -456,6 +516,19 @@ const Profile = (props) => {
     );
   };
 
+  const shouldShowPhone = (req) => {
+    if (checkIfAuthor(req))
+      return true;
+
+    if (req == null)
+      return false;
+
+    if (req.confirmed === false)
+      return false;
+
+    return true;
+  }
+
   return (
     <div>
       <Sidebar />
@@ -478,76 +551,86 @@ const Profile = (props) => {
             <br />
             GRAD: {dialogReq ? dialogReq.location.town : null}
             <br />
-            ADRESA: {dialogReq ? dialogReq.location.adress : null}
+                ADRESA: {dialogReq ? dialogReq.location.adress : null}
             <br />
-            KONTAKT:{" "}
-            <a href={"tel:" + (dialogReq ? dialogReq.phone : null)}>
-              {dialogReq ? dialogReq.phone : null}
-            </a>
+            {shouldShowPhone(dialogReq) ? (
+              <>
+                KONTAKT:{" "}
+                <a href={"tel:" + (dialogReq ? dialogReq.phone : null)}>
+                  {dialogReq ? dialogReq.phone : null}
+                </a>
+              </>
+            ) : null}
           </DialogContentText>
           <TextField
             label="Opis zahtjeva"
             defaultValue={dialogReq ? dialogReq.description : null}
             fullWidth
             multiline
+            disabled={(checkIfAuthor(dialogReq) && dialogReq.status !== "FINALIZED") ? false : true}
             onChange={(description) =>
               (dialogReq.description = description.target.value)
             }
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={openDeleteDialog} color="secondary">
-            Izbriši
-          </Button>
-          <Button
-            onClick={() => {
-              closeReqDialog();
-              if (dialogReq) {
-                if (dialogReq.status === "ACTIVE") {
-                  UserService.blockRequest(dialogReq.idRequest).then(
+        {checkIfAuthor(dialogReq) ? (
+          <DialogActions>
+            {dialogReq.executor == null ?
+              (<Button onClick={openDeleteDialog} color="secondary">
+                Izbriši
+              </Button>) : null}
+            {dialogReq.status !== "FINALIZED" ?
+              (<Button
+                onClick={() => {
+                  closeReqDialog();
+                  if (dialogReq) {
+                    if (dialogReq.status === "ACTIVE") {
+                      UserService.blockRequest(dialogReq.idRequest).then(
+                        (response) => {
+                          setRequests(response.data);
+                          setUpdateReqs({});
+                        }
+                      );
+                    } else if (dialogReq.status === "BLOCKED") {
+                      UserService.unblockRequest(dialogReq.idRequest).then(
+                        (response) => {
+                          setRequests(response.data);
+                          setUpdateReqs({});
+                        }
+                      );
+                    }
+                  }
+                }}
+                color="secondary"
+              >
+                {dialogReq
+                  ? (dialogReq.status === "ACTIVE" || dialogReq.status === "EXECUTING")
+                    ? "Blokiraj"
+                    : null
+                  : null}
+                {dialogReq
+                  ? dialogReq.status === "BLOCKED"
+                    ? "Aktiviraj"
+                    : null
+                  : null}
+              </Button>
+              ) : null}
+            {dialogReq.status !== "FINALIZED" ?
+              (<Button
+                onClick={() => {
+                  closeReqDialog();
+                  UserService.updateRequest(dialogReq.idRequest, dialogReq).then(
                     (response) => {
                       setRequests(response.data);
                       setUpdateReqs({});
                     }
                   );
-                } else if (dialogReq.status === "BLOCKED") {
-                  UserService.unblockRequest(dialogReq.idRequest).then(
-                    (response) => {
-                      setRequests(response.data);
-                      setUpdateReqs({});
-                    }
-                  );
-                }
-              }
-            }}
-            color="secondary"
-          >
-            {dialogReq
-              ? dialogReq.status === "ACTIVE"
-                ? "Blokiraj"
-                : null
-              : null}
-            {dialogReq
-              ? dialogReq.status === "BLOCKED"
-                ? "Aktiviraj"
-                : null
-              : null}
-          </Button>
-          <Button
-            onClick={() => {
-              closeReqDialog();
-              UserService.updateRequest(dialogReq.idRequest, dialogReq).then(
-                (response) => {
-                  setRequests(response.data);
-                  setUpdateReqs({});
-                }
-              );
-            }}
-            color="primary"
-          >
-            Spremi
-          </Button>
-        </DialogActions>
+                }}
+                color="primary"
+              >
+                Spremi
+              </Button>) : null}
+          </DialogActions>) : null}
       </Dialog>
 
       {/* dialog for changing profile photo */}
@@ -616,7 +699,7 @@ const Profile = (props) => {
       <Dialog
         fullWidth
         maxWidth="sm"
-        open={gradeDialog}
+        open={gradeDialog.open}
         onClose={closeGradeDialog}
       >
         <DialogTitle>
@@ -656,11 +739,17 @@ const Profile = (props) => {
           <Button
             disabled={rating.ratingGrade === null ? true : false}
             onClick={() => {
+              if (gradeDialog.req == null)
+                RatingService.rateUser(userData.idUser, {
+                  comment: rating.ratingComment,
+                  rate: rating.ratingGrade,
+                });
+              else
+                RatingService.rateRequest(getRatedId(gradeDialog.req), gradeDialog.req.idRequest, {
+                  comment: rating.ratingComment,
+                  rate: rating.ratingGrade,
+                });
               closeGradeDialog();
-              RatingService.rateUser(userData.idUser, {
-                comment: rating.ratingComment,
-                rate: rating.ratingGrade,
-              });
               setUpdateReqs({});
             }}
             color="primary"
@@ -738,7 +827,7 @@ const Profile = (props) => {
                   label: classes.visibilityLabel,
                   root: classes.visibilityRoot,
                 }}
-                onClick={openGradeDialog}
+                onClick={() => { openGradeDialog(null) }}
                 className={classes.visibilityButton}
               >
                 <CreateIcon />
@@ -899,7 +988,7 @@ const Profile = (props) => {
                 color="secondary"
                 style={{ marginBottom: 5 }}
               >
-                Chain of trust:
+                Lanac povjerenja:
               </Typography>
               <GridList cellHeight="auto" className={classes.gridList}>
                 {chainOfTrust

@@ -35,7 +35,7 @@ export const Registration = (props) => (
           onSubmit={async (values) => {
             let data = new FormData();
 
-            Geocode.fromAddress(values.address).then(
+            await Geocode.fromAddress(values.country + " " +  values.town + " " + values.address).then(
               response => {
                 const { lat, lng } = response.results[0].geometry.location;
                 console.log(lat, lng);
@@ -52,6 +52,9 @@ export const Registration = (props) => (
             data.append("password", values.password);
             data.append("secondPassword", values.secondPassword);
             data.append("email", values.email);
+            data.append("town", values.town);
+            data.append("state", values.state);
+            data.append("country", values.country);
 
             RegService.register(data)
               .then((res) => {

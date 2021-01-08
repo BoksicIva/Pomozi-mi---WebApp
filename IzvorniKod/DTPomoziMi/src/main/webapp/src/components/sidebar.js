@@ -57,10 +57,12 @@ function Navbar(props) {
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => {
+    onNotifClick();
     setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
+    console.log("closing");
     setAnchorEl(null);
     let count = 0;
     for (let notif of notifs) {
@@ -70,31 +72,37 @@ function Navbar(props) {
     setValue(0);
   };
 
-   const showSidebar = () => setSidebar(!sidebar);
+  const showSidebar = () => setSidebar(!sidebar);
 
   useEffect(() => {
-    const userId = UserService.getUserContext().id;
-    UserService.getNotifications(userId)
-      .then((response) => {
-        let count = 0;
-        if (response.data._embedded !== undefined) {
-          console.log(response.data._embedded.notifications);
-          setNotifs(response.data._embedded.notifications);
-          console.log(response.data._embedded.notifications.length);
-          for (let notif of response.data._embedded.notifications) {
-            if (notif.recived === false) {
-              count++;
-            }
-          }
-
-          setValue(count);
-          console.log(response);
-        }
-      })
-      .catch((error) => {
-        alert(error);
-      });
+    onNotifClick();
   }, []);
+
+  const onNotifClick = () => {
+    let userContext = UserService.getUserContext();
+    if (userContext !== null) {
+      const userId = UserService.getUserContext().id;
+      UserService.getNotifications(userId)
+        .then((response) => {
+          let count = 0;
+          if (response.data._embedded !== undefined) {
+            console.log(response.data._embedded.notifications);
+            setNotifs(response.data._embedded.notifications);
+            console.log(response.data._embedded.notifications.length);
+            for (let notif of response.data._embedded.notifications) {
+              if (notif.received === false) {
+                count++;
+              }
+            }
+            setValue(count);
+            console.log(response);
+          }
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    }
+  }
 
   const handleLogOut = () => {
     localStorage.removeItem("username");
@@ -131,21 +139,21 @@ function Navbar(props) {
             <FaIcons.FaBars onClick={showSidebar} />
           </Link>
 
-           <IconButton
+          <IconButton
             aria-label="show 17 new notifications"
             color="inherit"
-            onClick={handleClick}
+            onClick={(event) => handleClick(event)}
           >
             <Badge badgeContent={value} color="secondary">
               <NotificationsIcon />
             </Badge>
-          </IconButton> 
-           <Menu
+          </IconButton>
+          <Menu
             id="long-menu"
             anchorEl={anchorEl}
             keepMounted
             open={open}
-            onClose={handleClose}
+            onClose={() => handleClose()}
             PaperProps={{
               style: {
                 maxHeight: ITEM_HEIGHT * 10,
@@ -155,19 +163,17 @@ function Navbar(props) {
             }}
           >
             {notifs.map((notif) => (
-              <>
                 <MenuItem
                   key={notif.idNotification}
                   style={{
                     whiteSpace: "break-spaces",
                   }}
-                  onClick={handleClose}
+                  onClick={() => handleClose()}
                 >
                   {notif.message}
                 </MenuItem>
-              </>
             ))}
-                </Menu> 
+          </Menu>
           <a href="/home" style={{ textDecoration: "none" }}>
             <Typography
               variant="h4"
@@ -181,7 +187,7 @@ function Navbar(props) {
               Mi
             </Typography>
           </a>
-        </div> 
+        </div>
         <nav
           className={
             sidebar
