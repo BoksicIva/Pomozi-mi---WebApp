@@ -120,14 +120,16 @@ export default function RecipeReviewCard(props) {
     useEffect(() => {
         RequestService.getRequests(1)
             .then((response) => {
-                setRequests(response.data._embedded.requests);
-                const roles = UserService.getUserContext().roles;
-                for (let role of roles) {
-                    if (role === "ROLE_ADMIN") {
-                        setAdmin(true);
+                if(response.data._embedded != null){
+                    setRequests(response.data._embedded.requests);
+                    const roles = UserService.getUserContext().roles;
+                    for (let role of roles) {
+                        if (role === "ROLE_ADMIN") {
+                            setAdmin(true);
+                        }
                     }
-                }
-                console.log(response.data._embedded.requests);
+                    console.log(response.data._embedded.requests);
+                 }
             })
             .catch((error) => {
                 alert(error);
@@ -146,8 +148,10 @@ export default function RecipeReviewCard(props) {
     const handleSubmit = (event) => {
         RequestService.getRequests(value)
             .then((response) => {
-                setRequests(response.data._embedded.requests);
-                console.log(response.data._embedded.requests);
+                if(response.data._embedded != null){
+                    setRequests(response.data._embedded.requests);
+                    console.log(response.data._embedded.requests);
+                }
             })
             .catch((error) => {
                 alert(error);
