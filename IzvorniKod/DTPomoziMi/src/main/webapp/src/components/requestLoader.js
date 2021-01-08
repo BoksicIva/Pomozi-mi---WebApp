@@ -157,7 +157,7 @@ export const Dash = props => {
                                     var addParts = address.split(",");
                                     location.adress = addParts[0];
 
-                                    if(addParts.length() == 4){
+                                    if(addParts.length == 4){
                                         location.state = addParts[3].trim();
                                         location.town = addParts[1].trim() + ", " + addParts[2].trim();
                                     }else{
