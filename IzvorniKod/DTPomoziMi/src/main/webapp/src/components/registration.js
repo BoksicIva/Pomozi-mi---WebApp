@@ -11,6 +11,20 @@ import Geocode from "react-geocode";
 
 Geocode.setApiKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
 
+const checkAdress = (values) => {
+  return (
+      (values.town === null || values.town === "") &&
+      (values.country === null || values.country === "") &&
+      (values.address === null || values.address === "")
+  );
+}
+
+const fieldSetter = (value) => {
+  if (value === null)
+      return "";
+  return value;
+}
+
 
 export const Registration = (props) => (
   <div className={style.app}>
@@ -35,26 +49,32 @@ export const Registration = (props) => (
           onSubmit={async (values) => {
             let data = new FormData();
 
+            let latitude = null, longitude = null;
             await Geocode.fromAddress(values.country + " " +  values.town + " " + values.address).then(
               response => {
                 const { lat, lng } = response.results[0].geometry.location;
                 console.log(lat, lng);
-                data.append("longitude", lng);
-                data.append("latitude", lat)
+                longitude  = lng;
+                latitude = lat;
               },
               error => {
                 console.error(error);
               }
             );
 
+          if (latitude != null && longitude != null && !(checkAdress(values))){
+              data.append("adress", fieldSetter(values.address));
+              data.append("state", fieldSetter(values.country));
+              data.append("town", fieldSetter(values.town));
+              data.append("latitude", latitude);
+              data.append("longitude", longitude);
+          }
+
             data.append("firstName", values.firstName);
             data.append("lastName", values.lastName);
             data.append("password", values.password);
             data.append("secondPassword", values.secondPassword);
             data.append("email", values.email);
-            data.append("town", values.town);
-            data.append("state", values.state);
-            data.append("country", values.country);
 
             RegService.register(data)
               .then((res) => {
