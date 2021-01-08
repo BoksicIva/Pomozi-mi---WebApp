@@ -154,19 +154,30 @@ export const Dash = props => {
                                 var call = new Object();
                                 var location = new Object();
                                 if (checked) {
-                                    var addParts = address.split(",");
-                                    location.adress = addParts[0];
+                                    if (address != null) {
+                                        var addParts = address.split(",");
+                                        
+                                        if (addParts.length == 4) {
+                                            location.adress = addParts[0];
+                                            location.state = addParts[3].trim();
+                                            location.town = addParts[1].trim() + ", " + addParts[2].trim();
+                                        } else if (addParts.length == 3) {
+                                            location.adress = addParts[0];
+                                            location.state = addParts[2].trim();
+                                            location.town = addParts[1].trim();
+                                        }else if(addParts.length == 2){
+                                            location.town = addParts[0].trim();
+                                            location.country = addParts[1].trim();
+                                        }else if(addParts.length == 1)
+                                            location.country = addParts[0].trim();
+                                        else{
+                                            alert("Nije moguće postaviti danu lokaciju");
+                                        }
 
-                                    if(addParts.length == 4){
-                                        location.state = addParts[3].trim();
-                                        location.town = addParts[1].trim() + ", " + addParts[2].trim();
-                                    }else{
-                                        location.state = addParts[2].trim();
-                                        location.town = addParts[1].trim();
-                                    }
-                                    
-                                    location.longitude = long;
-                                    location.latitude = lat;
+                                        location.longitude = long;
+                                        location.latitude = lat;
+                                    }else
+                                        alert("Nije moguće postaviti danu lokaciju");
                                 } else {
 
                                     if (checkAdress(values))
@@ -185,9 +196,9 @@ export const Dash = props => {
                                             }
                                         );
 
-                                        if (location.latitude == null || location.longitude == null){
+                                        if (location.latitude == null || location.longitude == null) {
                                             location = null;
-                                        }else{
+                                        } else {
                                             location.adress = fieldSetter(values.address);
                                             location.state = fieldSetter(values.country);
                                             location.town = fieldSetter(values.town);
