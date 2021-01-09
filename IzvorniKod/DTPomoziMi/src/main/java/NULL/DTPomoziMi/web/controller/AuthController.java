@@ -102,8 +102,13 @@ public class AuthController {
 
 		UserPrincipal user = (UserPrincipal) auth.getPrincipal();
 
-		String refreshToken = jwtUtil.generateRefreshToken(user);
-		tokenService.updateToken(refreshToken, user.getUsername());
+		String refreshToken = null;
+		if (user.getUser().getToken() == null) // nemoj odlogirat na drugim uredajima
+		{
+			refreshToken = jwtUtil.generateRefreshToken(user);
+			tokenService.updateToken(refreshToken, user.getUsername());
+		} else
+			refreshToken = user.getUser().getToken();
 
 		String token = jwtUtil.generateToken(user);
 
