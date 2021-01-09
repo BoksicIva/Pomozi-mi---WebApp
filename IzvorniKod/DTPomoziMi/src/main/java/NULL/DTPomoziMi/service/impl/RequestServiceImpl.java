@@ -229,6 +229,9 @@ public class RequestServiceImpl implements RequestService {
 
 		if (!r.getStatus().equals(RequestStatus.EXECUTING) || !r.isConfirmed())
 			throw new IllegalActionException("Cannot mark a request without an executor as executed!");
+		
+		if(!r.isConfirmed())
+			throw new IllegalActionException("Cannot mark a non confirmed request as executed!");
 
 		publisher
 			.publishMessageEvent(
