@@ -210,7 +210,7 @@ const Profile = (props) => {
   const [requestsByExecutor, setRequestsByExecutor] = useState(null);
   const [requests, setRequests] = useState(null);
   const [dialogReq, setDialogReq] = useState(null);
-  const [updateReqs, setUpdateReqs] = useState({});
+  const [updateReqs, setUpdateReqs] = useState(-200);
   const [isUser, setUser] = useState(false);
   const [isAdmin, setAdmin] = useState(false);
   const [isBlocked, setBlocked] = useState(false);
@@ -295,28 +295,31 @@ const Profile = (props) => {
   const checkIfAuthor = (req) => {
     const user = getLoggedInUser();
 
-    console.log("aaa");
+    if(user == null)
+      return false;
+
     if (req == null)
       return false;
-    console.log("bbb");
+
     return user.id === req.author.idUser;
   }
 
   const checkUserDidNotRate = (req) => {
     const user = getLoggedInUser();
-
+    
     if (req == null) return false;
     if (user == null) return false;
 
     if (req.ratings == null)
       return true;
 
+    let res = true;
     req.ratings.map(rating => {
       if (rating.rator.idUser == user.id)
-        return false;
+        res = false;
     });
 
-    return true;
+    return res;
   }
 
   const getRated = (req) => {
@@ -447,7 +450,7 @@ const Profile = (props) => {
                   RequestService.confirmRequest(request.idRequest)
                     .then(() => {
                       console.log(request);
-                      setUpdateReqs({});
+                      setUpdateReqs(updateReqs+1);
                     })
                     .catch((error) => {
                       alert(error);
@@ -467,7 +470,7 @@ const Profile = (props) => {
                   RequestService.blockRequest(request.idRequest)
                     .then(() => {
                       console.log(request);
-                      setUpdateReqs({});
+                      setUpdateReqs(updateReqs+1);
                     })
                     .catch((error) => {
                       alert(error);
@@ -489,7 +492,7 @@ const Profile = (props) => {
               onClick={() => openGradeDialog(request)}
               className={classes.visibilityButton}
             >
-              <StarRateRoundedIcon onClick="" />
+              <StarRateRoundedIcon />
             </IconButton>
           ) : null}
 
@@ -559,8 +562,10 @@ const Profile = (props) => {
                 <a href={"tel:" + (dialogReq ? dialogReq.phone : null)}>
                   {dialogReq ? dialogReq.phone : null}
                 </a>
+                <br/>
               </>
             ) : null}
+            {dialogReq ? (dialogReq.executor ? (" POMOĆ JE PONUDIO: " + dialogReq.executor.firstName + " " + dialogReq.executor.lastName) : null) : null}
           </DialogContentText>
           <TextField
             label="Opis zahtjeva"
@@ -588,14 +593,14 @@ const Profile = (props) => {
                       UserService.blockRequest(dialogReq.idRequest).then(
                         (response) => {
                           setRequests(response.data);
-                          setUpdateReqs({});
+                          setUpdateReqs(updateReqs+1);
                         }
                       );
                     } else if (dialogReq.status === "BLOCKED") {
                       UserService.unblockRequest(dialogReq.idRequest).then(
                         (response) => {
                           setRequests(response.data);
-                          setUpdateReqs({});
+                          setUpdateReqs(updateReqs+1);
                         }
                       );
                     }
@@ -615,6 +620,20 @@ const Profile = (props) => {
                   : null}
               </Button>
               ) : null}
+            {(dialogReq.status === "EXECUTING" && dialogReq.confirmed==true) ?
+              (<Button
+                onClick={() => {
+                  closeReqDialog();
+                  RequestService.markExecuted(dialogReq.idRequest).then(
+                    (response) => {
+                      setUpdateReqs(updateReqs+1);
+                    }
+                  );
+                }}
+                color="primary"
+              >
+                Označi izvšen
+              </Button>) : null}
             {dialogReq.status !== "FINALIZED" ?
               (<Button
                 onClick={() => {
@@ -622,7 +641,7 @@ const Profile = (props) => {
                   UserService.updateRequest(dialogReq.idRequest, dialogReq).then(
                     (response) => {
                       setRequests(response.data);
-                      setUpdateReqs({});
+                      setUpdateReqs(updateReqs+1);
                     }
                   );
                 }}
@@ -681,7 +700,7 @@ const Profile = (props) => {
               UserService.deleteRequest(dialogReq.idRequest).then(
                 (response) => {
                   setRequests(response.data);
-                  setUpdateReqs({});
+                  setUpdateReqs(updateReqs+1);
                 }
               );
             }}
@@ -748,12 +767,12 @@ const Profile = (props) => {
                   rate: rating.ratingGrade,
                 });
               else
-                RatingService.rateRequest(getRated(gradeDialog.req).id, gradeDialog.req.idRequest, {
+                RatingService.rateRequest(getRated(gradeDialog.req).idUser, gradeDialog.req.idRequest, {
                   comment: rating.ratingComment,
                   rate: rating.ratingGrade,
                 });
               closeGradeDialog();
-              setUpdateReqs({});
+              setUpdateReqs(updateReqs+1);
             }}
             color="primary"
           >

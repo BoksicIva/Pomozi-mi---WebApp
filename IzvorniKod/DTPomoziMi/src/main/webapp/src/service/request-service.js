@@ -14,6 +14,7 @@ class RequestService {
     sendExecution(id){
       return http.patch("/requests/pickForExecution/" + id, {});
     }
+
     deleteRequest(id){
         return http.delete("/requests/" + id, {});
     }
@@ -24,6 +25,10 @@ class RequestService {
 
     blockRequest(id) {
       return http.patch("/requests/confirmExecution/" + id + "?confirm=false", {});
+    }
+
+    markExecuted(id) {
+      return http.patch("/requests/markExecuted/" + id, {});
     }
   
   }

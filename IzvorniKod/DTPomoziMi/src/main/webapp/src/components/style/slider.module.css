@@ -1,8 +1,8 @@
 
 .sliderimg{
-    object-fit: scale-down;
     width: 100%;
-    height: fit-content
+    height: fit-content;
+    width: auto;
 }
 
 .img{
