@@ -295,7 +295,7 @@ const Profile = (props) => {
   const checkIfAuthor = (req) => {
     const user = getLoggedInUser();
 
-    if(user == null)
+    if (user == null)
       return false;
 
     if (req == null)
@@ -306,7 +306,7 @@ const Profile = (props) => {
 
   const checkUserDidNotRate = (req) => {
     const user = getLoggedInUser();
-    
+
     if (req == null) return false;
     if (user == null) return false;
 
@@ -450,7 +450,7 @@ const Profile = (props) => {
                   RequestService.confirmRequest(request.idRequest)
                     .then(() => {
                       console.log(request);
-                      setUpdateReqs(updateReqs+1);
+                      setUpdateReqs(updateReqs + 1);
                     })
                     .catch((error) => {
                       alert(error);
@@ -470,7 +470,7 @@ const Profile = (props) => {
                   RequestService.blockRequest(request.idRequest)
                     .then(() => {
                       console.log(request);
-                      setUpdateReqs(updateReqs+1);
+                      setUpdateReqs(updateReqs + 1);
                     })
                     .catch((error) => {
                       alert(error);
@@ -562,7 +562,7 @@ const Profile = (props) => {
                 <a href={"tel:" + (dialogReq ? dialogReq.phone : null)}>
                   {dialogReq ? dialogReq.phone : null}
                 </a>
-                <br/>
+                <br />
               </>
             ) : null}
             {dialogReq ? (dialogReq.executor ? (" POMOĆ JE PONUDIO: " + dialogReq.executor.firstName + " " + dialogReq.executor.lastName) : null) : null}
@@ -572,7 +572,7 @@ const Profile = (props) => {
             defaultValue={dialogReq ? dialogReq.description : null}
             fullWidth
             multiline
-            disabled={(checkIfAuthor(dialogReq) && dialogReq.status !== "FINALIZED") ? false : true}
+            disabled={(checkIfAuthor(dialogReq) && dialogReq.status === "ACTIVE") ? false : true}
             onChange={(description) =>
               (dialogReq.description = description.target.value)
             }
@@ -593,14 +593,14 @@ const Profile = (props) => {
                       UserService.blockRequest(dialogReq.idRequest).then(
                         (response) => {
                           setRequests(response.data);
-                          setUpdateReqs(updateReqs+1);
+                          setUpdateReqs(updateReqs + 1);
                         }
                       );
                     } else if (dialogReq.status === "BLOCKED") {
                       UserService.unblockRequest(dialogReq.idRequest).then(
                         (response) => {
                           setRequests(response.data);
-                          setUpdateReqs(updateReqs+1);
+                          setUpdateReqs(updateReqs + 1);
                         }
                       );
                     }
@@ -620,13 +620,13 @@ const Profile = (props) => {
                   : null}
               </Button>
               ) : null}
-            {(dialogReq.status === "EXECUTING" && dialogReq.confirmed==true) ?
+            {(dialogReq.status === "EXECUTING" && dialogReq.confirmed == true) ?
               (<Button
                 onClick={() => {
                   closeReqDialog();
                   RequestService.markExecuted(dialogReq.idRequest).then(
                     (response) => {
-                      setUpdateReqs(updateReqs+1);
+                      setUpdateReqs(updateReqs + 1);
                     }
                   );
                 }}
@@ -634,14 +634,14 @@ const Profile = (props) => {
               >
                 Označi izvšen
               </Button>) : null}
-            {dialogReq.status !== "FINALIZED" ?
+            {dialogReq.status === "ACTIVE" ?
               (<Button
                 onClick={() => {
                   closeReqDialog();
                   UserService.updateRequest(dialogReq.idRequest, dialogReq).then(
                     (response) => {
                       setRequests(response.data);
-                      setUpdateReqs(updateReqs+1);
+                      setUpdateReqs(updateReqs + 1);
                     }
                   );
                 }}
@@ -700,7 +700,7 @@ const Profile = (props) => {
               UserService.deleteRequest(dialogReq.idRequest).then(
                 (response) => {
                   setRequests(response.data);
-                  setUpdateReqs(updateReqs+1);
+                  setUpdateReqs(updateReqs + 1);
                 }
               );
             }}
@@ -771,8 +771,8 @@ const Profile = (props) => {
                   comment: rating.ratingComment,
                   rate: rating.ratingGrade,
                 });
+              setUpdateReqs(updateReqs + 1);
               closeGradeDialog();
-              setUpdateReqs(updateReqs+1);
             }}
             color="primary"
           >
