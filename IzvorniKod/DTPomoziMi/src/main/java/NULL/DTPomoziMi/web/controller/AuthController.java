@@ -1,7 +1,6 @@
 package NULL.DTPomoziMi.web.controller;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -36,6 +35,7 @@ import NULL.DTPomoziMi.service.TokenService;
 import NULL.DTPomoziMi.service.UserService;
 import NULL.DTPomoziMi.util.CookieUtil;
 import NULL.DTPomoziMi.web.DTO.UserRegisterDTO;
+import io.jsonwebtoken.ExpiredJwtException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -112,11 +112,22 @@ public class AuthController {
 		} else {
 			refreshToken = user.getUser().getToken();
 			
-			Calendar cal = Calendar.getInstance();
-			cal.add(Calendar.HOUR, 1);
-			
-			if(jwtUtil.extractExpiration(refreshToken).before(cal.getTime()))
+			boolean shouldUpdate = false;
+			try {
+				Calendar cal = Calendar.getInstance();
+				cal.add(Calendar.HOUR, 1);
+				
+				if(jwtUtil.extractExpiration(refreshToken).before(cal.getTime())) {
+					refreshToken = jwtUtil.generateRefreshToken(user);
+					shouldUpdate = true;
+				}
+			}catch(ExpiredJwtException e) {
 				refreshToken = jwtUtil.generateRefreshToken(user);
+				shouldUpdate = true;
+			}
+			
+			if(shouldUpdate) 
+				tokenService.updateToken(refreshToken, user.getUsername());
 		}
 
 		String token = jwtUtil.generateToken(user);
