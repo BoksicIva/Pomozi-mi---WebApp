@@ -689,7 +689,7 @@ public class DeleteRequestTest {
             
             \medskip
 			
-			\noindent \textbf{Ispitni sličaj 7: Testiranje funkcionalnosti metode blockUser()}\\
+			\noindent \textbf{Ispitni slučaj 7: Testiranje funkcionalnosti metode blockUser()}\\
 			
 			\medskip
             \noindent\textbf{Ulaz:}
@@ -769,15 +769,178 @@ public class BlockUserTest {
             
 			\subsection{Ispitivanje sustava}
 			
-			 \textit{Potrebno je provesti i opisati ispitivanje sustava koristeći radni okvir Selenium\footnote{\url{https://www.seleniumhq.org/}}. Razraditi \textbf{minimalno 4 ispitna slučaja} u kojima će se ispitati redovni slučajevi, rubni uvjeti te poziv funkcionalnosti koja nije implementirana/izaziva pogrešku kako bi se vidjelo na koji način sustav reagira kada nešto nije u potpunosti ostvareno. Ispitni slučaj se treba sastojati od ulaza (npr. korisničko ime i lozinka), očekivanog izlaza ili rezultata, koraka ispitivanja i dobivenog izlaza ili rezultata.\\ }
+			 \textit{Ispitivanje sustava izvedeno je koristeći radni okvir Selenium IDE kako bi se provjerila osnovna funkcionalnost
+             sustava po obrascima uporabe.\\ }
 			 
-			 \textit{Izradu ispitnih slučajeva pomoću radnog okvira Selenium moguće je provesti pomoću jednog od sljedeća dva alata:}
-			 \begin{itemize}
-			 	\item \textit{dodatak za preglednik \textbf{Selenium IDE} - snimanje korisnikovih akcija radi automatskog ponavljanja ispita	}
-			 	\item \textit{\textbf{Selenium WebDriver} - podrška za pisanje ispita u jezicima Java, C\#, PHP koristeći posebno programsko sučelje.}
-			 \end{itemize}
-		 	\textit{Detalji o korištenju alata Selenium bit će prikazani na posebnom predavanju tijekom semestra.}
-			
+			 \noindent \textbf{Ispitni slučaj 1: Registracija korisnika}\\
+			 \medskip
+            \noindent\textbf{Ulaz:}
+            \begin{packed_enum}
+            \item Otvara se obrazac za registraciju
+            \item Ime
+            \item Prezime
+            \item Email
+            \item Zaporka i njena potvrda
+            \item Država
+            \item Mjesto
+            \item Adresa
+            \item Pritisak na gumb "Registracija"
+            \end{packed_enum}
+            
+            \noindent\textbf{Očekivani rezultat:}
+            \begin{packed_enum}
+            \item Uspješna registracija i prikaz početne(home) stranice
+            \item Pripadajuća pogreška
+            \end{packed_enum}
+            
+            \noindent \text
+            Rezultat: Očekivani rezultat je zadovoljen, aplikacija je prošla sve testove \\  
+            
+        \noindent \text 
+        Na slici 5.8 je prikaz uspješno provedenog testa registracije u Selenium IDE.\\
+        \noindent \text 
+        Na slici 5.9 je prikaz obrasca prilikom neispravne registracije te pripadajuća greška.\\
+		\begin{figure}[H]
+                 \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{slike/registracija.png}
+                \centering
+                \caption{Uspješan prolazak testa registracije}
+        \end{figure}
+		\begin{figure}[H]
+                 \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{slike/kriva_reg.png}
+                \centering
+                \caption{Krivi unos u polja registracije}
+        \end{figure}
+		
+		\noindent \textbf{Ispitni slučaj 2: Prijava korisnika u sustav}\\
+			 \medskip
+            \noindent\textbf{Ulaz:}
+            \begin{packed_enum}
+            \item Otvara se obrazac za prijavu
+            \item Email
+            \item Lozinka
+            \item Pritisak na gumb "Prijavi se"
+            \end{packed_enum}
+            
+            \noindent\textbf{Očekivani rezultat:}
+            \begin{packed_enum}
+            \item Prikazuje se obrazac za prijavu korisnika u sustav
+            \item Nakon uspješne prijave prikaz glavne stranice
+            \end{packed_enum}
+            
+            \noindent \text
+            Rezultat: Očekivani rezultat je zadovoljen, aplikacija je prošla sve testove \\  
+            
+        \noindent \text 
+        Na slici 5.10 vidi se obrazac za prijavu korisika u sustav, a na slici 5.11 kako u Seleniumu IDE prolazi test za uspješnu prijavu.\\
+		\begin{figure}[H]
+                 \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{slike/prijavaObrazac.jpg}
+                \centering
+                \caption{Prijava korisnika u sustav}
+        \end{figure}
+		\begin{figure}[H]
+                 \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{slike/prijava.png}
+                \centering
+                \caption{Uspješan prolazak testa prijave}
+        \end{figure}
+			\noindent \textbf{Ispitni slučaj 3: Zadavanje zahtjeva}\\
+			 \medskip
+            \noindent\textbf{Ulaz:}
+            \begin{packed_enum}
+            \item Na izborniku odabrati "Zadavanje zahtjeva"
+            \item Unos broja mobitela
+            \item Unos opisa zahtjeva
+            \item Lokacija : Drzava, mjesto adresa ili odabir na karti
+            \item Spremanje podataka
+            \item Odjava iz aplikacije
+            \end{packed_enum}
+            
+            \noindent\textbf{Očekivani rezultat:}
+            \begin{packed_enum}
+            \item Prikazuje se obrazac za zadavanje zahtjeva za pomoć
+            \item Opcionalni prikaz karte za lokaciju
+            \item Nakon uspješnog unosa podataka, pritisak na gumb "Pošalji zahtjev"
+            \end{packed_enum}
+            
+            \noindent \text
+            Rezultat: Očekivani rezultat je zadovoljen, aplikacija je prošla sve testove \\  
+            
+        \noindent \text 
+        Na slici 5.12 vidi se kako u Seleniumu IDE prolazi test za uspješnu prijavu, a na slici 5.13 obrazac za zadavanje zahtjeva. \\
+		\begin{figure}[H]
+                 \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{slike/zadavanjeUspjesno.png}
+                \centering
+                \caption{Uspješan prolazak testa zadavanja zahtjeva}
+        \end{figure}
+		\begin{figure}[H]
+                 \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{slike/zadavanjeZahtjeva.png}
+                \centering
+                \caption{Obrazac zadavanja zahtjeva za pomoć}
+        \end{figure}
+        \noindent \textbf{Ispitni slučaj 4: Odabir zahtjeva za izvršavanje}\\
+			 \medskip
+            \noindent\textbf{Ulaz:}
+            \begin{packed_enum}
+            \item  Na izborniku odabrati "Pregled zahtjeva"
+            \item Opcionalno unos radijusa za filtraciju
+            \item Odabir gumba "izvrši zahtjev"
+            \end{packed_enum}
+            
+            \noindent\textbf{Očekivani rezultat:}
+            \begin{packed_enum}
+            \item Prikazuje se izbornik na početnoj stranici
+            \item Prikaz  liste aktivnih zahtjeva
+            \item Opcionalni prikaz zahtjeva za unešeni radijus
+            \item Nakon odabira izvršavanja šalje se notifikacija autoru
+            \end{packed_enum}
+            
+            \noindent \text
+            Rezultat: Očekivani rezultat je zadovoljen, aplikacija je prošla sve testove \\  
+            
+        \noindent \text 
+        Na slici 5.14 vidi se kako u Seleniumu IDE prolazi test za uspješan odabir izršavanja zahtjeva, a na slici 5.15 prikaz liste aktivnih zahtjeva koje se pritiskom na gumb"Izvrši zahtijev" može odabrati za izvršavanje. \\
+		\begin{figure}[H]
+                 \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{slike/izvrsavanjeZahtjeva.png}
+                \centering
+                \caption{Uspješan prolazak testa izvršavanja zahtjeva}
+        \end{figure}
+		\begin{figure}[H]
+                 \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{slike/izvrsiZahtj.png}
+                \centering
+                \caption{Prikaz liste aktivnih zahtjeva}
+        \end{figure}
+        
+        \noindent \textbf{Ispitni slučaj 5: Ocjenjivanje korisnika}\\
+			 \medskip
+            \noindent\textbf{Ulaz:}
+            \begin{packed_enum}
+            \item  Na izborniku odabrati "Korisnici"
+            \item Kliknuti na ime tražene osobe
+            \item Na profilu korsnika stisnuti gumb za ocjenjivanje  4. odabrati ocijena 5. stisnuti gumb "ocijeni"
+            \end{packed_enum}
+            
+            \noindent\textbf{Očekivani rezultat:}
+            \begin{packed_enum}
+            \item Prikazuje se izbornik na početnoj stranici
+            \item Prikaz  liste korisnika
+            \item Nakon odabira imena prikaz profila
+            \item Mogućnost ocijenjivanja 
+            \end{packed_enum}
+            
+            \noindent \text
+            Rezultat: Očekivani rezultat je zadovoljen, aplikacija je prošla sve testove \\  
+            
+        \noindent \text 
+        Na slici 5.14 vidi se kako u Seleniumu IDE prolazi test za ocjenjivanje drugog korisnika, a na slici 5.15 prikaz obrasca za ocjenjivanje. \\
+		\begin{figure}[H]
+                 \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{slike/ocjenjivanjeSel.png}
+                \centering
+                \caption{Uspješan prolazak testa ocjenjivanja korisnika}
+        \end{figure}
+		\begin{figure}[H]
+                 \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{slike/ocjena.png}
+                \centering
+                \caption{Obrazac za ocjenjivanje}
+        \end{figure}
 			\eject 
 %\end{comment}
 \section{Dijagram razmještaja}
