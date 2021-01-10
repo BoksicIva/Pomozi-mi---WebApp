@@ -326,7 +326,7 @@ const Profile = (props) => {
     const user = getLoggedInUser();
 
     if (user.id !== req.author.idUser)
-      return req.author.idUser
+      return req.author;
 
     return req.executor;
   }
