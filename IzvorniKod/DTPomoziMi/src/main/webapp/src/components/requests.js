@@ -109,13 +109,14 @@ export default function RecipeReviewCard(props) {
     const classes = useStyles();
     const [expanded, setExpanded] = React.useState([]);
     const [requests, setRequests] = React.useState([]);
-    const [value, setValue] = React.useState('');
+    const [value, setValue] = React.useState(1);
     const [notSent, setNotSent] = React.useState(true);
     const [lat, setLat] = React.useState('');
     const [lng, setLng] = React.useState('');
     const [isAdmin, setAdmin] = React.useState(false);
     const [noLoc, setLoc] = React.useState(false);
     const [req, setReq] = React.useState();
+
 
     useEffect(() => {
         RequestService.getRequests(1)
@@ -208,10 +209,11 @@ export default function RecipeReviewCard(props) {
             <Sidebar />
             <div></div>
             <div className={style.background}>
-
-                <Container>
+            <Container>
+                <br></br>
+                <Typography variant="body2" color="textSecondary" component="p">Pretraži zahtjeve po udaljenosti od vlastite lokacije u kilometrima. <br></br>  (Ako korisnik nema zapisanu lokaciju prikazuju mu se samo zahtjevi bez lokacije.)</Typography>   
                 <form onSubmit={handleSubmit}>
-                    <TextField id="filled-basic" label="Radius zahtjeva" value={value} onChange={handleChangeInput} variant="filled" />
+                    <TextField id="filled-basic" label="Radius zahtjeva (km)" value={value} onChange={handleChangeInput} variant="filled" />
 
                 </form>
                     {(notSent && requests != null) ?
