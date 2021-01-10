@@ -1,5 +1,7 @@
 package NULL.DTPomoziMi.web.controller;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -107,8 +109,15 @@ public class AuthController {
 		{
 			refreshToken = jwtUtil.generateRefreshToken(user);
 			tokenService.updateToken(refreshToken, user.getUsername());
-		} else
+		} else {
 			refreshToken = user.getUser().getToken();
+			
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.HOUR, 1);
+			
+			if(jwtUtil.extractExpiration(refreshToken).before(cal.getTime()))
+				refreshToken = jwtUtil.generateRefreshToken(user);
+		}
 
 		String token = jwtUtil.generateToken(user);
 
