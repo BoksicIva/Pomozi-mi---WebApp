@@ -140,7 +140,7 @@ function Navbar(props) {
           </Link>
 
           <IconButton
-            aria-label="show 17 new notifications"
+            aria-label="show new notifications"
             color="inherit"
             onClick={(event) => handleClick(event)}
           >
@@ -201,7 +201,7 @@ function Navbar(props) {
                 <AiIcons.AiOutlineLeft />
               </Link>
             </li>
-            {SidebarData.map((item, index) => {
+            {SidebarData.slice(0).reverse().map((item, index) => {
               let elem = isLogout(item.title, item);
 
               return (

@@ -208,11 +208,12 @@ export default function RecipeReviewCard(props) {
             <Sidebar />
             <div></div>
             <div className={style.background}>
+
+                <Container>
                 <form onSubmit={handleSubmit}>
                     <TextField id="filled-basic" label="Radius zahtjeva" value={value} onChange={handleChangeInput} variant="filled" />
 
                 </form>
-                <Container>
                     {(notSent && requests != null) ?
                         requests.map((request, index) => (
                             <>
@@ -286,9 +287,6 @@ export default function RecipeReviewCard(props) {
                                 
 
                     </h1>
-                    <Typography paragraph>
-                                Mobitel : {req.phone}
-                                </Typography>
                     <Typography paragraph>
                                 Zahtjev : {req.description}
                                 </Typography>

@@ -1,7 +1,8 @@
 import axios from "axios";
+import UserService from "./service/user-service"
 const {REACT_APP_BASE_URL} = process.env;
 
-export default axios.create({
+const client = axios.create({
   withCredentials: true,
   xsrfCookieName: 'X-CSRF-COOKIE', // default,
   xsrfHeaderName: 'X-CSRF-TOKEN',
@@ -10,3 +11,22 @@ export default axios.create({
     "Content-type": "application/json"
   }
 });
+
+client.interceptors.response.use(
+  res => res,
+  err => {
+      if(err.response.status === 403) {
+        console.log(err.response)
+        if(err.response.data.code === 1001){
+          let userId = UserService.getUserContext().id;
+          if(userId !== undefined){
+          alert("Morate na profilu ocijeniti sve izvršene zahtjeve prije vaše iduće akcije");
+          window.location.assign("/profile/" + userId);
+          //alert("Morate na profilu ocijeniti sve izvršene zahtjeve prije vaše iduće akcije");
+          }else window.location.assign("/home");
+        }
+      }
+  }
+)
+
+export default client
