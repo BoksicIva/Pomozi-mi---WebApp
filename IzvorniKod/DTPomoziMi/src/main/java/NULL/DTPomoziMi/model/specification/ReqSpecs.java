@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.Specification;
 import NULL.DTPomoziMi.model.Location;
 import NULL.DTPomoziMi.model.Request;
 import NULL.DTPomoziMi.model.RequestStatus;
+import NULL.DTPomoziMi.model.User;
 
 public class ReqSpecs {
 	public static Specification<Request> statusEqual(RequestStatus status) {
@@ -69,7 +70,9 @@ public class ReqSpecs {
 			if(attribute == null)
 				return builder.conjunction();
 			
-			return builder.like(builder.lower(root.<String>get(name)), "%" + attribute.toLowerCase() + "%");
+			Join<Request, User> join = root.join("author", JoinType.LEFT);
+			
+			return builder.like(builder.lower(join.<String>get(name)), "%" + attribute.toLowerCase() + "%");
 		};
 	} 
 
