@@ -13,8 +13,8 @@ import LogoutService from "../service/login-service";
 import sidebarStyle from "./style/sidebar.module.css";
 import { IconContext } from "react-icons";
 import { Typography } from "@material-ui/core";
-import UserService from "../service/user-service";;
-
+import UserService from "../service/user-service";
+import Divider from "@material-ui/core/Divider";
 
 const ITEM_HEIGHT = 48;
 
@@ -162,7 +162,8 @@ function Navbar(props) {
               },
             }}
           >
-            {notifs.map((notif) => (
+            {notifs.reverse().map((notif) => (
+              <>
                 <MenuItem
                   key={notif.idNotification}
                   style={{
@@ -172,6 +173,8 @@ function Navbar(props) {
                 >
                   {notif.message}
                 </MenuItem>
+                <Divider />
+                </>
             ))}
           </Menu>
           <a href="/home" style={{ textDecoration: "none" }}>
@@ -201,7 +204,7 @@ function Navbar(props) {
                 <AiIcons.AiOutlineLeft />
               </Link>
             </li>
-            {SidebarData.slice(0).reverse().map((item, index) => {
+            {SidebarData.map((item, index) => {
               let elem = isLogout(item.title, item);
 
               return (

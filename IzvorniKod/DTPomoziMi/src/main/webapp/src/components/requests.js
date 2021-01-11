@@ -231,7 +231,7 @@ export default function RecipeReviewCard(props) {
             <Container>
                 <br></br>
                 <Typography variant="body2" color="textSecondary" component="p">
-                    Pretraži zahtjeve po udaljenosti od vlastite lokacije u kilometrima. <br></br>  (Ako korisnik nema zapisanu lokaciju prikazuju mu se samo zahtjevi bez lokacije.)
+                    Pretraži zahtjeve po udaljenosti od vlastite lokacije u kilometrima, te po imenu prezimenu ili mailu korisnika <br></br>  (Ako korisnik nema zapisanu lokaciju prikazuju mu se samo zahtjevi bez lokacije.)
                     </Typography>   
                 <form onSubmit={handleSubmit}>
                     <TextField id="filled-basic" label="Radius zahtjeva (km)" value={value} onChange={handleChangeInput} variant="filled" />
