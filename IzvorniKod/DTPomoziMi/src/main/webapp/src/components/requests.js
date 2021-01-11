@@ -116,6 +116,7 @@ export default function RecipeReviewCard(props) {
     const [isAdmin, setAdmin] = React.useState(false);
     const [noLoc, setLoc] = React.useState(false);
     const [req, setReq] = React.useState();
+    const [searchValue, setSearchValue] = React.useState();
 
 
     useEffect(() => {
@@ -160,8 +161,26 @@ export default function RecipeReviewCard(props) {
         event.preventDefault();
     };
 
+    const handleSearchSubmit = (event) => {
+        RequestService.getSearchRequests(value, searchValue)
+            .then((response) => {
+                if(response.data._embedded != null){
+                    console.log(response.data._embedded.requests);
+                    setRequests(response.data._embedded.requests);
+                }else setRequests([]);
+            })
+            .catch((error) => {
+                alert(error);
+            })
+        event.preventDefault();
+    };
+
     const handleChangeInput = (event) => {
         setValue(event.target.value);
+    };
+
+    const handleSearchChangeInput = (event) => {
+        setSearchValue(event.target.value);
     };
 
     const refreshPage = () => {
@@ -211,10 +230,15 @@ export default function RecipeReviewCard(props) {
             <div className={style.background}>
             <Container>
                 <br></br>
-                <Typography variant="body2" color="textSecondary" component="p">Pretraži zahtjeve po udaljenosti od vlastite lokacije u kilometrima. <br></br>  (Ako korisnik nema zapisanu lokaciju prikazuju mu se samo zahtjevi bez lokacije.)</Typography>   
+                <Typography variant="body2" color="textSecondary" component="p">
+                    Pretraži zahtjeve po udaljenosti od vlastite lokacije u kilometrima. <br></br>  (Ako korisnik nema zapisanu lokaciju prikazuju mu se samo zahtjevi bez lokacije.)
+                    </Typography>   
                 <form onSubmit={handleSubmit}>
                     <TextField id="filled-basic" label="Radius zahtjeva (km)" value={value} onChange={handleChangeInput} variant="filled" />
-
+                </form>
+                <br></br>
+                <form onSubmit={handleSearchSubmit}>
+                    <TextField id="filled-basic" label="Pretraživanje po parametru korisnika" value={searchValue} onChange={handleSearchChangeInput} variant="filled" />
                 </form>
                     {(notSent && requests != null) ?
                         requests.map((request, index) => (

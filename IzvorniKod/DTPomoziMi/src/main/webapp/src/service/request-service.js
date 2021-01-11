@@ -11,6 +11,10 @@ class RequestService {
       return http.get("/requests/active?radius=" + radius + "&page=0&size=400000", {});
     }
 
+    getSearchRequests(radius, value){
+      return http.get("/requests/active?radius=" + radius + "&page=0&size=400000&generalSearch=" + value, {});
+    }
+
     sendExecution(id){
       return http.patch("/requests/pickForExecution/" + id, {});
     }
