@@ -47,7 +47,22 @@ export default function BasicTable() {
   const [userStatistics, setUserStatistics] = useState([]);
 
   const handleSubmit = (event) => {
-    for (let user of UsersTemp) {
+    event.preventDefault();
+    Userservice.getSearched(value)
+    .then((response) => {
+      if(response.data._embedded !== undefined){
+      console.log(response.data._embedded.users)
+      setUsers(response.data._embedded.users)
+      }else setUsers([]);
+      //rows = response.data._embedded.users;
+      //console.log(rows);
+      //console.log(rows[0]);
+    })
+    .catch((error) => {
+      alert(error);
+    })
+
+/*     for (let user of UsersTemp) {
       let fullName = user.firstName + " " + user.lastName;
       if (user.lastName.toLowerCase().includes(value.toLowerCase()) ||
         user.firstName.toLowerCase().includes(value.toLowerCase()) ||
@@ -58,8 +73,8 @@ export default function BasicTable() {
     }
     console.log(rows);
     setUsers(rows);
-    event.preventDefault();
-    rows = [];
+    
+    rows = []; */
   };
 
   const handleChangeInput = (event) => {
@@ -105,7 +120,7 @@ export default function BasicTable() {
     Userservice.getUsers()
       .then((response) => {
         setUsers(response.data._embedded.users);
-        setUsersTemp(response.data._embedded.users);
+        //setUsersTemp(response.data._embedded.users);
         console.log(Users);
         //rows = response.data._embedded.users;
         //console.log(rows);

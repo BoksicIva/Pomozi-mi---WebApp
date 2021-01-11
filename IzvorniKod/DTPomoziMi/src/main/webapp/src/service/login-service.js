@@ -41,6 +41,10 @@ class LoginService {
       return http.get("/users?sort=" + condition + ",asc" , {});
     }
 
+    getSearched(cond){
+      return http.get("/users?generalSearch=" + cond , {});
+    }
+
     sendRequest(req){
       return http.post("/requests", req, {});
     }
