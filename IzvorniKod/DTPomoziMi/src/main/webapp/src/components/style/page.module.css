@@ -104,3 +104,19 @@ button.outline {
 .container {
   min-width: fit-content;
 }
+
+input:focus {
+  border-color: #08c;
+  outline: none;
+  border-width: 2px;
+}
+
+input.error {
+  border-color: red;
+}
+
+textarea.error {
+  border-color: red;
+}
+
+

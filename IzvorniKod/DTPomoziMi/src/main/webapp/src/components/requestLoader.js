@@ -156,7 +156,7 @@ export const Dash = props => {
                                 if (checked) {
                                     if (address != null) {
                                         var addParts = address.split(",");
-                                        
+
                                         if (addParts.length == 4) {
                                             location.adress = addParts[0];
                                             location.state = addParts[3].trim();
@@ -165,18 +165,18 @@ export const Dash = props => {
                                             location.adress = addParts[0];
                                             location.state = addParts[2].trim();
                                             location.town = addParts[1].trim();
-                                        }else if(addParts.length == 2){
+                                        } else if (addParts.length == 2) {
                                             location.town = addParts[0].trim();
                                             location.country = addParts[1].trim();
-                                        }else if(addParts.length == 1)
+                                        } else if (addParts.length == 1)
                                             location.country = addParts[0].trim();
-                                        else{
+                                        else {
                                             alert("Nije moguće postaviti danu lokaciju");
                                         }
 
                                         location.longitude = long;
                                         location.latitude = lat;
-                                    }else
+                                    } else
                                         alert("Nije moguće postaviti danu lokaciju");
                                 } else {
 
@@ -220,7 +220,10 @@ export const Dash = props => {
                             }}
                             validationSchema={Yup.object().shape({
                                 req: Yup.string()
-                                    .required("Unesite zahtjev"),
+                                    .required("Obavezno unesite zahtjev"),
+                                phone: Yup.number("Unos mora biti broj").required("Unesite broj mobitela"),
+                                country: Yup.string(),
+
                             })}
                         >
                             {(props) => {
@@ -238,7 +241,7 @@ export const Dash = props => {
                                     <form onSubmit={handleSubmit}>
                                         <div>
                                             <div className={style.inp_line}>
-                                                <label htmlFor="phone">Broj mobitela
+                                                <label htmlFor="phone">*Broj mobitela
                                                 <input
                                                         id="phone"
                                                         placeholder="Broj mobitela"
@@ -252,12 +255,14 @@ export const Dash = props => {
                                                                 ? `${style.text_input} ${style.error}`
                                                                 : style.text_input
                                                         }
-                                                    />
+                                                    /> {errors.phone && touched.phone && (
+                                                        <div className={style.input_feedback}>{errors.phone}</div>
+                                                    )}
                                                 </label>
                                             </div>
 
                                             <div className={style.inp_line}>
-                                                <label htmlFor="req">Zahtjev:
+                                                <label htmlFor="req">*Zahtjev:
                                                 <textarea
                                                         id="req"
                                                         placeholder="Opis zahtjeva"
@@ -270,6 +275,9 @@ export const Dash = props => {
                                                                 ? `${style.text_input} ${style.error}`
                                                                 : style.text_input
                                                         } rows="3"></textarea>
+                                                    {errors.req && touched.req && (
+                                                        <div className={style.input_feedback}>{errors.req}</div>
+                                                    )}
                                                 </label>
                                             </div>
 
@@ -290,6 +298,9 @@ export const Dash = props => {
                                                                     : style.text_input
                                                             }
                                                         />
+                                                        {errors.country && touched.country && (
+                                                            <div className={style.input_feedback}>{errors.country}</div>
+                                                        )}
                                                     </label>
                                                 </div>
 
