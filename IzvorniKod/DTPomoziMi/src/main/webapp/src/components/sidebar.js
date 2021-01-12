@@ -163,9 +163,8 @@ function Navbar(props) {
             }}
           >
             {notifs.reverse().map((notif) => (
-              <>
+              <div key={notif.idNotification}>
                 <MenuItem
-                  key={notif.idNotification}
                   style={{
                     whiteSpace: "break-spaces",
                   }}
@@ -174,7 +173,7 @@ function Navbar(props) {
                   {notif.message}
                 </MenuItem>
                 <Divider />
-                </>
+              </div>
             ))}
           </Menu>
           <a href="/home" style={{ textDecoration: "none" }}>
