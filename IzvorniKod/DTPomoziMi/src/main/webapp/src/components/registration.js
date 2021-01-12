@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from 'react';
 import style from "./style/log-reg.module.css";
 import "../index.module.css";
 import { Formik } from "formik";
@@ -13,21 +13,92 @@ Geocode.setApiKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
 
 const checkAdress = (values) => {
   return (
-      (values.town === null || values.town === "") &&
-      (values.country === null || values.country === "") &&
-      (values.address === null || values.address === "")
+    (values.town === null || values.town === "") &&
+    (values.country === null || values.country === "") &&
+    (values.address === null || values.address === "")
   );
 }
 
 const fieldSetter = (value) => {
   if (value === null)
-      return "";
+    return "";
   return value;
 }
 
 
-export const Registration = (props) => (
-  <div className={style.app}>
+const Registration = (props) => {
+
+  const [myErrors, setMyErrors] = useState({});
+
+  const submitFunction = async (props, values) => {
+    let data = new FormData();
+
+    let latitude = null, longitude = null;
+
+    if (values.country || values.town || values.adress) {
+      try {
+        let response = await Geocode.fromAddress(values.country + " " + values.town + " " + values.address);
+        console.log("aaaaaa", response);
+        if (response.status === "ZERO_RESULTS") {
+          setMyErrors({ geocodeError: "Nemoguće je pronaći danu lokaciju. Molimo provjerite upisano." })
+          return;
+        }
+        const { lat, lng } = response.results[0].geometry.location;
+        console.log(lat, lng);
+        longitude = lng;
+        latitude = lat;
+
+      } catch (err) {
+        setMyErrors({ geocodeError: "Nemoguće je pronaći danu lokaciju. Molimo provjerite upisano." })
+        return;
+      }
+    }
+
+    if (latitude != null && longitude != null && !(checkAdress(values))) {
+      data.append("adress", fieldSetter(values.address));
+      data.append("state", fieldSetter(values.country));
+      data.append("town", fieldSetter(values.town));
+      data.append("latitude", latitude);
+      data.append("longitude", longitude);
+    }
+
+    data.append("firstName", values.firstName);
+    data.append("lastName", values.lastName);
+    data.append("password", values.password);
+    data.append("secondPassword", values.secondPassword);
+    data.append("email", values.email);
+
+    try {
+      let res = await RegService.register(data)
+
+      props.history.push("/login");
+      console.log(res);
+
+    } catch (err) {
+      const code = err.response.status;
+      const response = err.response.data;
+
+      console.log(err.response)
+
+      let backendErrors = {};
+
+      if (code === 400) {
+        for (let obj of response) {
+          let message = obj.defaultMessage.split("] | [");
+
+          backendErrors[obj.field ? obj.field : "uncategorised"] = message;
+        }
+      }
+      if (code === 403) {
+        backendErrors["uncategorised"] = response.message;
+      }
+
+      console.log(backendErrors);
+      setMyErrors(backendErrors);
+    }
+  }
+
+  return (<div className={style.app}>
     <div className={style.empthy1}></div>
     <div className={style.container}>
       <Card className="crd col-lg-7 mx-auto">
@@ -46,68 +117,7 @@ export const Registration = (props) => (
             address: "",
             error1: "",
           }}
-          onSubmit={async (values) => {
-            let data = new FormData();
-
-            let latitude = null, longitude = null;
-            await Geocode.fromAddress(values.country + " " +  values.town + " " + values.address).then(
-              response => {
-                const { lat, lng } = response.results[0].geometry.location;
-                console.log(lat, lng);
-                longitude  = lng;
-                latitude = lat;
-              },
-              error => {
-                console.error(error);
-              }
-            );
-
-          if (latitude != null && longitude != null && !(checkAdress(values))){
-              data.append("adress", fieldSetter(values.address));
-              data.append("state", fieldSetter(values.country));
-              data.append("town", fieldSetter(values.town));
-              data.append("latitude", latitude);
-              data.append("longitude", longitude);
-          }
-
-            data.append("firstName", values.firstName);
-            data.append("lastName", values.lastName);
-            data.append("password", values.password);
-            data.append("secondPassword", values.secondPassword);
-            data.append("email", values.email);
-
-            RegService.register(data)
-              .then((res) => {
-                props.history.push("/login");
-                console.log(res);
-              })
-              .catch((error1) => {
-                const code = error1.response.status;
-                const response = error1.response.data;
-                console.log(error1.response)
-                
-                if (code === 400) {
-                  for (let obj of response) {
-                    let div = document.createElement("div");
-                    for (let s of obj.defaultMessage.split("] | [")) {
-                      div.innerHTML += s + "</br>";
-                    }
-
-                    if (obj.field !== undefined) {
-                      document.getElementById(obj.field + "-error").append(div);
-                    } else {
-                      document.getElementById("uncategorised").append(div);
-                    }
-                  }
-                  
-                }
-                if (code === 403) {
-                  let div = document.createElement("div");
-                  div.innerHTML = response.message;
-                  document.getElementById("uncategorised").append(div);
-                }
-              });
-          }}
+          onSubmit={(values) => submitFunction(props, values)}
           validationSchema={Yup.object().shape({
             email: Yup.string()
               .email("Unesite e-mail ispravnog formata")
@@ -158,7 +168,7 @@ export const Registration = (props) => (
                   {errors.firstName && touched.firstName && (
                     <div className={style.input_feedback}>{errors.firstName}</div>
                   )}
-                  <span className={style.input_feedback} id="firstName-error"></span>
+                  {myErrors && myErrors.firstName && <div className={style.input_feedback}>{myErrors.firstName.map((part) => <div>{part}</div>)}</div>}
                 </div>
 
                 <div className={style.inp_line}>
@@ -179,7 +189,7 @@ export const Registration = (props) => (
                   {errors.lastName && touched.lastName && (
                     <div className={style.input_feedback}>{errors.lastName}</div>
                   )}
-                  <span className={style.input_feedback} id="lastName-error"></span>
+                  {myErrors && myErrors.lastName && <div className={style.input_feedback}>{myErrors.lastName.map((part) => <div>{part}</div>)}</div>}
                 </div>
 
                 <div className={style.inp_line}>
@@ -200,7 +210,7 @@ export const Registration = (props) => (
                   {errors.email && touched.email && (
                     <div className={style.input_feedback}>{errors.email}</div>
                   )}
-                  <span className={style.input_feedback} id="email-error"></span>
+                  {myErrors && myErrors.email && (<div className={style.input_feedback}>{myErrors.email.map((part) => <div>{part}</div>)}</div>)}
                 </div>
 
                 <div className={style.inp_line}>
@@ -221,7 +231,7 @@ export const Registration = (props) => (
                   {errors.password && touched.password && (
                     <div className={style.input_feedback}>{errors.password}</div>
                   )}
-                  <span className={style.input_feedback} id="password-error"></span>
+                  {myErrors && myErrors.password && <div className={style.input_feedback}>{myErrors.password.map((part) => <div>{part}</div>)}</div>}
                 </div>
 
                 <div className={style.inp_line}>
@@ -236,7 +246,7 @@ export const Registration = (props) => (
                     className={
                       errors.secondPassword && touched.secondPassword
                         ? `${style.text_input} ${style.error}`
-                        :  style.text_input
+                        : style.text_input
                     }
                   />
                   {errors.secondPassword && touched.secondPassword && (
@@ -244,10 +254,7 @@ export const Registration = (props) => (
                       {errors.secondPassword}
                     </div>
                   )}
-                  <span
-                    className={style.input_feedback}
-                    id="secondPassword-error"
-                  ></span>
+                  {myErrors && myErrors.secondPassword && <div className={style.input_feedback}>{myErrors.secondPassword.map((part) => <div>{part}</div>)}</div>}
                 </div>
 
                 <div className={style.inp_line}>
@@ -268,6 +275,7 @@ export const Registration = (props) => (
                   {errors.country && touched.country && (
                     <div className={style.input_feedback}>{errors.country}</div>
                   )}
+                  {myErrors && myErrors.state && <div className={style.input_feedback}>{myErrors.state.map((part) => <div>{part}</div>)}</div>}
                 </div>
 
                 <div className={style.inp_line}>
@@ -288,6 +296,7 @@ export const Registration = (props) => (
                   {errors.town && touched.town && (
                     <div className={style.input_feedback}>{errors.town}</div>
                   )}
+                  {myErrors && myErrors.town && <div className={style.input_feedback}>{myErrors.town.map((part) => <div>{part}</div>)}</div>}
                 </div>
 
                 <div className={style.inp_line}>
@@ -308,9 +317,11 @@ export const Registration = (props) => (
                   {errors.address && touched.address && (
                     <div className={style.input_feedback}>{errors.address}</div>
                   )}
+                  {myErrors && myErrors.adress && <div className={style.input_feedback}>{myErrors.adress.map((part) => <div>{part}</div>)}</div>}
                 </div>
 
-                <span className={style.input_feedback} id="uncategorised"></span>
+                {myErrors && myErrors.geocodeError && <div className={style.input_feedback}>{myErrors.geocodeError}</div>}
+                {myErrors && myErrors.uncategorised && <div className={style.input_feedback}>{myErrors.uncategorised.map((part) => <div>{part}</div>)}</div>}
                 <div className={`${style.inp_line} ${style.lr_button_container}`}>
                   <span className={style.res_btn}>
                     <button
@@ -336,6 +347,7 @@ export const Registration = (props) => (
       </Card>
     </div>
   </div>
-);
+  );
+}
 
 export default Registration;

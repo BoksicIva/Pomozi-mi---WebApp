@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from 'react';
 import style from "./style/log-reg.module.css";
 import "../index.module.css";
 import { Formik } from "formik";
@@ -8,7 +8,11 @@ import { Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import LoginService from "../service/login-service";
 
-export const Login = (props) => (
+export const Login = (props) => {
+  
+  const [myErrors, setMyErrors] = useState({});
+
+  return (
   <div className={style.background}>
     <div className={style.empthy}></div>
     <div className="container">
@@ -29,10 +33,19 @@ export const Login = (props) => (
             formData.append("email", values.email);
             formData.append("password", values.password);
 
-
-
-            LoginService.login(formData)
-              .then((response) => {
+            try{
+              await LoginService.login(formData)
+              props.history.push("/home");
+            }catch(error){
+              const code = error.response.status;
+              const response = error.response.data;
+              console.log(error.response.data)
+              if (code === 401) {
+                setMyErrors({response});
+              }
+            }
+           
+              /* .then(response => {
                 console.log(response);
                 //alert(JSON.stringify(response, null, 2));
                 props.history.push("/home");
@@ -46,9 +59,7 @@ export const Login = (props) => (
                 div.innerHTML = response;
                 document.getElementById("uncategorised").append(div);
               }
-            });
-
-
+            }); */
           }
           }
           validationSchema={Yup.object().shape({
@@ -114,7 +125,7 @@ export const Login = (props) => (
                   </div>
                 </div>
 
-                <span className={style.input_feedback} id="uncategorised"></span>
+                {myErrors && myErrors.response && (<div className={style.input_feedback}>{myErrors.response}</div>)}
                 <div className="inp-line lr-button-container">
                   <button
                     type="button"
@@ -140,5 +151,6 @@ export const Login = (props) => (
     </div>
   </div>
 );
+}
 
 export default Login;

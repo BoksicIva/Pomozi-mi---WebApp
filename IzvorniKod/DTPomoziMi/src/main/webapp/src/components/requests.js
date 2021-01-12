@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import clsx from 'clsx';
 import Card from '@material-ui/core/Card';
 import Link from '@material-ui/core/Link'
@@ -32,7 +33,10 @@ if (UserService.getUserContext() === null) {
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        width: '65vw',
+        width: '100vw',
+        '@media (min-width: 680px)' : {
+            width: '75vw'
+        }
     },
     media: {
         height: 100,
