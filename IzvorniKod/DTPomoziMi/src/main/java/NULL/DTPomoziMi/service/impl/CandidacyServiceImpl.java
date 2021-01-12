@@ -103,7 +103,7 @@ public class CandidacyServiceImpl implements CandidacyService {
 		Candidacy can = null;
 		if (list.size() != 0) can = list.get(0);
 
-		if (can != null) { can.getUsers().remove(user); }
+		if (can != null) { can.getUsers().remove(user); can = candidacyRepo.save(can); }
 
 		return can == null ? new Candidacy() : can;
 	}
