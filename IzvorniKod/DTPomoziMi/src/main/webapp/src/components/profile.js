@@ -32,7 +32,7 @@ import ReportOffIcon from "@material-ui/icons/ReportOff";
 import StarRateRoundedIcon from "@material-ui/icons/StarRateRounded";
 import UserService from "../service/user-service";
 import Sidebar from "./sidebar";
-import SettingsIcon from "@material-ui/icons/Settings";
+import LocationOnIcon from "@material-ui/icons/LocationOn";
 import StarBorderIcon from "@material-ui/icons/StarBorder";
 import Star from "@material-ui/icons/Star";
 import DoneIcon from "@material-ui/icons/Done";
@@ -44,6 +44,7 @@ import GridListTile from "@material-ui/core/GridListTile";
 import RequestService from "../service/request-service";
 import CandidacyService from "../service/candidacy-service";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
+import LocationService from "../service/location-service";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -222,6 +223,8 @@ const Profile = (props) => {
   });
   const [chainOfTrust, setChainOfTrust] = useState({});
   const [isACandidate, setIsACandidate] = useState(false);
+
+  let location = {state: "", town: "", adress: ""};
 
   function handleChange(event, newValue) {
     setValue(newValue);
@@ -502,7 +505,7 @@ const Profile = (props) => {
   const mapRatings = (rating) => {
     return (
       <span style={{ display: "flex", justifyContent: "center" }}>
-        <GridListTile className={classes.chainTile}>
+        <GridListTile className={classes.chainTile} key={rating.idRating}>
           <Avatar>{rating.rator.firstName.substring(0, 1)}</Avatar>
           <React.Fragment>
             <Typography component="span" variant="body2" color="textPrimary">
@@ -777,15 +780,55 @@ const Profile = (props) => {
       >
         <DialogTitle>Uređivanje lokacije</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            TODO: Promjena korisnikove lokacije
+          <DialogContentText component="div">
+            <TextField
+              label="Država"
+              onChange={(state) => {
+                location.state = state.target.value;
+              }}
+            />
+
+            <TextField
+              label="Grad"
+              onChange={(town) => {
+                location.town = town.target.value;
+              }}
+            />
+
+            <TextField
+              label="Adresa"
+              onChange={(adress) => {
+                location.adress = adress.target.value;
+              }}
+            />
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={closeLocationDialog} color="secondary">
             Odustani
           </Button>
-          <Button onClick={closeLocationDialog} color="primary">
+          <Button
+            onClick={async () => {
+              closeLocationDialog();
+              let usrData = userData;
+              usrData.location = await LocationService.getLatLong(
+                location.state,
+                location.town,
+                location.adress
+              );
+              console.log(usrData);
+              UserService.updateUser(usrData.idUser, usrData)
+                .then((response) => {
+                  console.log(response.data);
+                  setUserData(response.data);
+                })
+                .catch((error) => {
+                  console.log(error);
+                  console.log(userData);
+                });
+            }}
+            color="primary"
+          >
             Spremi
           </Button>
         </DialogActions>
@@ -875,7 +918,7 @@ const Profile = (props) => {
                   className={classes.visibilityButton}
                   onClick={openLocationDialog}
                 >
-                  <SettingsIcon />
+                  <LocationOnIcon />
                 </IconButton>
               ) : null}
               {isUser ? (
@@ -941,14 +984,14 @@ const Profile = (props) => {
                 style={{ display: about ? "flex" : "none" }}
               >
                 {isUser ? (
-                  <p>
+                  <div>
                     Država: {userData ? userData.location.state : null}
                     <br />
                     Mjesto: {userData ? userData.location.town : null}
                     <br />
                     Adresa: {userData ? userData.location.adress : null}
                     <br />
-                  </p>
+                  </div>
                 ) : null}
               </Typography>
 
@@ -1009,7 +1052,7 @@ const Profile = (props) => {
           >
             <Paper className={classes.tabs}>
               <Tabs
-                value={swipeable1 == 0 ? value : value - 1}
+                value={swipeable1 == 0 ? value : (value - 1 >= 0 ? (value - 1) : 0)}
                 onChange={handleChange}
                 indicatorColor="primary"
                 textColor="primary"
@@ -1024,7 +1067,7 @@ const Profile = (props) => {
                     classes={{ wrapper: classes.tabWrapper }}
                   />
                 ) : (
-                  <></>
+                  null
                 )}
                 <Tab
                   label="Izvršeni zahtjevi"
@@ -1063,10 +1106,10 @@ const Profile = (props) => {
                 ? chainOfTrust._embedded
                   ? Object.keys(chainOfTrust._embedded).length === 0 &&
                     chainOfTrust._embedded.constructor === Object
-                    ? null
+                    ? <div />
                     : chainOfTrust._embedded.ratings.map(mapRatings)
-                  : null
-                : null}
+                  : <div />
+                : <div />}
             </GridList>
           </Container>
         ) : (
