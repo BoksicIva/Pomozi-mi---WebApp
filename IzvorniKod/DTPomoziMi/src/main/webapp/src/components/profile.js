@@ -201,8 +201,8 @@ const Profile = (props) => {
 
   const [reqDialog, setReqDialog] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
-  const [gradeDialog, setGradeDialog] = useState({ req: null, open: false });
   const [locationDialog, setLocationDialog] = useState(false);
+  const [gradeDialog, setGradeDialog] = useState({ req: null, open: false });
   const [about, setAbout] = useState(true);
   const [value, setValue] = useState(0);
   const [swipeable1, setSwipeable1] = useState(0);
