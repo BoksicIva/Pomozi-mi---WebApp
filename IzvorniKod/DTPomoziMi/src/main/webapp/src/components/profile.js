@@ -199,8 +199,8 @@ const useStyles = makeStyles((theme) => ({
   },
 
   locationInput: {
-    margin: "3px",
-  }
+    margin: "10px",
+  },
 }));
 
 const Profile = (props) => {
@@ -803,14 +803,17 @@ const Profile = (props) => {
         fullWidth
       >
         <DialogTitle>Uređivanje lokacije</DialogTitle>
-        <DialogContent >
-          <DialogContentText component="div" classes={{root: classes.locationDialog}}>
+        <DialogContent>
+          <DialogContentText
+            component="div"
+            classes={{ root: classes.locationDialog }}
+          >
             <TextField
               label="Država"
               onChange={(state) => {
                 location.state = state.target.value;
               }}
-              classes={{root: classes.locationInput}}
+              classes={{ root: classes.locationInput }}
             />
 
             <TextField
@@ -818,7 +821,7 @@ const Profile = (props) => {
               onChange={(town) => {
                 location.town = town.target.value;
               }}
-              classes={{root: classes.locationInput}}
+              classes={{ root: classes.locationInput }}
             />
 
             <TextField
@@ -826,7 +829,7 @@ const Profile = (props) => {
               onChange={(adress) => {
                 location.adress = adress.target.value;
               }}
-              classes={{root: classes.locationInput}}
+              classes={{ root: classes.locationInput }}
             />
           </DialogContentText>
         </DialogContent>
@@ -836,23 +839,23 @@ const Profile = (props) => {
           </Button>
           <Button
             onClick={async () => {
-              closeLocationDialog();
               let usrData = userData;
               usrData.location = await LocationService.getLatLong(
                 location.state,
                 location.town,
                 location.adress
-              );
-              console.log(usrData);
+              ).catch((error) => console.log(error));
               UserService.updateUser(usrData.idUser, usrData)
                 .then((response) => {
                   console.log(response.data);
-                  setUserData(response.data);
+                  response ? setUserData(response.data) : setUserData(userData);
                 })
                 .catch((error) => {
-                  console.log(error);
-                  console.log(userData);
+                  //console.log(error);
+                  //console.log(userData);
                 });
+
+              closeLocationDialog();
             }}
             color="primary"
           >
@@ -953,7 +956,9 @@ const Profile = (props) => {
                       root: classes.visibilityRoot,
                     }}
                     className={classes.visibilityButton}
-                    onClick={openLocationDialog}
+                    onClick={() => {
+                      openLocationDialog();
+                    }}
                   >
                     <LocationOnIcon />
                   </IconButton>
