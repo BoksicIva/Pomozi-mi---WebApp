@@ -24,19 +24,16 @@ import {
 } from "@material-ui/core";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import "fontsource-roboto";
 import PropTypes from "prop-types";
 import SwipeableViews from "react-swipeable-views";
 import ReportIcon from "@material-ui/icons/Report";
 import ReportOffIcon from "@material-ui/icons/Report";
 import StarRateRoundedIcon from "@material-ui/icons/StarRateRounded";
-
 import UserService from "../service/user-service";
 import Sidebar from "./sidebar";
-import CreateIcon from "@material-ui/icons/Create";
 import StarBorderIcon from "@material-ui/icons/StarBorder";
-import GroupIcon from "@material-ui/icons/Group";
+import SettingsIcon from "@material-ui/icons/Settings";
 import Star from "@material-ui/icons/Star";
 import DoneIcon from "@material-ui/icons/Done";
 import BlockIcon from "@material-ui/icons/Block";
@@ -45,6 +42,8 @@ import RatingService from "../service/rating-service";
 import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
 import RequestService from "../service/request-service";
+import CandidacyService from "../service/candidacy-service";
+import EqualizerIcon from "@material-ui/icons/Equalizer";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -75,7 +74,6 @@ function a11yProps(index) {
     "aria-controls": `full-width-tabpanel-${index}`,
   };
 }
-
 
 const useStyles = makeStyles((theme) => ({
   profileInfo: {
@@ -190,6 +188,10 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.2)",
     padding: 5,
   },
+
+  avatarFont: {
+    fontSize: "6vw",
+  }
 }));
 
 const Profile = (props) => {
@@ -197,9 +199,9 @@ const Profile = (props) => {
   const theme = useTheme();
   document.body.style = "background-image: none; background-color: white";
 
-  const [photoDialog, setPhotoDialog] = useState(false);
   const [reqDialog, setReqDialog] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
+  const [locationDialog, setLocationDialog] = useState(false);
   const [gradeDialog, setGradeDialog] = useState({ req: null, open: false });
   const [about, setAbout] = useState(true);
   const [value, setValue] = useState(0);
@@ -214,13 +216,12 @@ const Profile = (props) => {
   const [isUser, setUser] = useState(false);
   const [isAdmin, setAdmin] = useState(false);
   const [isBlocked, setBlocked] = useState(false);
-
   const [rating, setRating] = useState({
     ratingComment: null,
     ratingGrade: null,
   });
   const [chainOfTrust, setChainOfTrust] = useState({});
-  const [showChain, setShowChain] = useState(false);
+  const [isACandidate, setIsACandidate] = useState(false);
 
   function handleChange(event, newValue) {
     setValue(newValue);
@@ -237,14 +238,6 @@ const Profile = (props) => {
   function handleChange1(event, newValue) {
     setSwipeable1(newValue);
   }
-
-  const openPhotoDialog = () => {
-    setPhotoDialog(true);
-  };
-
-  const closePhotoDialog = () => {
-    setPhotoDialog(false);
-  };
 
   const openReqDialog = () => {
     setReqDialog(true);
@@ -270,6 +263,14 @@ const Profile = (props) => {
     setGradeDialog({ req: null, open: false });
   };
 
+  const openLocationDialog = () => {
+    setLocationDialog(true);
+  };
+
+  const closeLocationDialog = () => {
+    setLocationDialog(false);
+  };
+
   const handleAbout = () => {
     setAbout(!about);
   };
@@ -286,23 +287,20 @@ const Profile = (props) => {
   var loggedInUser;
 
   const getLoggedInUser = () => {
-    if (loggedInUser == null)
-      loggedInUser = UserService.getUserContext();
+    if (loggedInUser == null) loggedInUser = UserService.getUserContext();
 
     return loggedInUser;
-  }
+  };
 
   const checkIfAuthor = (req) => {
     const user = getLoggedInUser();
 
-    if (user == null)
-      return false;
+    if (user == null) return false;
 
-    if (req == null)
-      return false;
+    if (req == null) return false;
 
     return user.id === req.author.idUser;
-  }
+  };
 
   const checkUserDidNotRate = (req) => {
     const user = getLoggedInUser();
@@ -310,26 +308,23 @@ const Profile = (props) => {
     if (req == null) return false;
     if (user == null) return false;
 
-    if (req.ratings == null)
-      return true;
+    if (req.ratings == null) return true;
 
     let res = true;
-    req.ratings.map(rating => {
-      if (rating.rator.idUser == user.id)
-        res = false;
+    req.ratings.map((rating) => {
+      if (rating.rator.idUser == user.id) res = false;
     });
 
     return res;
-  }
+  };
 
   const getRated = (req) => {
     const user = getLoggedInUser();
 
-    if (user.id !== req.author.idUser)
-      return req.author;
+    if (user.id !== req.author.idUser) return req.author;
 
     return req.executor;
-  }
+  };
 
   useEffect(() => {
     loggedInUser = UserService.getUserContext();
@@ -400,7 +395,6 @@ const Profile = (props) => {
     setRequests(swipeable1 == 0 ? requestsByAuthor : requestsByExecutor);
   }, [swipeable1, requestsByAuthor, requestsByExecutor]);
 
-
   const mapRequests = (request) => {
     return (
       <>
@@ -438,7 +432,9 @@ const Profile = (props) => {
               </React.Fragment>
             }
           />
-          {(request.status === "EXECUTING" && request.confirmed == false && checkIfAuthor(request)) ? (
+          {request.status === "EXECUTING" &&
+          request.confirmed == false &&
+          checkIfAuthor(request) ? (
             <>
               <IconButton
                 color="primary"
@@ -495,7 +491,6 @@ const Profile = (props) => {
               <StarRateRoundedIcon />
             </IconButton>
           ) : null}
-
         </ListItem>
         <Divider variant="inset" component="li" />
       </>
@@ -520,17 +515,14 @@ const Profile = (props) => {
   };
 
   const shouldShowPhone = (req) => {
-    if (checkIfAuthor(req))
-      return true;
+    if (checkIfAuthor(req)) return true;
 
-    if (req == null)
-      return false;
+    if (req == null) return false;
 
-    if (req.confirmed === false)
-      return false;
+    if (req.confirmed === false) return false;
 
     return true;
-  }
+  };
 
   return (
     <div>
@@ -554,7 +546,7 @@ const Profile = (props) => {
             <br />
             GRAD: {dialogReq ? dialogReq.location.town : null}
             <br />
-                ADRESA: {dialogReq ? dialogReq.location.adress : null}
+            ADRESA: {dialogReq ? dialogReq.location.adress : null}
             <br />
             {shouldShowPhone(dialogReq) ? (
               <>
@@ -565,14 +557,25 @@ const Profile = (props) => {
                 <br />
               </>
             ) : null}
-            {dialogReq ? (dialogReq.executor ? (" POMOĆ JE PONUDIO: " + dialogReq.executor.firstName + " " + dialogReq.executor.lastName) : null) : null}
+            {dialogReq
+              ? dialogReq.executor
+                ? " POMOĆ JE PONUDIO: " +
+                  dialogReq.executor.firstName +
+                  " " +
+                  dialogReq.executor.lastName
+                : null
+              : null}
           </DialogContentText>
           <TextField
             label="Opis zahtjeva"
             defaultValue={dialogReq ? dialogReq.description : null}
             fullWidth
             multiline
-            disabled={(checkIfAuthor(dialogReq) && dialogReq.status === "ACTIVE") ? false : true}
+            disabled={
+              checkIfAuthor(dialogReq) && dialogReq.status === "ACTIVE"
+                ? false
+                : true
+            }
             onChange={(description) =>
               (dialogReq.description = description.target.value)
             }
@@ -580,12 +583,13 @@ const Profile = (props) => {
         </DialogContent>
         {checkIfAuthor(dialogReq) ? (
           <DialogActions>
-            {dialogReq.executor == null ?
-              (<Button onClick={openDeleteDialog} color="secondary">
+            {dialogReq.executor == null ? (
+              <Button onClick={openDeleteDialog} color="secondary">
                 Izbriši
-              </Button>) : null}
-            {dialogReq.status !== "FINALIZED" ?
-              (<Button
+              </Button>
+            ) : null}
+            {dialogReq.status !== "FINALIZED" ? (
+              <Button
                 onClick={() => {
                   closeReqDialog();
                   if (dialogReq) {
@@ -609,7 +613,8 @@ const Profile = (props) => {
                 color="secondary"
               >
                 {dialogReq
-                  ? (dialogReq.status === "ACTIVE" || dialogReq.status === "EXECUTING")
+                  ? dialogReq.status === "ACTIVE" ||
+                    dialogReq.status === "EXECUTING"
                     ? "Blokiraj"
                     : null
                   : null}
@@ -619,9 +624,9 @@ const Profile = (props) => {
                     : null
                   : null}
               </Button>
-              ) : null}
-            {(dialogReq.status === "EXECUTING" && dialogReq.confirmed == true) ?
-              (<Button
+            ) : null}
+            {dialogReq.status === "EXECUTING" && dialogReq.confirmed == true ? (
+              <Button
                 onClick={() => {
                   closeReqDialog();
                   RequestService.markExecuted(dialogReq.idRequest).then(
@@ -633,58 +638,27 @@ const Profile = (props) => {
                 color="primary"
               >
                 Označi izvšen
-              </Button>) : null}
-            {dialogReq.status === "ACTIVE" ?
-              (<Button
+              </Button>
+            ) : null}
+            {dialogReq.status === "ACTIVE" ? (
+              <Button
                 onClick={() => {
                   closeReqDialog();
-                  UserService.updateRequest(dialogReq.idRequest, dialogReq).then(
-                    (response) => {
-                      setRequests(response.data);
-                      setUpdateReqs(updateReqs + 1);
-                    }
-                  );
+                  UserService.updateRequest(
+                    dialogReq.idRequest,
+                    dialogReq
+                  ).then((response) => {
+                    setRequests(response.data);
+                    setUpdateReqs(updateReqs + 1);
+                  });
                 }}
                 color="primary"
               >
                 Spremi
-              </Button>) : null}
-          </DialogActions>) : null}
-      </Dialog>
-
-      {/* dialog for changing profile photo */}
-      <Dialog
-        open={photoDialog}
-        onClose={closePhotoDialog}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle id="form-dialog-title">
-          Promijeni sliku profila
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Upišite link na sliku koju želite postaviti kao sliku profila.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="link"
-            label="Link"
-            fullWidth
-            onChange={(event) =>
-              localStorage.setItem("photo", event.target.value)
-            }
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closePhotoDialog} color="primary">
-            Odustani
-          </Button>
-          <Button onClick={closePhotoDialog} color="primary">
-            Spremi
-          </Button>
-        </DialogActions>
+              </Button>
+            ) : null}
+          </DialogActions>
+        ) : null}
       </Dialog>
 
       {/*dialog for confirming deleting a request*/}
@@ -723,10 +697,14 @@ const Profile = (props) => {
       >
         <DialogTitle>
           Ocijenite korisnika:
-          {gradeDialog.req ?
-            (" " + getRated(gradeDialog.req).firstName + " " + getRated(gradeDialog.req).lastName)
-            :
-            (userData ? " " + userData.firstName + " " + userData.lastName : null)}
+          {gradeDialog.req
+            ? " " +
+              getRated(gradeDialog.req).firstName +
+              " " +
+              getRated(gradeDialog.req).lastName
+            : userData
+            ? " " + userData.firstName + " " + userData.lastName
+            : null}
         </DialogTitle>
         <DialogContent style={{ justifyContent: "center" }}>
           <Rating
@@ -767,10 +745,14 @@ const Profile = (props) => {
                   rate: rating.ratingGrade,
                 });
               else
-                RatingService.rateRequest(getRated(gradeDialog.req).idUser, gradeDialog.req.idRequest, {
-                  comment: rating.ratingComment,
-                  rate: rating.ratingGrade,
-                });
+                RatingService.rateRequest(
+                  getRated(gradeDialog.req).idUser,
+                  gradeDialog.req.idRequest,
+                  {
+                    comment: rating.ratingComment,
+                    rate: rating.ratingGrade,
+                  }
+                );
               setUpdateReqs(updateReqs + 1);
               closeGradeDialog();
             }}
@@ -784,22 +766,35 @@ const Profile = (props) => {
         </DialogActions>
       </Dialog>
 
+      {/*dialog for setting user location*/}
+      <Dialog open={locationDialog} onClose={closeLocationDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>Uređivanje lokacije</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            TODO: Promjena korisnikove lokacije
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeLocationDialog} color="secondary">
+            Odustani
+          </Button>
+          <Button onClick={closeLocationDialog} color="primary">
+            Spremi
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <div className={classes.body}>
         <Container className={classes.profileInfo} maxWidth="lg">
           <IconButton
             className={classes.avatarButton}
-            onClick={openPhotoDialog}
             classes={{ label: classes.avatarLabel }}
+            disabled={true}
           >
-            {localStorage.getItem("photo") ? (
-              <Avatar
-                alt="avatar"
-                src={localStorage.getItem("photo")}
-                className={classes.avatar}
-              />
-            ) : (
-                <AccountCircleIcon className={classes.avatar} />
-              )}
+            
+            <Avatar alt="avatar" className={classes.avatar} classes={{root: classes.avatarFont}}>
+              {userData ? userData.firstName.substring(0, 1) + userData.lastName.substring(0, 1) : null}
+            </Avatar>
           </IconButton>
 
           <Container
@@ -831,17 +826,17 @@ const Profile = (props) => {
                     <ReportOffIcon fontSize="large" />
                   </IconButton>
                 ) : (
-                    <IconButton
-                      classes={{
-                        label: classes.visibilityLabel,
-                        root: classes.visibilityRoot,
-                      }}
-                      className={classes.visibilityButton}
-                      onClick={handleBlock("false")}
-                    >
-                      <ReportIcon fontSize="large" />
-                    </IconButton>
-                  )
+                  <IconButton
+                    classes={{
+                      label: classes.visibilityLabel,
+                      root: classes.visibilityRoot,
+                    }}
+                    className={classes.visibilityButton}
+                    onClick={handleBlock("false")}
+                  >
+                    <ReportIcon fontSize="large" />
+                  </IconButton>
+                )
               ) : null}
               <IconButton
                 disabled={isUser ? true : false}
@@ -849,24 +844,76 @@ const Profile = (props) => {
                   label: classes.visibilityLabel,
                   root: classes.visibilityRoot,
                 }}
-                onClick={() => { openGradeDialog(null) }}
-                className={classes.visibilityButton}
-              >
-                <CreateIcon />
-              </IconButton>
-              <IconButton
-                disabled={isUser ? true : false}
-                classes={{
-                  label: classes.visibilityLabel,
-                  root: classes.visibilityRoot,
-                }}
                 onClick={() => {
-                  setShowChain(!showChain);
+                  openGradeDialog(null);
                 }}
                 className={classes.visibilityButton}
               >
-                <GroupIcon />
+                <Star />
               </IconButton>
+              {isUser ? (
+                <IconButton //                                                                              SETTINGS BUTTON
+                  classes={{
+                    label: classes.visibilityLabel,
+                    root: classes.visibilityRoot,
+                  }}
+                  className={classes.visibilityButton}
+                  onClick={openLocationDialog}
+                >
+                  <SettingsIcon />
+                </IconButton>
+              ) : null}
+              {isUser ? (
+                <IconButton //                                                                              CANDIDACY BUTTON
+                  classes={{
+                    label: classes.visibilityLabel,
+                    root: classes.visibilityRoot,
+                  }}
+                  className={classes.visibilityButton}
+                  onClick={() => {
+                    isACandidate
+                      ? CandidacyService.deleteCandidacy()
+                          .then((response) => {
+                            console.log(response);
+                            if (
+                              !response.data.users._embedded.users.find(
+                                (user) => user.idUser === userData.idUser
+                              )
+                            ) {
+                              console.log("Nisam se kandidirao");
+                              setIsACandidate(false);
+                            } else {
+                              setIsACandidate(true);
+                            }
+                          })
+                          .catch((error) => {
+                            console.log(error);
+                          })
+                      : CandidacyService.candidateYourself()
+                          .then((response) => {
+                            console.log(response);
+                            if (
+                              response.data.users._embedded.users.find(
+                                (user) => user.idUser === userData.idUser
+                              )
+                            ) {
+                              console.log("Kandidirao sam se");
+                              setIsACandidate(true);
+                            } else {
+                              setIsACandidate(false);
+                            }
+                          })
+                          .catch((error) => {
+                            console.log(error);
+                          });
+                  }}
+                  style={{
+                    backgroundColor: isACandidate ? "#f50057" : "#3f51b5",
+                  }}
+                >
+                  <EqualizerIcon />
+                </IconButton>
+              ) : null}
             </Container>
 
             <Container maxWidth={false} disableGutters={true}>
@@ -915,15 +962,16 @@ const Profile = (props) => {
                 onClick={handleBlock("true")}
               >
                 <ReportOffIcon fontSize="large" />
-              </IconButton>) : (
-                <IconButton
-                  aria-label="block"
-                  title="Blokiraj korisnika"
-                  onClick={handleBlock("false")}
-                >
-                  <ReportIcon fontSize="large" />
-                </IconButton>
-              )
+              </IconButton>
+            ) : (
+              <IconButton
+                aria-label="block"
+                title="Blokiraj korisnika"
+                onClick={handleBlock("false")}
+              >
+                <ReportIcon fontSize="large" />
+              </IconButton>
+            )
           ) : null}
         </Container>
 
@@ -965,7 +1013,7 @@ const Profile = (props) => {
           >
             <Paper className={classes.tabs}>
               <Tabs
-                value={swipeable1 == 0 ? value : (value - 1)}
+                value={swipeable1 == 0 ? value : value - 1}
                 onChange={handleChange}
                 indicatorColor="primary"
                 textColor="primary"
@@ -973,12 +1021,15 @@ const Profile = (props) => {
                 aria-label="full width tabs example"
                 classes={{ indicator: classes.scrollIndicator }}
               >
-                {swipeable1 == 0 ?
+                {swipeable1 == 0 ? (
                   <Tab
                     label="Aktivni zahtjevi"
                     {...a11yProps(0)}
                     classes={{ wrapper: classes.tabWrapper }}
-                  /> : <></>}
+                  />
+                ) : (
+                  <></>
+                )}
                 <Tab
                   label="Izvršeni zahtjevi"
                   {...a11yProps(swipeable1 == 0 ? 1 : 0)}
@@ -999,96 +1050,108 @@ const Profile = (props) => {
           </Container>
         )}
         {!isUser ? (
-          showChain ? (
-            <Container
-              maxWidth="lg"
-              disableGutters={true}
-              className={classes.chainContainer}
+          <Container
+            maxWidth="lg"
+            disableGutters={true}
+            className={classes.chainContainer}
+          >
+            <Typography
+              variant="h5"
+              color="secondary"
+              style={{ marginBottom: 5 }}
             >
-              <Typography
-                variant="h5"
-                color="secondary"
-                style={{ marginBottom: 5 }}
-              >
-                Lanac povjerenja:
-              </Typography>
-              <GridList cellHeight="auto" className={classes.gridList}>
-                {chainOfTrust
-                  ? chainOfTrust._embedded
-                    ? Object.keys(chainOfTrust._embedded).length === 0 &&
-                      chainOfTrust._embedded.constructor === Object
-                      ? null
-                      : chainOfTrust._embedded.ratings.map(mapRatings)
-                    : null
-                  : null}
-              </GridList>
-            </Container>
-          ) : null)
-
-          : (
-            <Container
-              className={classes.requestsContainer}
-              maxWidth="lg"
-              disableGutters={true}
+              Lanac povjerenja:
+            </Typography>
+            <GridList cellHeight="auto" className={classes.gridList}>
+              {chainOfTrust
+                ? chainOfTrust._embedded
+                  ? Object.keys(chainOfTrust._embedded).length === 0 &&
+                    chainOfTrust._embedded.constructor === Object
+                    ? null
+                    : chainOfTrust._embedded.ratings.map(mapRatings)
+                  : null
+                : null}
+            </GridList>
+          </Container>
+        ) : (
+          <Container
+            className={classes.requestsContainer}
+            maxWidth="lg"
+            disableGutters={true}
+          >
+            <SwipeableViews
+              axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+              index={value}
+              onChangeIndex={handleChangeIndex}
+              style={{ width: "100%" }}
             >
-              <SwipeableViews
-                axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-                index={value}
-                onChangeIndex={handleChangeIndex}
-                style={{ width: "100%" }}
-              >
-                {swipeable1 == 0 ?
-                  <TabPanel value={value} index={0} dir={theme.direction}>
-                    <List className={classes.list}>
-                      {requests
-                        ? requests.ACTIVE
-                          ? Object.keys(requests.ACTIVE).length === 0 &&
-                            requests.ACTIVE.constructor === Object
-                            ? null
-                            : requests.ACTIVE._embedded.requests.map(mapRequests)
-                          : null
-                        : null}
-                    </List>
-                  </TabPanel> : <></>}
-                <TabPanel value={swipeable1 == 0 ? value : (value - 1)} index={swipeable1 == 0 ? 1 : 0} dir={theme.direction}>
-                  <List>
-                    {requests
-                      ? requests.FINALIZED
-                        ? Object.keys(requests.FINALIZED).length === 0 &&
-                          requests.FINALIZED.constructor === Object
-                          ? null
-                          : requests.FINALIZED._embedded.requests.map(mapRequests)
-                        : null
-                      : null}
-                  </List>
-                </TabPanel>
-                <TabPanel value={swipeable1 == 0 ? value : (value - 1)} index={swipeable1 == 0 ? 2 : 1} dir={theme.direction}>
+              {swipeable1 == 0 ? (
+                <TabPanel value={value} index={0} dir={theme.direction}>
                   <List className={classes.list}>
                     {requests
-                      ? requests.EXECUTING
-                        ? Object.keys(requests.EXECUTING).length === 0 &&
-                          requests.EXECUTING.constructor === Object
+                      ? requests.ACTIVE
+                        ? Object.keys(requests.ACTIVE).length === 0 &&
+                          requests.ACTIVE.constructor === Object
                           ? null
-                          : requests.EXECUTING._embedded.requests.map(mapRequests)
+                          : requests.ACTIVE._embedded.requests.map(mapRequests)
                         : null
                       : null}
                   </List>
                 </TabPanel>
-                <TabPanel value={swipeable1 == 0 ? value : (value - 1)} index={swipeable1 == 0 ? 3 : 2} dir={theme.direction}>
-                  <List className={classes.list}>
-                    {requests
-                      ? requests.BLOCKED
-                        ? Object.keys(requests.BLOCKED).length === 0 &&
-                          requests.BLOCKED.constructor === Object
-                          ? null
-                          : requests.BLOCKED._embedded.requests.map(mapRequests)
-                        : null
-                      : null}
-                  </List>
-                </TabPanel>
-              </SwipeableViews>
-            </Container>
-          )}
+              ) : (
+                <></>
+              )}
+              <TabPanel
+                value={swipeable1 == 0 ? value : value - 1}
+                index={swipeable1 == 0 ? 1 : 0}
+                dir={theme.direction}
+              >
+                <List>
+                  {requests
+                    ? requests.FINALIZED
+                      ? Object.keys(requests.FINALIZED).length === 0 &&
+                        requests.FINALIZED.constructor === Object
+                        ? null
+                        : requests.FINALIZED._embedded.requests.map(mapRequests)
+                      : null
+                    : null}
+                </List>
+              </TabPanel>
+              <TabPanel
+                value={swipeable1 == 0 ? value : value - 1}
+                index={swipeable1 == 0 ? 2 : 1}
+                dir={theme.direction}
+              >
+                <List className={classes.list}>
+                  {requests
+                    ? requests.EXECUTING
+                      ? Object.keys(requests.EXECUTING).length === 0 &&
+                        requests.EXECUTING.constructor === Object
+                        ? null
+                        : requests.EXECUTING._embedded.requests.map(mapRequests)
+                      : null
+                    : null}
+                </List>
+              </TabPanel>
+              <TabPanel
+                value={swipeable1 == 0 ? value : value - 1}
+                index={swipeable1 == 0 ? 3 : 2}
+                dir={theme.direction}
+              >
+                <List className={classes.list}>
+                  {requests
+                    ? requests.BLOCKED
+                      ? Object.keys(requests.BLOCKED).length === 0 &&
+                        requests.BLOCKED.constructor === Object
+                        ? null
+                        : requests.BLOCKED._embedded.requests.map(mapRequests)
+                      : null
+                    : null}
+                </List>
+              </TabPanel>
+            </SwipeableViews>
+          </Container>
+        )}
       </div>
     </div>
   );
