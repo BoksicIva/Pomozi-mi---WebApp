@@ -231,14 +231,15 @@ export default function RecipeReviewCard(props) {
             <Container>
                 <br></br>
                 <Typography variant="body2" color="textSecondary" component="p">
-                    Pretraži zahtjeve po udaljenosti od vlastite lokacije u kilometrima, te po imenu prezimenu ili mailu korisnika <br></br>  (Ako korisnik nema zapisanu lokaciju prikazuju mu se samo zahtjevi bez lokacije.)
+                    Pretraži zahtjeve po udaljenosti od vlastite lokacije u kilometrima.<br></br>  (Ako korisnik nema zapisanu lokaciju prikazuju mu se samo zahtjevi bez lokacije.)
                     </Typography>   
                 <form onSubmit={handleSubmit}>
                     <TextField id="filled-basic" label="Radius zahtjeva (km)" value={value} onChange={handleChangeInput} variant="filled" />
                 </form>
                 <br></br>
+                <Typography variant="body2" color="textSecondary" component="p">Pretraživanje po parametru autora:</Typography>
                 <form onSubmit={handleSearchSubmit}>
-                    <TextField id="filled-basic" label="Pretraživanje po parametru korisnika" value={searchValue} onChange={handleSearchChangeInput} variant="filled" />
+                    <TextField id="filled-basic" label="ime, prezime i/ili email" value={searchValue} onChange={handleSearchChangeInput} variant="filled" />
                 </form>
                     {(notSent && requests != null) ?
                         requests.map((request, index) => (

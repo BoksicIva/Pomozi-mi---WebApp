@@ -1040,7 +1040,7 @@ const Profile = (props) => {
                 color="textSecondary"
                 style={{ display: about ? "none" : "flex" }}
               >
-                Ocjena: {userStatistics ? userStatistics.avgGrade : null}
+                Ocjena: {userStatistics ? +userStatistics.avgGrade.toFixed(3) : null}
                 <br />
                 Izvršeni zahtjevi:{" "}
                 {userStatistics ? userStatistics.numExecutedR : null}

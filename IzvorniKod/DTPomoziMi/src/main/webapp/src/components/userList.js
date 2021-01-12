@@ -20,6 +20,11 @@ import TextField from '@material-ui/core/TextField';
 import { Link } from "react-router-dom";
 import Avatar from '@material-ui/core/Avatar';
 
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -136,7 +141,7 @@ export default function BasicTable() {
     Users.map((user) => {
       UserService.getUserStatistics(user.idUser)
       .then((response) => {
-        setUserStatistics(old => [...old, response.data.avgGrade]);
+        setUserStatistics(old => [...old, response.data]);
       })
       .catch((error) => {
         alert(error);
@@ -169,7 +174,7 @@ export default function BasicTable() {
           <TextField id="filled-basic" label="Pretraži korisnika" value={value} onChange={handleChangeInput} variant="filled" />
 
         </form>
-        <TableContainer component={Paper}>
+        {/* <TableContainer component={Paper}>
           <Table className={classes.table} aria-label="simple table">
             <TableHead>
               <TableRow>
@@ -194,7 +199,38 @@ export default function BasicTable() {
               ))}
             </TableBody>
           </Table>
-        </TableContainer>
+        </TableContainer> */}
+        {Users.map((user, index) => (
+        <>
+        <br></br>
+        <Card className={classes.root}>
+            <CardHeader
+                avatar={<Avatar>{user.firstName.substring(0, 1)}</Avatar>}
+                title={
+                    <Link to={"/profile/" + user.idUser}>{user.firstName + " " + user.lastName}</Link>}
+                subheader={user.email}
+            />
+            <CardContent>
+            <Typography
+                  variant="h5"
+                  color="textSecondary"
+                  style={{ display: "flex" }}
+                >
+                  Ocjena: {userStatistics && userStatistics[index] ? userStatistics[index].avgGrade ? +userStatistics[index].avgGrade.toFixed(3) : null : null}
+                  <br />
+                  Izvršeni zahtjevi:{" "}
+                  {userStatistics && userStatistics[index] ? userStatistics[index].numExecutedR : null}
+                  <br />
+                  Zadani zahtjevi:{" "}
+                  {userStatistics && userStatistics[index] ? userStatistics[index].numAuthoredR : null}
+                  <br />
+                  Rang: {userStatistics && userStatistics[index] ? userStatistics[index].rank : null}
+              </Typography>
+            </CardContent>
+        </Card>
+        <br></br>
+      </>
+    ))}
       </Container>
     </>
   );
