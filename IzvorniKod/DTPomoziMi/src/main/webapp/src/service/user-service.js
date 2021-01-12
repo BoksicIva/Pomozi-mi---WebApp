@@ -77,10 +77,7 @@ class UserService {
   getChainOfTrust(id) {
     return http.get("./users/chainOfTrust/" + id, {});
   }
-
-  getChainOfTrust(id) {
-    return http.get("./users/chainOfTrust/" + id, {});
-  }
+  
   getNotifications(id) {
     return http.get("/notifications/user/" + id , {});
   }

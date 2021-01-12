@@ -192,6 +192,15 @@ const useStyles = makeStyles((theme) => ({
   avatarFont: {
     fontSize: "6vw",
   },
+
+  locationDialog: {
+    display: "flex",
+    flexDirection: "column",
+  },
+
+  locationInput: {
+    margin: "3px",
+  }
 }));
 
 const Profile = (props) => {
@@ -403,7 +412,6 @@ const Profile = (props) => {
     setRequests(swipeable1 == 0 ? requestsByAuthor : requestsByExecutor);
   }, [swipeable1, requestsByAuthor, requestsByExecutor]);
 
-
   const mapRequests = (request) => {
     return (
       <div key={request.idRequest}>
@@ -438,51 +446,51 @@ const Profile = (props) => {
             }
           />
           {request.status === "EXECUTING" &&
-            request.confirmed == false &&
-            checkIfAuthor(request) ? (
-              <>
-                <IconButton
-                  color="primary"
-                  classes={{
-                    label: classes.visibilityLabel,
-                    root: classes.visibilityRoot,
-                  }}
-                  onClick={(e) => {
-                    RequestService.confirmRequest(request.idRequest)
-                      .then(() => {
-                        setUpdateReqs({});
-                      })
-                      .catch((error) => {
-                        alert(error);
-                      });
-                      e.stopPropagation();
-                  }}
-                  className={classes.visibilityButton}
-                >
-                  <DoneIcon />
-                </IconButton>
-                <IconButton
-                  color="secondary"
-                  classes={{
-                    label: classes.visibilityLabel,
-                    root: classes.visibilityRoot,
-                  }}
-                  onClick={(e) => {
-                    RequestService.blockRequest(request.idRequest)
-                      .then(() => {
-                        setUpdateReqs({});
-                      })
-                      .catch((error) => {
-                        alert(error);
-                      });
-                      e.stopPropagation();
-                  }}
-                  className={classes.visibilityButton}
-                >
-                  <BlockIcon />
-                </IconButton>
-              </>
-            ) : null}
+          request.confirmed == false &&
+          checkIfAuthor(request) ? (
+            <>
+              <IconButton
+                color="primary"
+                classes={{
+                  label: classes.visibilityLabel,
+                  root: classes.visibilityRoot,
+                }}
+                onClick={(e) => {
+                  RequestService.confirmRequest(request.idRequest)
+                    .then(() => {
+                      setUpdateReqs({});
+                    })
+                    .catch((error) => {
+                      alert(error);
+                    });
+                  e.stopPropagation();
+                }}
+                className={classes.visibilityButton}
+              >
+                <DoneIcon />
+              </IconButton>
+              <IconButton
+                color="secondary"
+                classes={{
+                  label: classes.visibilityLabel,
+                  root: classes.visibilityRoot,
+                }}
+                onClick={(e) => {
+                  RequestService.blockRequest(request.idRequest)
+                    .then(() => {
+                      setUpdateReqs({});
+                    })
+                    .catch((error) => {
+                      alert(error);
+                    });
+                  e.stopPropagation();
+                }}
+                className={classes.visibilityButton}
+              >
+                <BlockIcon />
+              </IconButton>
+            </>
+          ) : null}
           {request.status === "FINALIZED" && checkUserDidNotRate(request) ? (
             <IconButton
               color="primary"
@@ -490,7 +498,10 @@ const Profile = (props) => {
                 label: classes.visibilityLabel,
                 root: classes.visibilityRoot,
               }}
-              onClick={(e) => {openGradeDialog(request);  e.stopPropagation();}}
+              onClick={(e) => {
+                openGradeDialog(request);
+                e.stopPropagation();
+              }}
               className={classes.visibilityButton}
             >
               <StarRateRoundedIcon />
@@ -577,9 +588,9 @@ const Profile = (props) => {
             {dialogReq
               ? dialogReq.executor
                 ? " POMOĆ JE PONUDIO: " +
-                dialogReq.executor.firstName +
-                " " +
-                dialogReq.executor.lastName
+                  dialogReq.executor.firstName +
+                  " " +
+                  dialogReq.executor.lastName
                 : null
               : null}
           </DialogContentText>
@@ -716,12 +727,12 @@ const Profile = (props) => {
           Ocijenite korisnika:
           {gradeDialog.req
             ? " " +
-            getRated(gradeDialog.req).firstName +
-            " " +
-            getRated(gradeDialog.req).lastName
+              getRated(gradeDialog.req).firstName +
+              " " +
+              getRated(gradeDialog.req).lastName
             : userData
-              ? " " + userData.firstName + " " + userData.lastName
-              : null}
+            ? " " + userData.firstName + " " + userData.lastName
+            : null}
         </DialogTitle>
         <DialogContent style={{ justifyContent: "center" }}>
           <Rating
@@ -769,10 +780,10 @@ const Profile = (props) => {
                     comment: rating.ratingComment,
                     rate: rating.ratingGrade,
                   }
-                ).then(res => {
-                  setUpdateReqs({})
+                ).then((res) => {
+                  setUpdateReqs({});
                   closeGradeDialog();
-                })
+                });
             }}
             color="primary"
           >
@@ -788,35 +799,35 @@ const Profile = (props) => {
       <Dialog
         open={locationDialog}
         onClose={closeLocationDialog}
-        maxWidth="sm"
+        maxWidth="xs"
         fullWidth
       >
         <DialogTitle>Uređivanje lokacije</DialogTitle>
-        <DialogContent>
-          <DialogContentText component="div">
+        <DialogContent >
+          <DialogContentText component="div" classes={{root: classes.locationDialog}}>
             <TextField
               label="Država"
               onChange={(state) => {
                 location.state = state.target.value;
               }}
+              classes={{root: classes.locationInput}}
             />
-            <br />
 
             <TextField
               label="Grad"
               onChange={(town) => {
                 location.town = town.target.value;
               }}
+              classes={{root: classes.locationInput}}
             />
-            <br />
 
             <TextField
               label="Adresa"
               onChange={(adress) => {
                 location.adress = adress.target.value;
               }}
+              classes={{root: classes.locationInput}}
             />
-            <br />
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -864,7 +875,7 @@ const Profile = (props) => {
             >
               {userData
                 ? userData.firstName.substring(0, 1) +
-                userData.lastName.substring(0, 1)
+                  userData.lastName.substring(0, 1)
                 : null}
             </Avatar>
           </IconButton>
@@ -903,19 +914,19 @@ const Profile = (props) => {
                     </IconButton>
                   </Tooltip>
                 ) : (
-                    <Tooltip title="Blokiraj korisnika">
-                      <IconButton
-                        classes={{
-                          label: classes.visibilityLabel,
-                          root: classes.visibilityRoot,
-                        }}
-                        className={classes.visibilityButton}
-                        onClick={handleBlock("false")}
-                      >
-                        <ReportIcon fontSize="large" />
-                      </IconButton>
-                    </Tooltip>
-                  )
+                  <Tooltip title="Blokiraj korisnika">
+                    <IconButton
+                      classes={{
+                        label: classes.visibilityLabel,
+                        root: classes.visibilityRoot,
+                      }}
+                      className={classes.visibilityButton}
+                      onClick={handleBlock("false")}
+                    >
+                      <ReportIcon fontSize="large" />
+                    </IconButton>
+                  </Tooltip>
+                )
               ) : null}
               {!isUser ? (
                 <Tooltip title="Ocijeni korisnika">
@@ -965,41 +976,21 @@ const Profile = (props) => {
                     onClick={() => {
                       userStatistics && userStatistics.rank
                         ? CandidacyService.deleteCandidacy()
-                          .then((response) => {
-                            console.log(response);
-                            setUpdateReqs({});
-                            /* if (
-                              !response.data.users._embedded.users.find(
-                                (user) => user.idUser === userData.idUser
-                              )
-                            ) {
-                              console.log("Nisam se kandidirao");
-                              setIsACandidate(false);
-                            } else {
-                              setIsACandidate(true);
-                            } */
-                          })
-                          .catch((error) => {
-                            console.log(error);
-                          })
+                            .then((response) => {
+                              console.log(response);
+                              setUpdateReqs({});
+                            })
+                            .catch((error) => {
+                              console.log(error);
+                            })
                         : CandidacyService.candidateYourself()
-                          .then((response) => {
-                            console.log(response);
-                            setUpdateReqs({});
-                            /* if (
-                              response.data.users._embedded.users.find(
-                                (user) => user.idUser === userData.idUser
-                              )
-                            ) {
-                              console.log("Kandidirao sam se");
-                              setIsACandidate(true);
-                            } else {
-                              setIsACandidate(false);
-                            } */
-                          })
-                          .catch((error) => {
-                            console.log(error);
-                          });
+                            .then((response) => {
+                              console.log(response);
+                              setUpdateReqs({});
+                            })
+                            .catch((error) => {
+                              console.log(error);
+                            });
                     }}
                     style={{
                       backgroundColor:
@@ -1040,7 +1031,8 @@ const Profile = (props) => {
                 color="textSecondary"
                 style={{ display: about ? "none" : "flex" }}
               >
-                Ocjena: {userStatistics ? +userStatistics.avgGrade.toFixed(3) : null}
+                Ocjena:{" "}
+                {userStatistics ? +userStatistics.avgGrade.toFixed(3) : null}
                 <br />
                 Izvršeni zahtjevi:{" "}
                 {userStatistics ? userStatistics.numExecutedR : null}
@@ -1144,158 +1136,138 @@ const Profile = (props) => {
               {chainOfTrust ? (
                 chainOfTrust._embedded ? (
                   Object.keys(chainOfTrust._embedded).length === 0 &&
-                    chainOfTrust._embedded.constructor === Object ? (
-                      <div />
-                    ) : (
-                      chainOfTrust._embedded.ratings.map(mapRatings)
-                    )
-                ) : (
+                  chainOfTrust._embedded.constructor === Object ? (
                     <div />
+                  ) : (
+                    chainOfTrust._embedded.ratings.map(mapRatings)
                   )
-              ) : (
+                ) : (
                   <div />
-                )}
+                )
+              ) : (
+                <div />
+              )}
             </List>
           </Container>
         ) : (
-            <Container
-              className={classes.requestsContainer}
-              maxWidth="lg"
-              disableGutters={true}
-            >
-              {swipeable1 == 0 ? (
-                <SwipeableViews
-                  axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-                  index={value}
-                  onChangeIndex={
-                    handleChangeIndex
-                  }
-                  style={{ width: "100%" }}
-                >
-                  <TabPanel value={value} index={0} dir={theme.direction}>
-                    <List className={classes.list}>
-                      {requests
-                        ? requests.ACTIVE
-                          ? Object.keys(requests.ACTIVE).length === 0 &&
-                            requests.ACTIVE.constructor === Object
-                            ? null
-                            : requests.ACTIVE._embedded.requests.map(mapRequests)
-                          : null
-                        : null}
-                    </List>
-                  </TabPanel>
-                  <TabPanel
-                    value={value}
-                    index={1}
-                    dir={theme.direction}
-                  >
-                    <List>
-                      {requests
-                        ? requests.FINALIZED
-                          ? Object.keys(requests.FINALIZED).length === 0 &&
-                            requests.FINALIZED.constructor === Object
-                            ? null
-                            : requests.FINALIZED._embedded.requests.map(mapRequests)
-                          : null
-                        : null}
-                    </List>
-                  </TabPanel>
-                  <TabPanel
-                    value={value}
-                    index={2}
-                    dir={theme.direction}
-                  >
-                    <List className={classes.list}>
-                      {requests
-                        ? requests.EXECUTING
-                          ? Object.keys(requests.EXECUTING).length === 0 &&
-                            requests.EXECUTING.constructor === Object
-                            ? null
-                            : requests.EXECUTING._embedded.requests.map(mapRequests)
-                          : null
-                        : null}
-                    </List>
-                  </TabPanel>
-                  <TabPanel
-                    value={value}
-                    index={3}
-                    dir={theme.direction}
-                  >
-                    <List className={classes.list}>
-                      {requests
-                        ? requests.BLOCKED
-                          ? Object.keys(requests.BLOCKED).length === 0 &&
-                            requests.BLOCKED.constructor === Object
-                            ? null
-                            : requests.BLOCKED._embedded.requests.map(mapRequests)
-                          : null
-                        : null}
-                    </List>
-                  </TabPanel>
-                </SwipeableViews>) :
-                (
-                  <SwipeableViews
-                    axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-                    index={value2}
-                    onChangeIndex={
-                      handleChangeIndex2
-                    }
-                    style={{ width: "100%" }}
-                  >
-                    <TabPanel
-                      value={value2}
-                      index={0}
-                      dir={theme.direction}
-                    >
-                      <List>
-                        {requests
-                          ? requests.FINALIZED
-                            ? Object.keys(requests.FINALIZED).length === 0 &&
-                              requests.FINALIZED.constructor === Object
-                              ? null
-                              : requests.FINALIZED._embedded.requests.map(mapRequests)
-                            : null
-                          : null}
-                      </List>
-                    </TabPanel>
-                    <TabPanel
-                      value={value2}
-                      index={1}
-                      dir={theme.direction}
-                    >
-                      <List className={classes.list}>
-                        {requests
-                          ? requests.EXECUTING
-                            ? Object.keys(requests.EXECUTING).length === 0 &&
-                              requests.EXECUTING.constructor === Object
-                              ? null
-                              : requests.EXECUTING._embedded.requests.map(mapRequests)
-                            : null
-                          : null}
-                      </List>
-                    </TabPanel>
-                    <TabPanel
-                      value={value2}
-                      index={2}
-                      dir={theme.direction}
-                    >
-                      <List className={classes.list}>
-                        {requests
-                          ? requests.BLOCKED
-                            ? Object.keys(requests.BLOCKED).length === 0 &&
-                              requests.BLOCKED.constructor === Object
-                              ? null
-                              : requests.BLOCKED._embedded.requests.map(mapRequests)
-                            : null
-                          : null}
-                      </List>
-                    </TabPanel>
-                  </SwipeableViews>
-                )}
-            </Container>
-          )}
+          <Container
+            className={classes.requestsContainer}
+            maxWidth="lg"
+            disableGutters={true}
+          >
+            {swipeable1 == 0 ? (
+              <SwipeableViews
+                axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+                index={value}
+                onChangeIndex={handleChangeIndex}
+                style={{ width: "100%" }}
+              >
+                <TabPanel value={value} index={0} dir={theme.direction}>
+                  <List className={classes.list}>
+                    {requests
+                      ? requests.ACTIVE
+                        ? Object.keys(requests.ACTIVE).length === 0 &&
+                          requests.ACTIVE.constructor === Object
+                          ? null
+                          : requests.ACTIVE._embedded.requests.map(mapRequests)
+                        : null
+                      : null}
+                  </List>
+                </TabPanel>
+                <TabPanel value={value} index={1} dir={theme.direction}>
+                  <List>
+                    {requests
+                      ? requests.FINALIZED
+                        ? Object.keys(requests.FINALIZED).length === 0 &&
+                          requests.FINALIZED.constructor === Object
+                          ? null
+                          : requests.FINALIZED._embedded.requests.map(
+                              mapRequests
+                            )
+                        : null
+                      : null}
+                  </List>
+                </TabPanel>
+                <TabPanel value={value} index={2} dir={theme.direction}>
+                  <List className={classes.list}>
+                    {requests
+                      ? requests.EXECUTING
+                        ? Object.keys(requests.EXECUTING).length === 0 &&
+                          requests.EXECUTING.constructor === Object
+                          ? null
+                          : requests.EXECUTING._embedded.requests.map(
+                              mapRequests
+                            )
+                        : null
+                      : null}
+                  </List>
+                </TabPanel>
+                <TabPanel value={value} index={3} dir={theme.direction}>
+                  <List className={classes.list}>
+                    {requests
+                      ? requests.BLOCKED
+                        ? Object.keys(requests.BLOCKED).length === 0 &&
+                          requests.BLOCKED.constructor === Object
+                          ? null
+                          : requests.BLOCKED._embedded.requests.map(mapRequests)
+                        : null
+                      : null}
+                  </List>
+                </TabPanel>
+              </SwipeableViews>
+            ) : (
+              <SwipeableViews
+                axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+                index={value2}
+                onChangeIndex={handleChangeIndex2}
+                style={{ width: "100%" }}
+              >
+                <TabPanel value={value2} index={0} dir={theme.direction}>
+                  <List>
+                    {requests
+                      ? requests.FINALIZED
+                        ? Object.keys(requests.FINALIZED).length === 0 &&
+                          requests.FINALIZED.constructor === Object
+                          ? null
+                          : requests.FINALIZED._embedded.requests.map(
+                              mapRequests
+                            )
+                        : null
+                      : null}
+                  </List>
+                </TabPanel>
+                <TabPanel value={value2} index={1} dir={theme.direction}>
+                  <List className={classes.list}>
+                    {requests
+                      ? requests.EXECUTING
+                        ? Object.keys(requests.EXECUTING).length === 0 &&
+                          requests.EXECUTING.constructor === Object
+                          ? null
+                          : requests.EXECUTING._embedded.requests.map(
+                              mapRequests
+                            )
+                        : null
+                      : null}
+                  </List>
+                </TabPanel>
+                <TabPanel value={value2} index={2} dir={theme.direction}>
+                  <List className={classes.list}>
+                    {requests
+                      ? requests.BLOCKED
+                        ? Object.keys(requests.BLOCKED).length === 0 &&
+                          requests.BLOCKED.constructor === Object
+                          ? null
+                          : requests.BLOCKED._embedded.requests.map(mapRequests)
+                        : null
+                      : null}
+                  </List>
+                </TabPanel>
+              </SwipeableViews>
+            )}
+          </Container>
+        )}
       </div>
-    </div >
+    </div>
   );
 };
 
