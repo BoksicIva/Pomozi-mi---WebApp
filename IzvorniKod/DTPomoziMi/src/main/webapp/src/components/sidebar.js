@@ -124,7 +124,7 @@ function Navbar(props) {
         <span className={sidebarStyle.span_class}>{props}</span>
       </Link>
     } else {
-      return <Link onClick={handleLogOut}>{item.icon}<span className={sidebarStyle.span_class} onClick={handleLogOut}>{props}</span></Link>;
+      return <Link to="" onClick={handleLogOut}>{item.icon}<span className={sidebarStyle.span_class} onClick={handleLogOut}>{props}</span></Link>;
     }
   }
 

@@ -46,6 +46,10 @@ class UserService {
     return http.get("./requests/authored/" + id, {});
   }
 
+  updateUser(id, user) {
+    return http.put("./users/" + id, user);
+  }
+
   getByExecutor(id) {
     return http.get("./requests/byExecutor/" + id, {});
   }

@@ -121,7 +121,7 @@ export default function BasicTable() {
       .then((response) => {
         setUsers(response.data._embedded.users);
         //setUsersTemp(response.data._embedded.users);
-        console.log(Users);
+        //console.log(Users);
         //rows = response.data._embedded.users;
         //console.log(rows);
         //console.log(rows[0]);
