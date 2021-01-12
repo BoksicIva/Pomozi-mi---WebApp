@@ -16,6 +16,7 @@ import NULL.DTPomoziMi.model.Candidacy;
 import NULL.DTPomoziMi.model.Location;
 import NULL.DTPomoziMi.model.User;
 import NULL.DTPomoziMi.repository.CandidacyRepo;
+import NULL.DTPomoziMi.repository.UserRepo;
 import NULL.DTPomoziMi.security.UserPrincipal;
 import NULL.DTPomoziMi.service.CandidacyService;
 import NULL.DTPomoziMi.service.LocationService;
@@ -30,6 +31,9 @@ public class CandidacyServiceImpl implements CandidacyService {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private UserRepo userRepo;
 
 	@Autowired
 	private LocationService locationService;
@@ -94,7 +98,8 @@ public class CandidacyServiceImpl implements CandidacyService {
 
 	@Override
 	public Candidacy deleteCandidacy(UserPrincipal principal) {
-		User user = principal.getUser();
+		User user = userService.fetch(principal.getUser().getIdUser());
+		
 		int year = LocalDate.now().getYear();
 
 		List<Candidacy> list = candidacyRepo.findByYear(year);
@@ -103,7 +108,7 @@ public class CandidacyServiceImpl implements CandidacyService {
 		Candidacy can = null;
 		if (list.size() != 0) can = list.get(0);
 
-		if (can != null) { can.getUsers().remove(user); can = candidacyRepo.save(can); }
+		if (can != null) { user.removeCandidacy(can); userRepo.save(user); }
 
 		return can == null ? new Candidacy() : can;
 	}
