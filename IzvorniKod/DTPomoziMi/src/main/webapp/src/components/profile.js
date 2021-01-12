@@ -22,29 +22,31 @@ import {
   Tab,
   Box,
 } from "@material-ui/core";
+//icons
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+import ReportIcon from "@material-ui/icons/Report";
+import ReportOffIcon from "@material-ui/icons/ReportOff";
+import LocationOnIcon from "@material-ui/icons/LocationOn";
+import StarBorderIcon from "@material-ui/icons/StarBorder";
+import DoneIcon from "@material-ui/icons/Done";
+import BlockIcon from "@material-ui/icons/Block";
+import StarRateRoundedIcon from "@material-ui/icons/StarRateRounded";
+import EqualizerIcon from "@material-ui/icons/Equalizer";
+import Star from "@material-ui/icons/Star";
+//services
+import RatingService from "../service/rating-service";
+import RequestService from "../service/request-service";
+import CandidacyService from "../service/candidacy-service";
+import UserService from "../service/user-service";
+import LocationService from "../service/location-service";
+//other
 import "fontsource-roboto";
 import PropTypes from "prop-types";
 import SwipeableViews from "react-swipeable-views";
-import ReportIcon from "@material-ui/icons/Report";
-import ReportOffIcon from "@material-ui/icons/ReportOff";
-import StarRateRoundedIcon from "@material-ui/icons/StarRateRounded";
-import UserService from "../service/user-service";
 import Sidebar from "./sidebar";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
-import StarBorderIcon from "@material-ui/icons/StarBorder";
-import Star from "@material-ui/icons/Star";
-import DoneIcon from "@material-ui/icons/Done";
-import BlockIcon from "@material-ui/icons/Block";
 import Rating from "@material-ui/lab/Rating";
-import RatingService from "../service/rating-service";
-import GridList from "@material-ui/core/GridList";
-import GridListTile from "@material-ui/core/GridListTile";
-import RequestService from "../service/request-service";
-import CandidacyService from "../service/candidacy-service";
-import EqualizerIcon from "@material-ui/icons/Equalizer";
-import LocationService from "../service/location-service";
+import Tooltip from "@material-ui/core/Tooltip";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -83,7 +85,6 @@ const useStyles = makeStyles((theme) => ({
     padding: 20,
     display: "flex",
     alignItems: "center",
-    //backgroundColor: "lightgray",
     boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.2)",
     marginBottom: 20,
   },
@@ -105,7 +106,6 @@ const useStyles = makeStyles((theme) => ({
   },
 
   about: {
-    //backgroundColor: "lightgray",
     height: "100%",
     display: "flex",
     flexDirection: "column",
@@ -135,7 +135,6 @@ const useStyles = makeStyles((theme) => ({
   requestsContainer: {
     display: "flex",
     alignItems: "center",
-    //backgroundColor: "lightgray",
     marginTop: 20,
     justifyContent: "center",
   },
@@ -214,7 +213,7 @@ const Profile = (props) => {
   const [requestsByExecutor, setRequestsByExecutor] = useState(null);
   const [requests, setRequests] = useState(null);
   const [dialogReq, setDialogReq] = useState(null);
-  const [updateReqs, setUpdateReqs] = useState(-200);
+  const [updateReqs, setUpdateReqs] = useState({});
   const [isUser, setUser] = useState(false);
   const [isAdmin, setAdmin] = useState(false);
   const [isBlocked, setBlocked] = useState(false);
@@ -223,9 +222,8 @@ const Profile = (props) => {
     ratingGrade: null,
   });
   const [chainOfTrust, setChainOfTrust] = useState({});
-  const [isACandidate, setIsACandidate] = useState(false);
 
-  let location = {state: "", town: "", adress: ""};
+  let location = { state: "", town: "", adress: "" };
 
   function handleChange(event, newValue) {
     setValue(newValue);
@@ -342,12 +340,10 @@ const Profile = (props) => {
     const user = loggedInUser;
     UserService.getUser(props.match.params.id)
       .then((response) => {
-        //console.log(response);
         setUserData(response.data);
         if (response.data.enabled === false) {
           setBlocked(true);
         }
-        //console.log(user.id == props.match.params.id);
         if (user.id == props.match.params.id) {
           setUser(true);
         }
@@ -410,7 +406,6 @@ const Profile = (props) => {
     return (
       <div key={request.idRequest}>
         <ListItem
-          
           // button={
           //   request.status === "ACTIVE" || request.status === "BLOCKED"
           //     ? true
@@ -456,8 +451,7 @@ const Profile = (props) => {
                 onClick={() => {
                   RequestService.confirmRequest(request.idRequest)
                     .then(() => {
-                      //console.log(request);
-                      setUpdateReqs(updateReqs + 1);
+                      setUpdateReqs({});
                     })
                     .catch((error) => {
                       alert(error);
@@ -476,8 +470,7 @@ const Profile = (props) => {
                 onClick={() => {
                   RequestService.blockRequest(request.idRequest)
                     .then(() => {
-                      //console.log(request);
-                      setUpdateReqs(updateReqs + 1);
+                      setUpdateReqs({});
                     })
                     .catch((error) => {
                       alert(error);
@@ -510,18 +503,30 @@ const Profile = (props) => {
 
   const mapRatings = (rating) => {
     return (
-      <span style={{ display: "flex", justifyContent: "center" }}>
-        <GridListTile className={classes.chainTile} key={rating.idRating}>
-          <Avatar>{rating.rator.firstName.substring(0, 1)}</Avatar>
-          <React.Fragment>
-            <Typography component="span" variant="body2" color="textPrimary">
-              {rating.rator.firstName + " " + rating.rator.lastName}
-
-              {" — " + rating.rate}
-            </Typography>
-          </React.Fragment>
-        </GridListTile>
-      </span>
+      <div key={rating.idRating}>
+        <ListItem alignItems="flex-start">
+          <ListItemAvatar>
+            <Avatar>{rating.rator.firstName.substring(0, 1)}</Avatar>
+          </ListItemAvatar>
+          <ListItemText
+            primary={rating.rator.firstName + " " + rating.rator.lastName}
+            secondary={
+              <React.Fragment>
+                <Typography
+                  component="span"
+                  variant="body2"
+                  className={classes.inline}
+                  color="textPrimary"
+                >
+                  Ocjena: {rating.rate}
+                </Typography>
+                {" — " + rating.comment}
+              </React.Fragment>
+            }
+          />
+        </ListItem>
+        <Divider variant="inset" component="li" />
+      </div>
     );
   };
 
@@ -608,14 +613,14 @@ const Profile = (props) => {
                       UserService.blockRequest(dialogReq.idRequest).then(
                         (response) => {
                           setRequests(response.data);
-                          setUpdateReqs(updateReqs + 1);
+                          setUpdateReqs({});
                         }
                       );
                     } else if (dialogReq.status === "BLOCKED") {
                       UserService.unblockRequest(dialogReq.idRequest).then(
                         (response) => {
                           setRequests(response.data);
-                          setUpdateReqs(updateReqs + 1);
+                          setUpdateReqs({});
                         }
                       );
                     }
@@ -642,7 +647,7 @@ const Profile = (props) => {
                   closeReqDialog();
                   RequestService.markExecuted(dialogReq.idRequest).then(
                     (response) => {
-                      setUpdateReqs(updateReqs + 1);
+                      setUpdateReqs({});
                     }
                   );
                 }}
@@ -660,7 +665,7 @@ const Profile = (props) => {
                     dialogReq
                   ).then((response) => {
                     setRequests(response.data);
-                    setUpdateReqs(updateReqs + 1);
+                    setUpdateReqs({});
                   });
                 }}
                 color="primary"
@@ -793,6 +798,7 @@ const Profile = (props) => {
                 location.state = state.target.value;
               }}
             />
+            <br />
 
             <TextField
               label="Grad"
@@ -800,6 +806,7 @@ const Profile = (props) => {
                 location.town = town.target.value;
               }}
             />
+            <br />
 
             <TextField
               label="Adresa"
@@ -807,6 +814,7 @@ const Profile = (props) => {
                 location.adress = adress.target.value;
               }}
             />
+            <br />
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -865,118 +873,142 @@ const Profile = (props) => {
             disableGutters={true}
           >
             <Container maxWidth={false} disableGutters={true}>
-              <IconButton
-                classes={{
-                  label: classes.visibilityLabel,
-                  root: classes.visibilityRoot,
-                }}
-                onClick={handleAbout}
-                className={classes.visibilityButton}
-              >
-                {about ? <VisibilityOffIcon /> : <VisibilityIcon />}
-              </IconButton>
-              {isUser ? null : isAdmin ? (
-                isBlocked ? (
-                  <IconButton
-                    classes={{
-                      label: classes.visibilityLabel,
-                      root: classes.visibilityRoot,
-                    }}
-                    className={classes.visibilityButton}
-                    onClick={handleBlock("true")}
-                  >
-                    <ReportOffIcon fontSize="large" />
-                  </IconButton>
-                ) : (
-                  <IconButton
-                    classes={{
-                      label: classes.visibilityLabel,
-                      root: classes.visibilityRoot,
-                    }}
-                    className={classes.visibilityButton}
-                    onClick={handleBlock("false")}
-                  >
-                    <ReportIcon fontSize="large" />
-                  </IconButton>
-                )
-              ) : null}
-              {!isUser ? (
+              <Tooltip title="Prikaži dodatne izvještaje">
                 <IconButton
                   classes={{
                     label: classes.visibilityLabel,
                     root: classes.visibilityRoot,
                   }}
-                  onClick={() => {
-                    openGradeDialog(null);
-                  }}
+                  onClick={handleAbout}
                   className={classes.visibilityButton}
                 >
-                  <Star />
+                  {about ? <VisibilityOffIcon /> : <VisibilityIcon />}
                 </IconButton>
+              </Tooltip>
+
+              {isUser ? null : isAdmin ? (
+                isBlocked ? (
+                  <Tooltip title="Odblokiraj korisnika">
+                    <IconButton
+                      classes={{
+                        label: classes.visibilityLabel,
+                        root: classes.visibilityRoot,
+                      }}
+                      className={classes.visibilityButton}
+                      onClick={handleBlock("true")}
+                    >
+                      <ReportOffIcon fontSize="large" />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Tooltip title="Blokiraj korisnika">
+                    <IconButton
+                      classes={{
+                        label: classes.visibilityLabel,
+                        root: classes.visibilityRoot,
+                      }}
+                      className={classes.visibilityButton}
+                      onClick={handleBlock("false")}
+                    >
+                      <ReportIcon fontSize="large" />
+                    </IconButton>
+                  </Tooltip>
+                )
+              ) : null}
+              {!isUser ? (
+                <Tooltip title="Ocijeni korisnika">
+                  <IconButton
+                    classes={{
+                      label: classes.visibilityLabel,
+                      root: classes.visibilityRoot,
+                    }}
+                    onClick={() => {
+                      openGradeDialog(null);
+                    }}
+                    className={classes.visibilityButton}
+                  >
+                    <Star />
+                  </IconButton>
+                </Tooltip>
               ) : null}
 
               {isUser ? (
-                <IconButton //                                                                              SETTINGS BUTTON
-                  classes={{
-                    label: classes.visibilityLabel,
-                    root: classes.visibilityRoot,
-                  }}
-                  className={classes.visibilityButton}
-                  onClick={openLocationDialog}
-                >
-                  <LocationOnIcon />
-                </IconButton>
+                <Tooltip title="Uredi svoju lokaciju">
+                  <IconButton
+                    classes={{
+                      label: classes.visibilityLabel,
+                      root: classes.visibilityRoot,
+                    }}
+                    className={classes.visibilityButton}
+                    onClick={openLocationDialog}
+                  >
+                    <LocationOnIcon />
+                  </IconButton>
+                </Tooltip>
               ) : null}
               {isUser ? (
-                <IconButton //                                                                              CANDIDACY BUTTON
-                  classes={{
-                    label: classes.visibilityLabel,
-                    root: classes.visibilityRoot,
-                  }}
-                  className={classes.visibilityButton}
-                  onClick={() => {
-                    isACandidate
-                      ? CandidacyService.deleteCandidacy()
-                          .then((response) => {
-                            console.log(response);
-                            if (
-                              !response.data.users._embedded.users.find(
-                                (user) => user.idUser === userData.idUser
-                              )
-                            ) {
-                              console.log("Nisam se kandidirao");
-                              setIsACandidate(false);
-                            } else {
-                              setIsACandidate(true);
-                            }
-                          })
-                          .catch((error) => {
-                            console.log(error);
-                          })
-                      : CandidacyService.candidateYourself()
-                          .then((response) => {
-                            console.log(response);
-                            if (
-                              response.data.users._embedded.users.find(
-                                (user) => user.idUser === userData.idUser
-                              )
-                            ) {
-                              console.log("Kandidirao sam se");
-                              setIsACandidate(true);
-                            } else {
-                              setIsACandidate(false);
-                            }
-                          })
-                          .catch((error) => {
-                            console.log(error);
-                          });
-                  }}
-                  style={{
-                    backgroundColor: isACandidate ? "#f50057" : "#3f51b5",
-                  }}
+                <Tooltip
+                  title={
+                    userStatistics && userStatistics.rank
+                      ? "Odustani od kandidiranja"
+                      : "Kandidiraj se"
+                  }
                 >
-                  <EqualizerIcon />
-                </IconButton>
+                  <IconButton
+                    classes={{
+                      label: classes.visibilityLabel,
+                      root: classes.visibilityRoot,
+                    }}
+                    className={classes.visibilityButton}
+                    onClick={() => {
+                      userStatistics && userStatistics.rank
+                        ? CandidacyService.deleteCandidacy()
+                            .then((response) => {
+                              console.log(response);
+                              setUpdateReqs({});
+                              /* if (
+                                !response.data.users._embedded.users.find(
+                                  (user) => user.idUser === userData.idUser
+                                )
+                              ) {
+                                console.log("Nisam se kandidirao");
+                                setIsACandidate(false);
+                              } else {
+                                setIsACandidate(true);
+                              } */
+                            })
+                            .catch((error) => {
+                              console.log(error);
+                            })
+                        : CandidacyService.candidateYourself()
+                            .then((response) => {
+                              console.log(response);
+                              setUpdateReqs({});
+                              /* if (
+                                response.data.users._embedded.users.find(
+                                  (user) => user.idUser === userData.idUser
+                                )
+                              ) {
+                                console.log("Kandidirao sam se");
+                                setIsACandidate(true);
+                              } else {
+                                setIsACandidate(false);
+                              } */
+                            })
+                            .catch((error) => {
+                              console.log(error);
+                            });
+                    }}
+                    style={{
+                      backgroundColor:
+                        userStatistics && userStatistics.rank
+                          ? "green"
+                          : "white",
+                    }}
+                  >
+                    <EqualizerIcon />
+                  </IconButton>
+                </Tooltip>
               ) : null}
             </Container>
 
@@ -1072,9 +1104,7 @@ const Profile = (props) => {
                     {...a11yProps(0)}
                     classes={{ wrapper: classes.tabWrapper }}
                   />
-                ) : (
-                  null
-                )}
+                ) : null}
                 <Tab
                   label="Izvršeni zahtjevi"
                   {...a11yProps(swipeable1 == 0 ? 1 : 0)}
@@ -1107,16 +1137,23 @@ const Profile = (props) => {
             >
               Lanac povjerenja:
             </Typography>
-            <GridList cellHeight="auto" className={classes.gridList}>
-              {chainOfTrust
-                ? chainOfTrust._embedded
-                  ? Object.keys(chainOfTrust._embedded).length === 0 &&
-                    chainOfTrust._embedded.constructor === Object
-                    ? <div />
-                    : chainOfTrust._embedded.ratings.map(mapRatings)
-                  : <div />
-                : <div />}
-            </GridList>
+
+            <List className={classes.list}>
+              {chainOfTrust ? (
+                chainOfTrust._embedded ? (
+                  Object.keys(chainOfTrust._embedded).length === 0 &&
+                  chainOfTrust._embedded.constructor === Object ? (
+                    <div />
+                  ) : (
+                    chainOfTrust._embedded.ratings.map(mapRatings)
+                  )
+                ) : (
+                  <div />
+                )
+              ) : (
+                <div />
+              )}
+            </List>
           </Container>
         ) : (
           <Container
@@ -1127,7 +1164,9 @@ const Profile = (props) => {
             <SwipeableViews
               axis={theme.direction === "rtl" ? "x-reverse" : "x"}
               index={swipeable1 == 0 ? value : value2}
-              onChangeIndex={swipeable1 == 0 ? handleChangeIndex : handleChangeIndex2}
+              onChangeIndex={
+                swipeable1 == 0 ? handleChangeIndex : handleChangeIndex2
+              }
               style={{ width: "100%" }}
             >
               {swipeable1 == 0 ? (
