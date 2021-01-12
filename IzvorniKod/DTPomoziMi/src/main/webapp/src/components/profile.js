@@ -206,6 +206,7 @@ const Profile = (props) => {
   const [gradeDialog, setGradeDialog] = useState({ req: null, open: false });
   const [about, setAbout] = useState(true);
   const [value, setValue] = useState(0);
+  const [value2, setValue2] = useState(0);
   const [swipeable1, setSwipeable1] = useState(0);
   const [userData, setUserData] = useState(null);
   const [userStatistics, setUserStatistics] = useState(null);
@@ -234,12 +235,17 @@ const Profile = (props) => {
     setValue(index);
   }
 
-  function handleChangeIndex1(index) {
-    setSwipeable1(index);
+  function handleChange2(event, newValue) {
+    setValue2(newValue);
+  }
+
+  function handleChangeIndex2(index) {
+    setValue2(index);
   }
 
   function handleChange1(event, newValue) {
     setSwipeable1(newValue);
+    setValue2(0);
   }
 
   const openReqDialog = () => {
@@ -402,9 +408,9 @@ const Profile = (props) => {
 
   const mapRequests = (request) => {
     return (
-      <>
+      <div key={request.idRequest}>
         <ListItem
-          key={request.idRequest}
+          
           // button={
           //   request.status === "ACTIVE" || request.status === "BLOCKED"
           //     ? true
@@ -498,7 +504,7 @@ const Profile = (props) => {
           ) : null}
         </ListItem>
         <Divider variant="inset" component="li" />
-      </>
+      </div>
     );
   };
 
@@ -1052,8 +1058,8 @@ const Profile = (props) => {
           >
             <Paper className={classes.tabs}>
               <Tabs
-                value={swipeable1 == 0 ? value : (value - 1 >= 0 ? (value - 1) : 0)}
-                onChange={handleChange}
+                value={swipeable1 == 0 ? value : value2}
+                onChange={swipeable1 == 0 ? handleChange : handleChange2}
                 indicatorColor="primary"
                 textColor="primary"
                 variant="fullWidth"
@@ -1120,8 +1126,8 @@ const Profile = (props) => {
           >
             <SwipeableViews
               axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-              index={value}
-              onChangeIndex={handleChangeIndex}
+              index={swipeable1 == 0 ? value : value2}
+              onChangeIndex={swipeable1 == 0 ? handleChangeIndex : handleChangeIndex2}
               style={{ width: "100%" }}
             >
               {swipeable1 == 0 ? (
@@ -1141,8 +1147,8 @@ const Profile = (props) => {
                 <></>
               )}
               <TabPanel
-                value={swipeable1 == 0 ? value : value - 1}
-                index={swipeable1 == 0 ? 1 : 0}
+                value={swipeable1 == 0 ? value : value2}
+                index={swipeable1 == 0 ? value : value2}
                 dir={theme.direction}
               >
                 <List>
@@ -1157,8 +1163,8 @@ const Profile = (props) => {
                 </List>
               </TabPanel>
               <TabPanel
-                value={swipeable1 == 0 ? value : value - 1}
-                index={swipeable1 == 0 ? 2 : 1}
+                value={swipeable1 == 0 ? value : value2}
+                index={swipeable1 == 0 ? value : value2}
                 dir={theme.direction}
               >
                 <List className={classes.list}>
@@ -1173,8 +1179,8 @@ const Profile = (props) => {
                 </List>
               </TabPanel>
               <TabPanel
-                value={swipeable1 == 0 ? value : value - 1}
-                index={swipeable1 == 0 ? 3 : 2}
+                value={swipeable1 == 0 ? value : value2}
+                index={swipeable1 == 0 ? value : value2}
                 dir={theme.direction}
               >
                 <List className={classes.list}>
