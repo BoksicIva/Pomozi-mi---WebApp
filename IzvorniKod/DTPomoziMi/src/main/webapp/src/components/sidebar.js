@@ -162,7 +162,7 @@ function Navbar(props) {
               },
             }}
           >
-            {notifs.reverse().map((notif) => (
+            {notifs.map((notif) => (
               <div key={notif.idNotification}>
                 <MenuItem
                   style={{

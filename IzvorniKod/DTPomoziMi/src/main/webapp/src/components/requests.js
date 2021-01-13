@@ -29,7 +29,10 @@ if (UserService.getUserContext() === null) {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
+    width: '100vw',
+    '@media (min-width: 680px)' : {
+        width: '75vw'
+    },
     boxShadow: "0 0 7px 0 rgba(0, 0, 0, 0.2)",
   },
   media: {
@@ -119,6 +122,7 @@ export default function RecipeReviewCard(props) {
   const [noLoc, setLoc] = React.useState(false);
   const [req, setReq] = React.useState();
   const [searchValue, setSearchValue] = React.useState();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   useEffect(() => {
     RequestService.getRequests(1)
@@ -148,21 +152,8 @@ export default function RecipeReviewCard(props) {
   if (loadError) return "Error";
   if (!isLoaded) return "Loading...";
 
-  const handleSubmit = (event) => {
-    RequestService.getRequests(value)
-      .then((response) => {
-        if (response.data._embedded != null) {
-          setRequests(response.data._embedded.requests);
-          console.log(response.data._embedded.requests);
-        }
-      })
-      .catch((error) => {
-        alert(error);
-      });
-    event.preventDefault();
-  };
-
   const handleSearchSubmit = (event) => {
+    setIsSubmitting(true);
     RequestService.getSearchRequests(value, searchValue)
       .then((response) => {
         if (response.data._embedded != null) {
@@ -173,6 +164,7 @@ export default function RecipeReviewCard(props) {
       .catch((error) => {
         alert(error);
       });
+    setIsSubmitting(false);
     event.preventDefault();
   };
 
@@ -233,7 +225,7 @@ export default function RecipeReviewCard(props) {
               kilometrima.<br></br> (Ako korisnik nema zapisanu lokaciju
               prikazuju mu se samo zahtjevi bez lokacije.)
             </Typography>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSearchSubmit}>
               <TextField
                 id="filled-basic"
                 label="Radius zahtjeva (km)"
@@ -241,12 +233,10 @@ export default function RecipeReviewCard(props) {
                 onChange={handleChangeInput}
                 variant="filled"
               />
-            </form>
             <br></br>
             <Typography variant="body2" color="textSecondary" component="p">
               Pretraživanje po parametru autora:
             </Typography>
-            <form onSubmit={handleSearchSubmit}>
               <TextField
                 id="filled-basic"
                 label="ime, prezime i/ili email"
@@ -254,13 +244,13 @@ export default function RecipeReviewCard(props) {
                 onChange={handleSearchChangeInput}
                 variant="filled"
               />
+              <button type="submit" disabled={isSubmitting} hidden={true}/>
             </form>
           </>
         )}
         {notSent && requests != null ? (
           requests.map((request, index) => (
-            <>
-              <br></br>
+            <div key = {request.idRequest}>
               <Card className={classes.root}>
                 <CardHeader
                   avatar={
@@ -340,7 +330,7 @@ export default function RecipeReviewCard(props) {
                 </Collapse>
               </Card>
               <br></br>
-            </>
+            </div>
           ))
         ) : (
           <>
