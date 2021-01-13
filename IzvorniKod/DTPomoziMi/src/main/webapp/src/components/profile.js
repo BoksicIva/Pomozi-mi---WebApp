@@ -772,6 +772,9 @@ const Profile = (props) => {
                 RatingService.rateUser(userData.idUser, {
                   comment: rating.ratingComment,
                   rate: rating.ratingGrade,
+                }).then(res => {
+                  setUpdateReqs({});
+                  closeGradeDialog();
                 });
               else
                 RatingService.rateRequest(
