@@ -1,51 +1,42 @@
-
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
-      sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    font-size: 14px;
-    line-height: 1.5;
-    overflow: auto;
-    background-color: cornsilk; 
-  }
-  .background{
-    height: 100vh;
-    width: 100vw;
-    background-color: cornsilk; 
-    background-size: 100% 100%;
-  }
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 14px;
+  line-height: 1.5;
+  overflow: auto;
+}
 
-.empthy1{
-    height: 60px;
-  }
-
-
+.empthy1 {
+  height: 60px;
+}
 
 input {
-  padding: .5rem;
-  width: 19rem; 
+  padding: 0.5rem;
+  width: 19rem;
   font-size: 16px;
   border-radius: 4px;
   border: 1px solid #ccc;
 }
 
-textarea{
-  padding: .5rem;
-  width: 19rem; 
+textarea {
+  padding: 0.5rem;
+  width: 19rem;
   font-size: 16px;
   border-radius: 4px;
   border: 1px solid #ccc;
 }
 
-textarea:focus{
-    border-color: #08c;
-    outline: none;
-    border-width: 2px;
+textarea:focus {
+  border-color: #08c;
+  outline: none;
+  border-width: 2px;
 }
 
-label {
+.label {
   font-weight: bold;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
   margin-right: 15px;
+  margin-top: 1rem;
   width: 14rem;
   text-align: left;
 }
@@ -54,18 +45,17 @@ label {
 
 .input_feedback {
   color: red;
-  margin-top: .25rem;
+  margin-top: 0.25rem;
   text-align: center;
 }
 
-
-button {
+.button {
   max-width: 150px;
   margin: 20px 0;
   padding: 12px 20px;
   border-style: none;
   border-radius: 10px;
-  background-color: rgba(255, 0, 0, 0.616);
+  background-color: #f50057;
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.15);
   font-size: 17px;
   font-weight: 500;
@@ -77,12 +67,12 @@ button {
 }
 
 button:disabled {
-  opacity: .5;
+  opacity: 0.5;
   cursor: not-allowed !important;
 }
 
 button + button {
-  margin-left: .5rem;
+  margin-left: 0.5rem;
 }
 
 button.outline {
@@ -118,5 +108,3 @@ input.error {
 textarea.error {
   border-color: red;
 }
-
-

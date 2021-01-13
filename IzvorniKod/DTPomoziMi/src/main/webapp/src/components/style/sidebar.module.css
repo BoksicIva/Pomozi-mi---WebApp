@@ -6,7 +6,7 @@
   justify-content: space-between;
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 10;
   box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.2);
   padding: 0rem 2rem;
 }
@@ -56,7 +56,7 @@
 }
 
 .nav_text a:hover {
-  background-color:rgba(255, 0, 0, 0.616);
+  background-color:#f50057;
 }
 
 .nav_menu_items {

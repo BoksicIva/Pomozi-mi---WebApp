@@ -13,8 +13,7 @@ body {
     line-height: 1.5;
     overflow: auto;
     color: #24292e;
-    /* background-image: url('../../images/hands.png'); */
-    background-color: cornsilk; 
+    /* background-image: url('../../images/hands.png'); */ 
   }
 
 .background{
