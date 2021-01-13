@@ -233,7 +233,8 @@ export default function RecipeReviewCard(props) {
             <div></div>
             <div className={style.background}>
             <Container>
-                <br></br>
+                {notSent && 
+                (<><br></br>
                 <Typography variant="body2" color="textSecondary" component="p">
                     Pretraži zahtjeve po udaljenosti od vlastite lokacije u kilometrima.<br></br>  (Ako korisnik nema zapisanu lokaciju prikazuju mu se samo zahtjevi bez lokacije.)
                     </Typography>   
@@ -244,113 +245,113 @@ export default function RecipeReviewCard(props) {
                 <Typography variant="body2" color="textSecondary" component="p">Pretraživanje po parametru autora:</Typography>
                 <form onSubmit={handleSearchSubmit}>
                     <TextField id="filled-basic" label="ime, prezime i/ili email" value={searchValue} onChange={handleSearchChangeInput} variant="filled" />
-                </form>
-                    {(notSent && requests != null) ?
-                        requests.map((request, index) => (
-                            <>
-                                <br></br>
-                                <Card className={classes.root}>
-                                    <CardHeader
-                                        avatar={
-                                            localStorage.getItem("photo") ?
-                                                (<Avatar alt="avatar" src={localStorage.getItem("photo")} className={classes.avatar} />)
-                                                : (<Avatar>{request.author.firstName.substring(0, 1)}</Avatar>) }
-                                       
-                                        title={
-                                            <Link onClick={(event) => { props.history.push("/profile/" + request.author.idUser) }}>{request.author.firstName + " " + request.author.lastName}</Link>}
-                                        subheader={request.author.email}
-                                    />
-                                    <CardContent>
-                                        <Typography variant="body2" color="textSecondary" component="p">
-                                            {request.description}
-                                        </Typography>
-                                    </CardContent>
-                                    <CardActions disableSpacing>
-
-                                        <Button size="small" onClick={() => handleRequestClick(request)}>Izvrši zahtjev</Button>
-                                        {isAdmin ?
-                                            <IconButton aria-label="trash" onClick={handleDelete(request)}>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                            : null}
-                                        <IconButton
-                                            className={clsx(classes.expand, {
-                                                [classes.expandOpen]: expanded[index],
-                                            })}
-                                            onClick={() => handleExpandClick(index)}
-                                            aria-expanded={expanded[index]}
-                                            aria-label="show more"
-                                        >
-                                            <ExpandMoreIcon />
-                                        </IconButton>
-                                    </CardActions>
-                                    <Collapse in={expanded[index]} timeout="auto" unmountOnExit>
-                                        <CardContent>
-                                            <Typography paragraph>Rok izvrsavanja:</Typography>
-
-                                            <Typography paragraph>
-                                                {((request.tstmp === null) ? "Nije postavljen rok" : request.tstmp)}
-                                            </Typography>
-                                            <Typography paragraph>
-                                                Lokacija:
-                                        </Typography>
-
-                                            <Typography paragraph>
-                                                Grad: {" " + ((request.location === null) ? "Grad nije zadan" : request.location.town)}
-                                                <br></br>
-                                        Adresa: {" " + ((request.location === null) ? "Adresa nije zadana" : request.location.adress)}
-                                            </Typography>
-
-
-
-                                        </CardContent>
-                                    </Collapse>
-                                </Card>
-                                <br></br>
-                            </>
-                        )) :
+                </form></>)}
+                {(notSent && requests != null) ?
+                    requests.map((request, index) => (
                         <>
-                            <div>
-                                <button onClick={refreshPage}>Povratak na zahtjeve</button>
-                            </div>
-                            <h1>
-                                Zahtjev uspjesno poslan!
-                                
+                            <br></br>
+                            <Card className={classes.root}>
+                                <CardHeader
+                                    avatar={
+                                        localStorage.getItem("photo") ?
+                                            (<Avatar alt="avatar" src={localStorage.getItem("photo")} className={classes.avatar} />)
+                                            : (<Avatar>{request.author.firstName.substring(0, 1)}</Avatar>) }
+                                    
+                                    title={
+                                        <Link onClick={(event) => { props.history.push("/profile/" + request.author.idUser) }}>{request.author.firstName + " " + request.author.lastName}</Link>}
+                                    subheader={request.author.email}
+                                />
+                                <CardContent>
+                                    <Typography variant="body2" color="textSecondary" component="p">
+                                        {request.description}
+                                    </Typography>
+                                </CardContent>
+                                <CardActions disableSpacing>
 
-                    </h1>
-                    <Typography paragraph>
-                                Zahtjev : {req.description}
-                                </Typography>
-                            {noLoc ? null :
-                                <>
-                                    <h2>
-                                        Lokacija zahtjeva:
-                    </h2>
+                                    <Button size="small" onClick={() => handleRequestClick(request)}>Izvrši zahtjev</Button>
+                                    {isAdmin ?
+                                        <IconButton aria-label="trash" onClick={handleDelete(request)}>
+                                            <DeleteIcon />
+                                        </IconButton>
+                                        : null}
+                                    <IconButton
+                                        className={clsx(classes.expand, {
+                                            [classes.expandOpen]: expanded[index],
+                                        })}
+                                        onClick={() => handleExpandClick(index)}
+                                        aria-expanded={expanded[index]}
+                                        aria-label="show more"
+                                    >
+                                        <ExpandMoreIcon />
+                                    </IconButton>
+                                </CardActions>
+                                <Collapse in={expanded[index]} timeout="auto" unmountOnExit>
+                                    <CardContent>
+                                        <Typography paragraph>Rok izvrsavanja:</Typography>
 
-                                    <div>
-                                        <GoogleMap mapContainerStyle={mapContainerStyle}
-                                            zoom={15}
-                                            center={{ lat: lat, lng: lng }}
-                                            options={options}
-                                            onClick={(event) => {
+                                        <Typography paragraph>
+                                            {((request.tstmp === null) ? "Nije postavljen rok" : request.tstmp)}
+                                        </Typography>
+                                        <Typography paragraph>
+                                            Lokacija:
+                                    </Typography>
 
-                                                setLat(event.latLng.lat())
-                                                setLng(event.latLng.lng())
-                                            }}
-                                        >
+                                        <Typography paragraph>
+                                            Grad: {" " + ((request.location === null) ? "Grad nije zadan" : request.location.town)}
+                                            <br></br>
+                                    Adresa: {" " + ((request.location === null) ? "Adresa nije zadana" : request.location.adress)}
+                                        </Typography>
 
-                                            <Marker
-                                                key={16}
-                                                position={{ lat: lat, lng: lng }}
-                                            />
-                                        </GoogleMap>
 
-                                    </div>
-                                </>
-                            }
+
+                                    </CardContent>
+                                </Collapse>
+                            </Card>
+                            <br></br>
                         </>
+                    )) :
+                    <>
+                        <div>
+                            <button onClick={refreshPage}>Povratak na zahtjeve</button>
+                        </div>
+                        <h1>
+                            Zahtjev uspjesno poslan!
+                            
 
-                    }
+                </h1>
+                <Typography paragraph>
+                            Zahtjev : {req.description}
+                            </Typography>
+                        {noLoc ? null :
+                            <>
+                                <h2>
+                                    Lokacija zahtjeva:
+                </h2>
+
+                                <div>
+                                    <GoogleMap mapContainerStyle={mapContainerStyle}
+                                        zoom={15}
+                                        center={{ lat: lat, lng: lng }}
+                                        options={options}
+                                        onClick={(event) => {
+
+                                            setLat(event.latLng.lat())
+                                            setLng(event.latLng.lng())
+                                        }}
+                                    >
+
+                                        <Marker
+                                            key={16}
+                                            position={{ lat: lat, lng: lng }}
+                                        />
+                                    </GoogleMap>
+
+                                </div>
+                            </>
+                        }
+                    </>
+
+                }
                 </Container>
             </div>
         </>

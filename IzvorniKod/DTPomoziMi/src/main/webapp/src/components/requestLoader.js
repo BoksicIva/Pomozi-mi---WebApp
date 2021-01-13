@@ -133,10 +133,6 @@ export const Dash = props => {
         setLat(45.815011)
     }
 
-
-
-
-
     return (
         <>
             <Sidebar />
