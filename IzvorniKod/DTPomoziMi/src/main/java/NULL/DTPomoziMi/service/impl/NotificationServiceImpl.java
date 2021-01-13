@@ -38,7 +38,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 		if (!principal.getUser().getIdUser().equals(userID)) throw new IllegalAccessException("Only reciever can see notifications");
 
-		return notificationRepo.findByUser(pageable, principal.getUser());
+		return notificationRepo.findByUserOrderByTstmpDesc(pageable, principal.getUser());
 
 	}
 

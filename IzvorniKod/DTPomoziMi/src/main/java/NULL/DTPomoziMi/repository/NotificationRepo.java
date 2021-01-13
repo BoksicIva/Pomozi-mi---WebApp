@@ -8,5 +8,5 @@ import NULL.DTPomoziMi.model.Notification;
 import NULL.DTPomoziMi.model.User;
 
 public interface NotificationRepo extends PagingAndSortingRepository<Notification, Long> {
-	Page<Notification> findByUser(Pageable pageable, User user);
+	Page<Notification> findByUserOrderByTstmpDesc(Pageable pageable, User user);
 }
