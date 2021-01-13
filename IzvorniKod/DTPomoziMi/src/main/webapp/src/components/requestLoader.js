@@ -12,6 +12,7 @@ import {
     Marker,
 } from "@react-google-maps/api";
 import Geocode from "react-geocode";
+import LocationService from '../service/location-service'
 import Service from '../service/login-service';
 import Datetime from 'react-datetime';
 import "react-datetime/css/react-datetime.css";
@@ -128,6 +129,8 @@ export const Dash = props => {
                 alert("An unknown error occurred.")
                 break;
         }
+        setLong(15.981919)
+        setLat(45.815011)
     }
 
 
@@ -183,25 +186,10 @@ export const Dash = props => {
                                     if (checkAdress(values))
                                         location = null;
                                     else {
-
-                                        await Geocode.fromAddress(values.country + " " + values.town + " " + values.address).then(
-                                            response => {
-                                                const { lat, lng } = response.results[0].geometry.location;
-                                                console.log(lat, lng);
-                                                location.longitude = lng;
-                                                location.latitude = lat;
-                                            },
-                                            error => {
-                                                console.error(error);
-                                            }
-                                        );
-
-                                        if (location.latitude == null || location.longitude == null) {
-                                            location = null;
-                                        } else {
-                                            location.adress = fieldSetter(values.address);
-                                            location.state = fieldSetter(values.country);
-                                            location.town = fieldSetter(values.town);
+                                        try {
+                                            location = await LocationService.getLatLong(fieldSetter(values.country), fieldSetter(values.town), fieldSetter(values.address))
+                                        } catch (err) {
+                                            alert(err);
                                         }
                                     }
                                 }
@@ -223,7 +211,6 @@ export const Dash = props => {
                                     .required("Obavezno unesite zahtjev"),
                                 phone: Yup.number("Unos mora biti broj").required("Unesite broj mobitela"),
                                 country: Yup.string(),
-
                             })}
                         >
                             {(props) => {
