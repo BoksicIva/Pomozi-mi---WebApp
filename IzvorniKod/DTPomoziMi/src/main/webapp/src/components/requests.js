@@ -209,7 +209,6 @@ export default function RecipeReviewCard(props) {
         }
       })
       .catch((error) => {
-        alert(error);
       });
   };
 

@@ -123,21 +123,25 @@ export default function BasicTable() {
   };
 
   useEffect(() => {
-    Userservice.getUsers()
-      .then((response) => {
-        setUsers(response.data._embedded.users);
-        //setUsersTemp(response.data._embedded.users);
-        //console.log(Users);
-        //rows = response.data._embedded.users;
-        //console.log(rows);
-        //console.log(rows[0]);
-      })
-      .catch((error) => {
-        alert(error);
-      });
+    (async ()=>{
+      try {
+        let response = await Userservice.getUsers();
+        let users = response.data._embedded.users;
+  
+        for(let user of users ){
+          let response = await UserService.getUserStatistics(user.idUser);
+          user.statistics = response.data;
+        }
+        
+        setUsers(users);
+  
+      } catch (err) {
+        console.log(err);
+      }
+    })();
   }, []);
 
-  useEffect(() => {
+  /* useEffect(() => {
     Users.map((user) => {
       UserService.getUserStatistics(user.idUser)
         .then((response) => {
@@ -147,7 +151,7 @@ export default function BasicTable() {
           alert(error);
         });
     });
-  }, [Users]);
+  }, [Users]); */
 
   return (
     <div className={style.background}>
@@ -226,29 +230,19 @@ export default function BasicTable() {
                 >
                   <span style={{ margin: 5 }}>
                     Ocjena:{" "}
-                    {userStatistics && userStatistics[index]
-                      ? userStatistics[index].avgGrade
-                        ? +userStatistics[index].avgGrade.toFixed(3)
-                        : null
-                      : null}
+                    {user.statistics && user.statistics.avgGrade && +user.statistics.avgGrade.toFixed(3)}
                   </span>
                   <span style={{ margin: 5 }}>
                     Izvršeni zahtjevi:{" "}
-                    {userStatistics && userStatistics[index]
-                      ? userStatistics[index].numExecutedR
-                      : null}
+                    {user.statistics && user.statistics.numExecutedR}
                   </span>
                   <span style={{ margin: 5 }}>
                     Zadani zahtjevi:{" "}
-                    {userStatistics && userStatistics[index]
-                      ? userStatistics[index].numAuthoredR
-                      : null}
+                    {user.statistics ? user.statistics.numAuthoredR : null}
                   </span>
                   <span style={{ margin: 5 }}>
                     Rang:{" "}
-                    {userStatistics && userStatistics[index]
-                      ? userStatistics[index].rank
-                      : null}
+                    {user.statistics && user.statistics.rank}
                   </span>
                 </Typography>
               </CardContent>
