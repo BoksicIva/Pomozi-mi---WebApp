@@ -54,21 +54,25 @@ export default function BasicTable() {
   const [UsersTemp, setUsersTemp] = useState([]);
   const [userStatistics, setUserStatistics] = useState([]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    Userservice.getSearched(value)
-      .then((response) => {
-        if (response.data._embedded !== undefined) {
-          console.log(response.data._embedded.users);
-          setUsers(response.data._embedded.users);
-        } else setUsers([]);
-        //rows = response.data._embedded.users;
-        //console.log(rows);
-        //console.log(rows[0]);
-      })
-      .catch((error) => {
-        alert(error);
-      });
+
+    try {
+      let response = await Userservice.getSearched(value);
+      let usrs = response.data._embedded && response.data._embedded.users;
+      setUsers(usrs ? usrs : []);
+
+      for (let user of usrs) {
+        let response = await UserService.getUserStatistics(user.idUser);
+        user.statistics = response.data;
+      }
+
+      setUsers([]);
+      setUsers(usrs);
+
+    } catch (err) {
+      console.log(err);
+    }
 
     /*     for (let user of UsersTemp) {
       let fullName = user.firstName + " " + user.lastName;
@@ -88,53 +92,54 @@ export default function BasicTable() {
   const handleChangeInput = (event) => {
     setValue(event.target.value);
   };
-  const handleChangeSort = (event) => {
+
+  const handleChangeSort = async (event) => {
     setSort(event.target.value);
     console.log(event.target.value);
     console.log(typeof sort);
 
-    if (event.target.value === "1") {
-      Userservice.getSortedUsers("lastName")
-        .then((response) => {
-          setUsers(response.data._embedded.users);
+    let usrs;
+    let response;
 
-          console.log(Users);
+    try {
 
-          //rows = response.data._embedded.users;
-          //console.log(rows);
-          //console.log(rows[0]);
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    } else {
-      Userservice.getSortedUsers("firstName")
-        .then((response) => {
-          setUsers(response.data._embedded.users);
-          console.log(Users);
-          //rows = response.data._embedded.users;
-          //console.log(rows);
-          //console.log(rows[0]);
-        })
-        .catch((error) => {
-          alert(error);
-        });
+      if (event.target.value === "1")
+        response = await Userservice.getSortedUsers("lastName");
+      else
+        response = await Userservice.getSortedUsers("firstName");
+
+      usrs = response.data._embedded.users;
+      setUsers(usrs);
+
+      for (let user of usrs) {
+        let response = await UserService.getUserStatistics(user.idUser);
+        user.statistics = response.data;
+      }
+
+      setUsers([]);
+      setUsers(usrs);
+
+    } catch (err) {
+      console.log(err);
     }
   };
 
   useEffect(() => {
-    (async ()=>{
+    (async () => {
       try {
         let response = await Userservice.getUsers();
         let users = response.data._embedded.users;
-  
-        for(let user of users ){
+
+        setUsers(users);
+
+        for (let user of users) {
           let response = await UserService.getUserStatistics(user.idUser);
           user.statistics = response.data;
         }
-        
+
+        setUsers([]);
         setUsers(users);
-  
+
       } catch (err) {
         console.log(err);
       }
