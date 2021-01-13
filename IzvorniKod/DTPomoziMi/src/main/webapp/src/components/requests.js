@@ -21,6 +21,7 @@ import Button from "@material-ui/core/Button";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 import DeleteIcon from "@material-ui/icons/Delete";
 import UserService from "../service/user-service";
+import style from "./style/log-reg.module.css";
 
 if (UserService.getUserContext() === null) {
   window.location.assign("/login");
@@ -48,12 +49,17 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     backgroundColor: red[500],
   },
+  page: {
+    backgroundColor: "cornsilk",
+    height: "100%",
+    minHeight: "100vh",
+  },
 }));
 
 const libraries = ["places"];
 const mapContainerStyle = {
-  height: "100vh",
-  width: "60vw",
+  height: "50vh",
+  width: "100%",
 };
 
 const options = {
@@ -216,7 +222,7 @@ export default function RecipeReviewCard(props) {
   };
 
   return (
-    <>
+    <div className={classes.page}>
       <Sidebar />
       <Container maxWidth="lg">
         {notSent && (
@@ -339,7 +345,9 @@ export default function RecipeReviewCard(props) {
         ) : (
           <>
             <div>
-              <button onClick={refreshPage}>Povratak na zahtjeve</button>
+              <button onClick={refreshPage} className={style.button}>
+                Povratak na zahtjeve
+              </button>
             </div>
             <h1>Zahtjev uspjesno poslan!</h1>
             <Typography paragraph>Zahtjev : {req.description}</Typography>
@@ -347,7 +355,7 @@ export default function RecipeReviewCard(props) {
               <>
                 <h2>Lokacija zahtjeva:</h2>
 
-                <div>
+                <Container maxWidth="md" disableGutters={true}>
                   <GoogleMap
                     mapContainerStyle={mapContainerStyle}
                     zoom={15}
@@ -360,12 +368,12 @@ export default function RecipeReviewCard(props) {
                   >
                     <Marker key={16} position={{ lat: lat, lng: lng }} />
                   </GoogleMap>
-                </div>
+                </Container>
               </>
             )}
           </>
         )}
       </Container>
-    </>
+    </div>
   );
 }

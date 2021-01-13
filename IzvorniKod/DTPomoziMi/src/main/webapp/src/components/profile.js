@@ -1044,7 +1044,7 @@ const Profile = (props) => {
                 style={{ display: about ? "none" : "flex" }}
               >
                 Ocjena:{" "}
-                {userStatistics ? +userStatistics.avgGrade.toFixed(3) : null}
+                {userStatistics && userStatistics.avgGrade && +userStatistics.avgGrade.toFixed(3)}
                 <br />
                 Izvršeni zahtjevi:{" "}
                 {userStatistics ? userStatistics.numExecutedR : null}

@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     boxShadow: "0 0 7px 0 rgba(0, 0, 0, 0.2)",
     padding: "5%",
-    marginBottom: "5%",
+    backgroundColor: "white",
   },
 }));
 
@@ -139,7 +139,7 @@ export const Dash = (props) => {
   };
 
   return (
-    <>
+    <div className={style.background}>
       <Sidebar />
       <div>
         <div className={style.empthy1}> </div>
@@ -434,7 +434,7 @@ export const Dash = (props) => {
           </Container>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

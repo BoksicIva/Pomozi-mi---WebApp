@@ -150,7 +150,7 @@ export default function BasicTable() {
   }, [Users]);
 
   return (
-    <>
+    <div className={style.background}>
       <Sidebar />
       <div className={style.empthy1}></div>
       <Container maxWidth="lg">
@@ -202,7 +202,7 @@ export default function BasicTable() {
           </Table>
         </TableContainer> */}
         {Users.map((user, index) => (
-          <>
+          <div key={user.idUser}>
             <br></br>
             <Card className={classes.root}>
               <CardHeader
@@ -218,36 +218,45 @@ export default function BasicTable() {
                 <Typography
                   variant="h5"
                   color="textSecondary"
-                  style={{ display: "flex" }}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-around",
+                    flexFlow: "wrap",
+                  }}
                 >
-                  Ocjena:{" "}
-                  {userStatistics && userStatistics[index]
-                    ? userStatistics[index].avgGrade
-                      ? +userStatistics[index].avgGrade.toFixed(3)
-                      : null
-                    : null}
-                  <br />
-                  Izvršeni zahtjevi:{" "}
-                  {userStatistics && userStatistics[index]
-                    ? userStatistics[index].numExecutedR
-                    : null}
-                  <br />
-                  Zadani zahtjevi:{" "}
-                  {userStatistics && userStatistics[index]
-                    ? userStatistics[index].numAuthoredR
-                    : null}
-                  <br />
-                  Rang:{" "}
-                  {userStatistics && userStatistics[index]
-                    ? userStatistics[index].rank
-                    : null}
+                  <span style={{ margin: 5 }}>
+                    Ocjena:{" "}
+                    {userStatistics && userStatistics[index]
+                      ? userStatistics[index].avgGrade
+                        ? +userStatistics[index].avgGrade.toFixed(3)
+                        : null
+                      : null}
+                  </span>
+                  <span style={{ margin: 5 }}>
+                    Izvršeni zahtjevi:{" "}
+                    {userStatistics && userStatistics[index]
+                      ? userStatistics[index].numExecutedR
+                      : null}
+                  </span>
+                  <span style={{ margin: 5 }}>
+                    Zadani zahtjevi:{" "}
+                    {userStatistics && userStatistics[index]
+                      ? userStatistics[index].numAuthoredR
+                      : null}
+                  </span>
+                  <span style={{ margin: 5 }}>
+                    Rang:{" "}
+                    {userStatistics && userStatistics[index]
+                      ? userStatistics[index].rank
+                      : null}
+                  </span>
                 </Typography>
               </CardContent>
             </Card>
             <br></br>
-          </>
+          </div>
         ))}
       </Container>
-    </>
+    </div>
   );
 }

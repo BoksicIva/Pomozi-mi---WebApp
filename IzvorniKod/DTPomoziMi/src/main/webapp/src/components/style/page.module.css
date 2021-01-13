@@ -10,6 +10,11 @@ body {
   height: 60px;
 }
 
+.background {
+  background-color: cornsilk;
+  height: 100%;
+}
+
 input {
   padding: 0.5rem;
   width: 19rem;
@@ -93,6 +98,7 @@ button.outline {
 
 .container {
   min-width: fit-content;
+  padding-bottom: 5vh;
 }
 
 input:focus {
