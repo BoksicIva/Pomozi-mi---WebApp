@@ -232,8 +232,8 @@ const Profile = (props) => {
   });
   const [chainOfTrust, setChainOfTrust] = useState({});
   const [myErrors, setMyErrors] = useState({});
-
-  let location = { state: "", town: "", adress: "" };
+  const [isLocationSubmiting, setIsLocationSubmiting] = useState(false);
+  const [location, setLocation] = useState({ state: "", town: "", adress: "" });
 
   function handleChange(event, newValue) {
     setValue(newValue);
@@ -815,7 +815,9 @@ const Profile = (props) => {
             <TextField
               label="Država"
               onChange={(state) => {
-                location.state = state.target.value;
+                let loc = location;
+                loc.state = state.target.value;
+                setLocation(loc);
               }}
               classes={{ root: classes.locationInput }}
             />
@@ -823,7 +825,9 @@ const Profile = (props) => {
             <TextField
               label="Grad"
               onChange={(town) => {
-                location.town = town.target.value;
+                let loc = location;
+                loc.town = town.target.value;
+                setLocation(loc);
               }}
               classes={{ root: classes.locationInput }}
             />
@@ -831,7 +835,9 @@ const Profile = (props) => {
             <TextField
               label="Adresa"
               onChange={(adress) => {
-                location.adress = adress.target.value;
+                let loc = location;
+                loc.adress = adress.target.value;
+                setLocation(loc);
               }}
               classes={{ root: classes.locationInput }}
             />
@@ -839,18 +845,21 @@ const Profile = (props) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeLocationDialog} color="secondary">
+          <Button onClick={closeLocationDialog} disabled={isLocationSubmiting} color="secondary">
             Odustani
           </Button>
           <Button
+            disabled={isLocationSubmiting}
             onClick={async () => {
+              setIsLocationSubmiting(true);
+              if(myErrors && myErrors.message && setMyErrors({}));
               let usrData = userData;
               try {
                 usrData.location = await LocationService.getLatLong(location.state, location.town, location.adress);
               } catch (err) {
                 let message = err;
-                console.log(err);
                 setMyErrors({ message });
+                setIsLocationSubmiting(false);
                 return;
               }
               UserService.updateUser(usrData.idUser, usrData)
@@ -861,7 +870,7 @@ const Profile = (props) => {
                 .catch((error) => {
                   setMyErrors(error); // TODO ??
                 });
-
+              setIsLocationSubmiting(false);
               closeLocationDialog();
             }}
             color="primary"
