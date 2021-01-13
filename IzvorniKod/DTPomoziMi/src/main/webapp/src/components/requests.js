@@ -121,7 +121,7 @@ export default function RecipeReviewCard(props) {
   const [isAdmin, setAdmin] = React.useState(false);
   const [noLoc, setLoc] = React.useState(false);
   const [req, setReq] = React.useState();
-  const [searchValue, setSearchValue] = React.useState();
+  const [searchValue, setSearchValue] = React.useState("");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   useEffect(() => {
