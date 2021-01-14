@@ -267,13 +267,30 @@ public class UserServiceImpl implements UserService {
 	public List<RatingDTO> getChainOfTrust(long id, UserPrincipal principal) {
 		User user = fetch(principal.getUser().getIdUser()); // TODO ovo treba debelo testirat
 		//da je korisnik kojeg ste vi visoko ocjenili ocijenio korisnika čiji profil gledate.
-		return user
+
+		List<RatingDTO> dtos =  user
 			.getRatedOthers()
 			.stream()
 			.filter(r -> r.getRate() > 3)
 			.flatMap(r -> r.getRated().getRatedOthers().stream().filter(o -> o.getRated().getIdUser().equals(id)))
+			.distinct()
 			.map(r -> ratingDTOAssembler.toModel(r))
 			.collect(Collectors.toList());
+		
+		dtos.forEach(r -> {
+			r.getRator().setLocation(null);
+			r.getRated().setLocation(null);
+
+			if (r.getRequest() != null) {
+				r.getRequest().setAuthor(null);
+				r.getRequest().setExecutor(null);
+				r.getRequest().setLocation(null);
+				r.getRequest().setPhone(null);
+				r.getRequest().setRatings(null);
+			}
+		});
+		
+		return dtos;
 	}
 
 	private Location resolveLocation(LocationDTO dto) {
