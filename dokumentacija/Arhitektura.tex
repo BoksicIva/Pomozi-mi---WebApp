@@ -297,48 +297,64 @@
 			
 		\section{Dijagram razreda}
 		
-			\textit Na slikama  \ref{fig:4.5}, \ref{fig:4.6}, \ref{fig:4.7}, \ref{fig:4.8} i \ref{fig:4.9} su prikazani dijagrami razreda za backend. Raspoređeni su u više slika radi bolje preglednosti i slične funkcionalnosti. Iz samih slika lakše se može uočiti povezanost samih stavki, njihova ovisnost te sadržaj atributa i funkcionalnosti.
+			\textit Na slikama  \ref{fig:4.5}, \ref{fig:4.6}, \ref{fig:4.7}, \ref{fig:4.8}, \ref{fig:4.9}, \ref{fig:4.10} i \ref{fig:4.11} su prikazani dijagrami razreda za backend. Raspoređeni su u više slika radi bolje preglednosti i slične funkcionalnosti. Iz samih slika lakše se može uočiti povezanost samih stavki, njihova ovisnost te sadržaj atributa i funkcionalnosti.
 			%unos slike
 			\begin{figure}[H]
-				\includegraphics[scale=0.65]{slike/user.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+				\includegraphics[scale=0.45]{slike/authDIag.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
 				\centering
-				\caption { Dijagram razreda za User}
+				\caption { Dijagram razreda za autentifikaciju}
 				\label{fig:4.5}
 			\end{figure}
 		
 			%unos slike
 			\begin{figure}[H]
-				\includegraphics[scale=0.65]{slike/ControllersDiagram.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+				\includegraphics[scale=0.4]{slike/userDiag.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
 				\centering
-				\caption { Dijagram razreda za controllere}
+				\caption { Dijagram razreda za korisnika}
 				\label{fig:4.6}
 			\end{figure}
 			
 			%unos slike
 			\begin{figure}[H]
-				\includegraphics[scale=0.65]{slike/ModelUml.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+				\includegraphics[scale=0.45]{slike/reqDiag.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
 				\centering
-				\caption { Dijagram razreda za model korisnika}
+				\caption { Dijagram razreda za zahtjeve}
 				\label{fig:4.7}
 			\end{figure}
 			
 			
 			%unos slike
 			\begin{figure}[H]
-				\includegraphics[scale=0.65]{slike/ServiceDaoUml.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+				\includegraphics[scale=0.55]{slike/locationDiag.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
 				\centering
-				\caption { Dijagram razreda za ServiceDao}
+				\caption { Dijagram razreda za lokaciju}
 				\label{fig:4.8}
 			\end{figure}
 			
 			
 			%unos slike
 			\begin{figure}[H]
-				\includegraphics[scale=0.4]{slike/class_dijagram.jpeg} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+				\includegraphics[scale=0.55]{slike/ratingDiag.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
 				\centering
-				\caption { Dijagram razreda - models}
+				\caption { Dijagram razreda za ocjenjivanje}
 				\label{fig:4.9}
 			\end{figure}
+		
+			%unos slike
+			\begin{figure}[H]
+				\includegraphics[scale=0.55]{slike/candidacyDiag.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+				\centering
+				\caption { Dijagram razreda za kandidiranje}
+				\label{fig:4.10}
+			\end{figure}
+		
+			%unos slike
+		\begin{figure}[H]
+			\includegraphics[scale=0.45]{slike/notifDiag.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+			\centering
+			\caption { Dijagram razreda za notifikacije}
+			\label{fig:4.11}
+		\end{figure}
 			
 			
 			\begin{comment}
@@ -352,14 +368,14 @@
 				
 		
 		\text Dijagram stanja prikazuje stanja objekta te prijelaze iz jednog stanja u drugo temeljene na dogadajima. Na slici
-		\ref{fig:4.10} prikazan je dijagram stanja registriranog korisnika. Nakon prijave, korisniku se prikazuje početna stranica(Home page). Korisnik klikom na Profil otvara svoju profilnu stranicu. Korisnik može odabirom Autor je Zahtjeva pregledati vlastite aktivne zahtjeve, izvršene, zahtjeve u obradi i blokirane. Isto tako odabirom Izvršitelj je zahtjeva može pregledati zahtjeve koje je izvršio. Korisniku se klikom na Pregled Zahtjeva nudi pregled aktivnih zahtjeva te mogućnost odabira nekoga od zahtjeva s liste. Nakon izvršavanja zahtjeva korisnik mora ocijeniti drugog korisnika i opcionalno ostaviti komentar te se komentari i ocjene vide u profilu korisnika. Korisniku se nudi i mogućnost uređivanja osobnih podataka kao i brisanje korisničkog računa, dok klikom  na Search korisnik može pretraživati druge korisnike aplikacije. Također klikom na Zadavanje Zahtjeva korisnik može zadati novi zahtjev.
+		\ref{fig:4.12} prikazan je dijagram stanja registriranog korisnika. Nakon prijave, korisniku se prikazuje početna stranica(Home page). Korisnik klikom na Profil otvara svoju profilnu stranicu. Korisnik može odabirom Autor je Zahtjeva pregledati vlastite aktivne zahtjeve, izvršene, zahtjeve u obradi i blokirane. Isto tako odabirom Izvršitelj je zahtjeva može pregledati zahtjeve koje je izvršio. Korisniku se klikom na Pregled Zahtjeva nudi pregled aktivnih zahtjeva te mogućnost odabira nekoga od zahtjeva s liste. Nakon izvršavanja zahtjeva korisnik mora ocijeniti drugog korisnika i opcionalno ostaviti komentar te se komentari i ocjene vide u profilu korisnika. Korisniku se nudi i mogućnost uređivanja osobnih podataka kao i brisanje korisničkog računa, dok klikom  na Search korisnik može pretraživati druge korisnike aplikacije. Također klikom na Zadavanje Zahtjeva korisnik može zadati novi zahtjev.
 		
 			%unos slike
 		\begin{figure}[H]
 			\includegraphics[scale=0.3]{slike/Dijagram Stanja Korisnik.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
 			\centering
 			\caption { Dijagram stanja}
-			\label{fig:4.10}
+			\label{fig:4.12}
 			\end{figure}		
 			
 \begin{comment}		
@@ -378,7 +394,7 @@
 			
 		
 			
-			\text Dijagram aktivnosti primjenjuje se za opis modela toka upravljanja ili toka podataka. Ne upotrebljava se za modeliranje dogadajima poticanog ponašanja. U modeliranju toka upravljanja svaki novi korak poduzima se nakon završenog prethodnog, a naglasak je na jednostavnosti. Na dijagramu \ref{fig:4.11} prikazan je proces izvršavanja zahtjeva za pomoć. Korisnik se prijavljuje u sustav,prikazujemu se početna stranica, nakon koje on odabire Pregled zahtjeva. Kada je zamijetio zahtjev kojeg može izvršiti, odabire taj zahtjev, ako mu je zahtjev za izvršavanjem odobren poslužuju se dodatne informacije o zahtjevu kako bi mogao izvršiti zahtjev. Nakon izvršenog zahtjeva, korisnik treba ocijeniti i opcinalno komentirati.
+			\text Dijagram aktivnosti primjenjuje se za opis modela toka upravljanja ili toka podataka. Ne upotrebljava se za modeliranje dogadajima poticanog ponašanja. U modeliranju toka upravljanja svaki novi korak poduzima se nakon završenog prethodnog, a naglasak je na jednostavnosti. Na dijagramu \ref{fig:4.13} prikazan je proces izvršavanja zahtjeva za pomoć. Korisnik se prijavljuje u sustav,prikazujemu se početna stranica, nakon koje on odabire Pregled zahtjeva. Kada je zamijetio zahtjev kojeg može izvršiti, odabire taj zahtjev, ako mu je zahtjev za izvršavanjem odobren poslužuju se dodatne informacije o zahtjevu kako bi mogao izvršiti zahtjev. Nakon izvršenog zahtjeva, korisnik treba ocijeniti i opcinalno komentirati.
 			
 			
 						%unos slike
@@ -386,7 +402,7 @@
 			\includegraphics[scale=0.27]{slike/Izvršavanje zahtjeva.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
 			\centering
 			\caption { Dijagram Aktivnosti}
-			\label{fig:4.11}
+			\label{fig:4.13}
 			\end{figure}
 
 \begin{comment}
@@ -403,7 +419,7 @@
 		
 		
 			
-			\text   Dijagram komponenti prikazan na slici \ref{fig:4.12} opisuje organizaciju i međuovisnost
+			\text   Dijagram komponenti prikazan na slici \ref{fig:4.14} opisuje organizaciju i međuovisnost
             komponenti, interne strukture i odnose prema okolini. Sustavu se pristupa preko dva različita sučelja. Preko sučelja za dohvat HTML, CSS i JS datoteka poslužuju se
             datoteke koje pripadaju \emph{frontend} dijelu aplikacije. Router je komponenta koja na
             upit s url odreduje koja datoteka će se poslužiti na sučelje.Sve JavaScript datoteke ovise o React biblioteci iz koje dohvaćaju gotove komponente kao što su gumbi, forme i slično.REST API poslužuje
@@ -414,7 +430,7 @@
 			\includegraphics[scale=0.3]{slike/Dijagram Komponeneti.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
 			\centering
 			\caption { Dijagram Komponeneti}
-			\label{fig:4.12}
+			\label{fig:4.14}
 			\end{figure}
 			
 \begin{comment}		
