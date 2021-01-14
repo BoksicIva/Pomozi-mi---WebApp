@@ -1,5 +1,3 @@
 package NULL.DTPomoziMi.model;
 
-public enum RequestStatus {
-    AKTIVAN, BLOKIRAN, IZVRSEN
-}
+public enum RequestStatus { ACTIVE, BLOCKED, FINALIZED, EXECUTING, DELETED }

@@ -14,18 +14,19 @@ import java.io.IOException;
 @Component
 public class CsrfTokenRequestFilter extends OncePerRequestFilter {
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        MutableHttpServletRequest mutableRequest = new MutableHttpServletRequest(request);
+	@Override
+	protected void doFilterInternal(
+		HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
+	) throws ServletException, IOException {
+		MutableHttpServletRequest mutableRequest = new MutableHttpServletRequest(request);
 
-            String token = CookieUtil.getValue(request,"X-CSRF-COOKIE");// TODO JwtConstants
+		String token = CookieUtil.getValue(request, "X-CSRF-COOKIE");// TODO JwtConstants
 
-            if(token != null && !token.isBlank()){
-                // TODO JwtConstants
-                mutableRequest.putHeader("X-CSRF-TOKEN", token);
-            }
+		if (token != null && !token.isBlank()) {
+			// TODO JwtConstants
+			mutableRequest.putHeader("X-CSRF-TOKEN", token);
+		}
 
-
-        filterChain.doFilter(mutableRequest, response);
-    }
+		filterChain.doFilter(mutableRequest, response);
+	}
 }

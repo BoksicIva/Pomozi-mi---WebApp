@@ -1,11 +1,11 @@
 package NULL.DTPomoziMi.model;
 
 import java.io.Serializable;
-import java.sql.Date;
-import java.sql.Time;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -31,41 +31,31 @@ import lombok.ToString;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString
+@ToString(exclude = { "ratings" })
 @Table(name = "zahtjev")
 @Entity(name = "zahtjev")
 public class Request implements Serializable {
 
-	private static final long serialVersionUID = 1835469530725494808L;
+	private static final long serialVersionUID = 1L;
 
 	@Include
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_zahtjev")
-	private Long IdRequest;
+	private Long idRequest;
 
 	@Column(name = "brojmobitela")
 	private String phone;
 
-	@Column(name = "datum")
-	private Date date;
-
-	@Column(name = "izvrsen")
-	private Boolean executed;
-
 	@Column(name = "opis")
 	private String description;
-
-	@Column(name = "primljenanotif")
-	private Boolean recivedNotif;
 
 	@Enumerated(EnumType.STRING)
 	private RequestStatus status;
 
-	@Column(name = "vrijeme")
-	private Time time;
+	private LocalDateTime tstmp;
 
-	@OneToMany(mappedBy = "request")
+	@OneToMany(mappedBy = "request", cascade = CascadeType.ALL)
 	private Set<Rating> ratings = new HashSet<>();
 
 	@ManyToOne
@@ -80,12 +70,13 @@ public class Request implements Serializable {
 	@JoinColumn(name = "id_lokacija")
 	private Location location;
 
-	public Rating addRating(Rating rating) {
-		getRatings().add(rating);
-		rating.setRequest(this);
+	@Column(name = "exectstmp")
+	private LocalDateTime execTstmp;
+	
+	@Column(name = "potvrden")
+	private boolean confirmed;
 
-		return rating;
-	}
+	public Rating addRating(Rating rating) { getRatings().add(rating); rating.setRequest(this); return rating; }
 
 	public Rating removeRating(Rating rating) {
 		getRatings().remove(rating);

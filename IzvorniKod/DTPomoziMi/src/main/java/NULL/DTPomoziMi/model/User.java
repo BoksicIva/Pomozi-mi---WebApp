@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,13 +33,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString
+@ToString(exclude = { "candidacies", "ratedBy", "ratedOthers", "authoredReqs", "executedReqs", "notifications" })
 @Entity(name = "korisnik")
 @Table(name = "korisnik")
 public class User implements Serializable {
-	private static final long serialVersionUID = -7095903751090463181L;
+	private static final long serialVersionUID = 1L;
 
-    @Include
+	@Include
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_korisnik")
@@ -59,34 +61,52 @@ public class User implements Serializable {
 
 	private String token;
 
+	@Column(name = "slika")
+	private String picture;
+
 	@ManyToOne
 	@JoinColumn(name = "id_lokacija")
 	private Location location;
 
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(
-			name = "kandidiranje", joinColumns = { @JoinColumn(name = "id_korisnik") },
-			inverseJoinColumns = { @JoinColumn(name = "id_kandidatura") }
+		name = "kandidiranje", joinColumns = { @JoinColumn(name = "id_korisnik") },
+		inverseJoinColumns = { @JoinColumn(name = "id_kandidatura") }
 	)
 	private Set<Candidacy> candidacies = new HashSet<>();
 
-	@OneToMany(mappedBy = "rated")
+	@OneToMany(mappedBy = "rated", cascade = CascadeType.ALL)
 	private Set<Rating> ratedBy = new HashSet<>();
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private Set<Notification> notifications = new HashSet<>();
 
-	@OneToMany(mappedBy = "rator")
+	@OneToMany(mappedBy = "rator", cascade = CascadeType.ALL)
 	private Set<Rating> ratedOthers = new HashSet<>();
 
-	@ManyToMany(mappedBy = "users")
+	@ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
 	private Set<RoleEntity> roles = new HashSet<>();
 
-	@OneToMany(mappedBy = "author")
+	@OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
 	private Set<Request> authoredReqs = new HashSet<>();
 
-	@OneToMany(mappedBy = "executor")
+	@OneToMany(mappedBy = "executor", cascade = CascadeType.ALL)
 	private Set<Request> executedReqs = new HashSet<>();
 
-	public List<Role> getEnumRoles() {
-		return roles.stream().map(r -> r.getRole()).collect(Collectors.toList());
+	public List<Role> getEnumRoles() { return roles.stream().map(r -> r.getRole()).collect(Collectors.toList()); }
+	
+	public Notification addNotification(Notification notification) {
+		getNotifications().add(notification);
+		notification.setUser(this);
+
+		return notification;
+	}
+
+	public Notification removeNotification(Notification notification) {
+		getNotifications().remove(notification);
+		notification.setUser(null);
+
+		return notification;
 	}
 
 	public Rating addRatedBy(Rating ratedBy) {
@@ -131,18 +151,18 @@ public class User implements Serializable {
 		return authoredReq;
 	}
 
-	public Request addExectedReq(Request exectedReq) {
-		getExecutedReqs().add(exectedReq);
-		exectedReq.setExecutor(this);
+	public Request addExecutedReq(Request executedReq) {
+		getExecutedReqs().add(executedReq);
+		executedReq.setExecutor(this);
 
-		return exectedReq;
+		return executedReq;
 	}
 
-	public Request removeExectedReq(Request exectedReq) {
-		getExecutedReqs().remove(exectedReq);
-		exectedReq.setExecutor(null);
+	public Request removeExecutedReq(Request executedReq) {
+		getExecutedReqs().remove(executedReq);
+		executedReq.setExecutor(null);
 
-		return exectedReq;
+		return executedReq;
 	}
 
 	public RoleEntity addRoleEntity(RoleEntity roleEntity) {

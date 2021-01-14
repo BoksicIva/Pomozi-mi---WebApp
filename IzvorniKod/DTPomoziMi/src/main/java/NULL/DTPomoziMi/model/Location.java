@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,12 +27,12 @@ import lombok.ToString;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString
+@ToString(exclude = { "candidacies", "users", "requests" })
 @Entity(name = "lokacija")
 @Table(name = "lokacija")
 public class Location implements Serializable {
 
-	private static final long serialVersionUID = -5793615200714679731L;
+	private static final long serialVersionUID = 1L;
 
 	@Include
 	@Id
@@ -54,13 +55,13 @@ public class Location implements Serializable {
 	@Column(name = "sirina")
 	private BigDecimal latitude;
 
-	@OneToMany(mappedBy = "location")
+	@OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
 	private Set<Candidacy> candidacies = new HashSet<>();
 
-	@OneToMany(mappedBy = "location")
+	@OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
 	private Set<User> users = new HashSet<>();
 
-	@OneToMany(mappedBy = "location")
+	@OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
 	private Set<Request> requests = new HashSet<>();
 
 	public Candidacy addCandidacy(Candidacy candidacy) {

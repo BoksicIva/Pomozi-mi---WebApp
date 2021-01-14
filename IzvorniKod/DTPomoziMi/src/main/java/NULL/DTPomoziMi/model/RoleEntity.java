@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -29,11 +30,11 @@ import lombok.ToString;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString
+@ToString(exclude = { "users" })
 @Entity(name = "uloga")
 @Table(name = "uloga")
 public class RoleEntity implements Serializable {
-	private static final long serialVersionUID = -6873258326473510073L;
+	private static final long serialVersionUID = 1L;
 
 	@Include
 	@Id
@@ -45,11 +46,9 @@ public class RoleEntity implements Serializable {
 	@Column(name = "naziv")
 	private Role role;
 
-	
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.REMOVE)
 	@JoinTable(
-			name = "imaulogu", joinColumns = { @JoinColumn(name = "id_uloga") },
-			inverseJoinColumns = { @JoinColumn(name = "id_korisnik") }
+		name = "imaulogu", joinColumns = { @JoinColumn(name = "id_uloga") }, inverseJoinColumns = { @JoinColumn(name = "id_korisnik") }
 	)
 	private Set<User> users = new HashSet<>();
 

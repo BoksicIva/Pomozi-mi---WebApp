@@ -1,16 +1,21 @@
 package NULL.DTPomoziMi.web.DTO;
 
-import java.sql.Date;
-import java.sql.Time;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Pattern;
 
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
-import NULL.DTPomoziMi.model.Location;
 import NULL.DTPomoziMi.model.RequestStatus;
-import NULL.DTPomoziMi.model.User;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.EqualsAndHashCode.Include;
@@ -23,30 +28,42 @@ import lombok.Setter;
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 @Getter
 @Setter
-@JsonInclude(JsonInclude.Include.NON_NULL)
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 @Relation(collectionRelation = "requests", itemRelation = "request")
-public class RequestDTO extends RepresentationModel<RequestDTO> { // TODO validacija
+public class RequestDTO extends RepresentationModel<RequestDTO> {
 
 	@Include
+	@NotNull
 	private Long IdRequest;
 
+	@Pattern(regexp = "^[0-9]+$")
+	@NotNull
 	private String phone;
 
-	private Date date;
+	@Future
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+	private LocalDateTime tstmp;
 
-	private Boolean executed;
-
+	@NotNull
 	private String description;
-
-	private Boolean recivedNotif;
 
 	private RequestStatus status;
 
-	private Time time;
+	@NotNull
+	@Valid
+	private UserDTO author;
 
-	private User author;
+	@Valid
+	private UserDTO executor;
 
-	private User executor;
+	@Valid
+	private LocationDTO location;
+	
+	private Set<RatingDTO> ratings = new HashSet<>();
 
-	private Location location;
+	@Past
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+	private LocalDateTime execTstmp;
+	
+	private boolean confirmed;
 }

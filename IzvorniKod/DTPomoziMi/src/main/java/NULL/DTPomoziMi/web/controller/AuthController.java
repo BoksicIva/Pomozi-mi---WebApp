@@ -1,5 +1,6 @@
 package NULL.DTPomoziMi.web.controller;
 
+import java.util.Calendar;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -16,8 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -33,83 +34,108 @@ import NULL.DTPomoziMi.security.UserPrincipal;
 import NULL.DTPomoziMi.service.TokenService;
 import NULL.DTPomoziMi.service.UserService;
 import NULL.DTPomoziMi.util.CookieUtil;
-import NULL.DTPomoziMi.web.DTO.UserDTO;
+import NULL.DTPomoziMi.web.DTO.UserRegisterDTO;
+import io.jsonwebtoken.ExpiredJwtException;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private UserService userService;
+	@Autowired
+	private UserService userService;
 
-    @Autowired
-    private TokenService tokenService;
+	@Autowired
+	private TokenService tokenService;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+	@Autowired
+	private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private MessageSource messageSource;
+	@Autowired
+	private MessageSource messageSource;
 
-    @Autowired
-    private JwtUtil jwtUtil;
+	@Autowired
+	private JwtUtil jwtUtil;
 
-    @Resource(name = "myUserDetailsService")
-    private UserDetailsService userDetailsService;
+	@Resource(name = "myUserDetailsService")
+	private UserDetailsService userDetailsService;
 
-    @PostMapping(value = "/registration", produces = {"application/json; charset=UTF-8"} )
-    public ResponseEntity<?> register(@Valid UserDTO user, BindingResult bindingResult, HttpServletRequest request) {
+	@PostMapping(value = "/registration", produces = { "application/json; charset=UTF-8" })
+	public ResponseEntity<?> register(@Valid UserRegisterDTO user, BindingResult bindingResult, HttpServletRequest request) {
 
-        if(bindingResult.hasErrors()) {
-            List<ObjectError> errors = bindingResult.getAllErrors();
-            logger.debug("Binding errors {}", errors);
+		if (bindingResult.hasErrors()) {
+			List<ObjectError> errors = bindingResult.getAllErrors();
+			logger.debug("Binding errors {}", errors);
 
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-        }
+			return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+		}
 
-        logger.debug("Registering user account with info: {}", user);
+		logger.debug("Registering user account with info: {}", user);
 
-        try {
-            userService.registerUser(user);
-        }catch (DataIntegrityViolationException e){
-            throw new UserAlreadyExistException("User with username: " + user.getEmail() + " already exists");
-        }
+		try {
+			userService.registerUser(user);
+		} catch (DataIntegrityViolationException e) {
+			throw new UserAlreadyExistException(
+				messageSource.getMessage("auth.registration.exists", new Object[] { user.getEmail() }, request.getLocale())
+			);
+		}
 
-        return ResponseEntity.ok(messageSource.getMessage("auth.registration.success", null, request.getLocale()));
-    }
+		return ResponseEntity.ok(messageSource.getMessage("auth.registration.success", null, request.getLocale()));
+	}
 
-    @PostMapping(value = "/login", produces = {"application/json; charset=UTF-8"})
-    public ResponseEntity<?> login(@RequestParam("email") String email, @RequestParam("password") String password,
-								   HttpServletResponse response) throws Exception {
-        logger.debug("Login with username: {}", email);
+	@PostMapping(value = "/login", produces = { "application/json; charset=UTF-8" })
+	public ResponseEntity<?> login(
+		@RequestParam("email") String email, @RequestParam("password") String password, HttpServletResponse response,
+		HttpServletRequest request
+	) throws Exception {
 
-        email = email == null ? null : email.trim();
+		logger.debug("Login with username: {}", email);
+		email = email == null ? null : email.trim();
 
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-        } catch (AuthenticationException e) {
-            logger.debug("Incorect username: {} or password", email);
-            return new ResponseEntity<String>("Incorect username or password", HttpStatus.UNAUTHORIZED); // TODO promjeni
-        }
+		Authentication auth;
+		try {
+			auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+		} catch (AuthenticationException e) {
+			logger.debug("Incorect username: {} or password", email);
+			return new ResponseEntity<String>(
+				messageSource.getMessage("userDetails.service.notFound", null, request.getLocale()), HttpStatus.UNAUTHORIZED
+			);
+		}
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-        
-        String refreshToken = null;
-        
-        if(userDetails instanceof UserPrincipal && ((UserPrincipal) userDetails).getUser().getToken() != null) {
-        	refreshToken = ((UserPrincipal) userDetails).getUser().getToken();
-        }else {
-        	refreshToken = jwtUtil.generateRefreshToken(userDetails);
-        	tokenService.updateToken(userDetails.getUsername(), refreshToken);
-        }
+		UserPrincipal user = (UserPrincipal) auth.getPrincipal();
 
-        String token = jwtUtil.generateToken(userDetails);
+		String refreshToken = null;
+		if (user.getUser().getToken() == null) // nemoj odlogirat na drugim uredajima
+		{
+			refreshToken = jwtUtil.generateRefreshToken(user);
+			tokenService.updateToken(refreshToken, user.getUsername());
+		} else {
+			refreshToken = user.getUser().getToken();
+			
+			boolean shouldUpdate = false;
+			try {
+				Calendar cal = Calendar.getInstance();
+				cal.add(Calendar.HOUR, 1);
+				
+				if(jwtUtil.extractExpiration(refreshToken).before(cal.getTime())) {
+					refreshToken = jwtUtil.generateRefreshToken(user);
+					shouldUpdate = true;
+				}
+			}catch(ExpiredJwtException e) {
+				refreshToken = jwtUtil.generateRefreshToken(user);
+				shouldUpdate = true;
+			}
+			
+			if(shouldUpdate) 
+				tokenService.updateToken(refreshToken, user.getUsername());
+		}
 
-        CookieUtil.create(response, JwtConstants.JWT_COOKIE_NAME, token, false, -1);
-        CookieUtil.create(response, JwtConstants.JWT_REFRESH_COOKIE_NAME, refreshToken, false, -1);
+		String token = jwtUtil.generateToken(user);
 
-        return ResponseEntity.ok("User login successful!");
-    }
+		CookieUtil.create(response, JwtConstants.JWT_COOKIE_NAME, token, false, -1, false);
+		CookieUtil.create(response, JwtConstants.JWT_REFRESH_COOKIE_NAME, refreshToken, false, -1, true);
+
+		return ResponseEntity.ok(messageSource.getMessage("auth.login.sucess", null, request.getLocale()));
+	}
 
 }

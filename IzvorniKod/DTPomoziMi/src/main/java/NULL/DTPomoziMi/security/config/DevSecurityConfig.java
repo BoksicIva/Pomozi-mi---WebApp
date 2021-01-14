@@ -2,6 +2,8 @@ package NULL.DTPomoziMi.security.config;
 
 import NULL.DTPomoziMi.web.filters.CsrfTokenRequestFilter;
 import NULL.DTPomoziMi.web.filters.JwtRequestFilter;
+import NULL.DTPomoziMi.web.filters.UnratedRequestsFilter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,78 +31,83 @@ import org.springframework.security.web.csrf.CsrfFilter;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class DevSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserDetailsService myUserDetailsService;
+	@Autowired
+	private UserDetailsService myUserDetailsService;
 
-    @Autowired
-    private JwtRequestFilter jwtRequestFilter;
+	@Autowired
+	private JwtRequestFilter jwtRequestFilter;
 
-    @Autowired
-    private CsrfTokenRequestFilter csrfTokenRequestFilter;
+	@Autowired
+	private CsrfTokenRequestFilter csrfTokenRequestFilter;
 
-    @Autowired
-    private LogoutSuccessHandler myLogoutHandler;
+	@Autowired
+	private LogoutSuccessHandler myLogoutHandler;
 
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+	@Autowired
+	private UnratedRequestsFilter unratedRequestsFilter;
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .userDetailsService(myUserDetailsService)
-                .passwordEncoder(passwordEncoder());
-    }
+	@Bean
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception { return super.authenticationManagerBean(); }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .cors()
-                .and()
-                .csrf().csrfTokenRepository(cookieCsrfTokenRepository()).ignoringAntMatchers("/h2/**");
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(myUserDetailsService).passwordEncoder(passwordEncoder());
+	}
 
-        http.authorizeRequests()
-                .antMatchers("/h2/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/getCsrf").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/auth/*").permitAll()
-                .anyRequest().authenticated();
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http
+			.sessionManagement()
+			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			.and()
+			.cors()
+			.and()
+			.csrf()
+			.csrfTokenRepository(cookieCsrfTokenRepository())
+			.ignoringAntMatchers("/h2/**");
 
-        http.headers().frameOptions().disable();
+		http
+			.authorizeRequests()
+			.antMatchers("/h2/**")
+			.permitAll()
+			.antMatchers(HttpMethod.GET, "/api/getCsrf")
+			.permitAll()
+			.antMatchers(HttpMethod.POST, "/api/auth/*")
+			.permitAll()
+			.anyRequest()
+			.authenticated();
 
-        http.formLogin().disable()
-                .logout().logoutUrl("/logout")
-                .logoutSuccessHandler(myLogoutHandler);
+		http.headers().frameOptions().disable();
 
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(csrfTokenRequestFilter, CsrfFilter.class);
+		http.formLogin().disable().logout().logoutSuccessHandler(myLogoutHandler);
 
-    }
+		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(csrfTokenRequestFilter, CsrfFilter.class);
+		http.addFilterAfter(unratedRequestsFilter, JwtRequestFilter.class);
 
-    CookieCsrfTokenRepository cookieCsrfTokenRepository(){
-        CookieCsrfTokenRepository repo = new CookieCsrfTokenRepository();
-        repo.setCookieHttpOnly(false);
-        repo.setCookieName("X-CSRF-COOKIE"); //TODO constants
-        repo.setHeaderName("X-CSRF-TOKEN");
+	}
 
-        return repo;
-    }
+	CookieCsrfTokenRepository cookieCsrfTokenRepository() {
+		CookieCsrfTokenRepository repo = new CookieCsrfTokenRepository();
+		repo.setCookieHttpOnly(false);
+		repo.setCookieName("X-CSRF-COOKIE"); //TODO constants
+		repo.setHeaderName("X-CSRF-TOKEN");
 
-    @Override
-    public void configure(WebSecurity web){
-        web.ignoring().antMatchers("/");
-        web.ignoring().antMatchers("/*.ico");
-        web.ignoring().antMatchers("/*.js");
-        web.ignoring().antMatchers("/*.json");
-        web.ignoring().antMatchers("/*.png");
-        web.ignoring().antMatchers("/static/**");
-    }
+		return repo;
+	}
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(11);
-    }
+	@Override
+	public void configure(WebSecurity web) {
+		//web.ignoring().antMatchers("/*");
+		web.ignoring().antMatchers("/*.ico");
+		web.ignoring().antMatchers("/*.js");
+		web.ignoring().antMatchers("/*.json");
+		web.ignoring().antMatchers("/*.png");
+		web.ignoring().antMatchers("/static/**");
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(11); }
 
 }

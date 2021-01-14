@@ -29,7 +29,7 @@ import lombok.ToString;
 @Table(name = "ocjenjivanje")
 public class Rating implements Serializable {
 
-	private static final long serialVersionUID = -3163979796749734017L;
+	private static final long serialVersionUID = 1L;
 
 	@Include
 	@Id

@@ -1,12 +1,13 @@
 package NULL.DTPomoziMi.web.DTO;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-import NULL.DTPomoziMi.model.Request;
-import NULL.DTPomoziMi.model.User;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.EqualsAndHashCode.Include;
@@ -19,7 +20,7 @@ import lombok.Setter;
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 @Getter
 @Setter
-@JsonInclude(JsonInclude.Include.NON_NULL)
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 @Relation(collectionRelation = "ratings", itemRelation = "rating")
 public class RatingDTO extends RepresentationModel<RatingDTO> { // TODO validacija
 	@Include
@@ -27,12 +28,18 @@ public class RatingDTO extends RepresentationModel<RatingDTO> { // TODO validaci
 
 	private String comment;
 
+	@NotNull
+	@Min(1)
+	@Max(5)
 	private Integer rate;
 
-	private User rated;
+	@Valid
+	private UserDTO rated;
 
-	private User rator;
+	@Valid
+	private UserDTO rator;
 
-	private Request request;
+	@Valid
+	private RequestDTO request;
 
 }
