@@ -8,40 +8,34 @@ import org.springframework.stereotype.Component;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 @Component
-public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword, String>{
+public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword, String> {
 
-    @Autowired
-    private MessageSource messageSource;
+	@Autowired
+	private MessageSource messageSource;
 
-    @Override
-    public void initialize(ValidPassword constraintAnnotation) {}
+	@Override
+	public void initialize(ValidPassword constraintAnnotation) {}
 
-    @Override
-    public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
-        MessageResolver resolver = new SpringMessageResolver(messageSource);
+	@Override
+	public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
+		MessageResolver resolver = new SpringMessageResolver(messageSource);
 
-        PasswordValidator val = new PasswordValidator(resolver,
-                new LengthRule(8,50),
-                new CharacterRule(CroatianCharacterData.UpperCase, 1),
-                new CharacterRule(EnglishCharacterData.Digit, 1),
-                new CharacterRule(EnglishCharacterData.Special, 1),
-                new WhitespaceRule()
-        );
+		PasswordValidator val = new PasswordValidator(
+			resolver, new LengthRule(8, 50), new CharacterRule(CroatianCharacterData.UpperCase, 1),
+			new CharacterRule(EnglishCharacterData.Digit, 1), new CharacterRule(EnglishCharacterData.Special, 1), new WhitespaceRule()
+		);
 
-        RuleResult result = val.validate(new PasswordData(s));
-        if(result.isValid())
-            return true;
+		RuleResult result = val.validate(new PasswordData(s));
+		if (result.isValid()) return true;
 
+		String message = val.getMessages(result).stream().collect(Collectors.joining("] | ["));
 
-        String message = val.getMessages(result).stream().collect(Collectors.joining("] | ["));
+		constraintValidatorContext.disableDefaultConstraintViolation();
+		constraintValidatorContext.buildConstraintViolationWithTemplate(message).addConstraintViolation();
 
-        constraintValidatorContext.disableDefaultConstraintViolation();
-        constraintValidatorContext.buildConstraintViolationWithTemplate(message).addConstraintViolation();
-
-        return false;
-    }
+		return false;
+	}
 }

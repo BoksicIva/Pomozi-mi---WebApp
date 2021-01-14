@@ -1,60 +1,108 @@
 package NULL.DTPomoziMi.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
-public class Location {
-    private BigDecimal longitude; //dužina
-    private BigDecimal latitude; //širina
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
-    private String country;
-    private String town;
-    private String address;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.EqualsAndHashCode.Include;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-    public Location(BigDecimal longitude, BigDecimal latitude, String country, String town, String address) {
-        this.longitude = longitude;
-        this.latitude = latitude;
-        this.country = country;
-        this.town = town;
-        this.address = address;
-    }
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = { "candidacies", "users", "requests" })
+@Entity(name = "lokacija")
+@Table(name = "lokacija")
+public class Location implements Serializable {
 
-    public BigDecimal getLongitude() {
-        return longitude;
-    }
+	private static final long serialVersionUID = 1L;
 
-    public void setLongitude(BigDecimal longitude) {
-        this.longitude = longitude;
-    }
+	@Include
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id_lokacija")
+	private Long IdLocation;
 
-    public BigDecimal getLatitude() {
-        return latitude;
-    }
+	@Column(name = "adresa")
+	private String adress;
 
-    public void setLatitude(BigDecimal latitude) {
-        this.latitude = latitude;
-    }
+	@Column(name = "drzava")
+	private String state;
 
-    public String getCountry() {
-        return country;
-    }
+	@Column(name = "duljina")
+	private BigDecimal longitude;
 
-    public void setCountry(String country) {
-        this.country = country;
-    }
+	@Column(name = "naselje")
+	private String town;
 
-    public String getTown() {
-        return town;
-    }
+	@Column(name = "sirina")
+	private BigDecimal latitude;
 
-    public void setTown(String town) {
-        this.town = town;
-    }
+	@OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
+	private Set<Candidacy> candidacies = new HashSet<>();
 
-    public String getAddress() {
-        return address;
-    }
+	@OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
+	private Set<User> users = new HashSet<>();
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+	@OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
+	private Set<Request> requests = new HashSet<>();
+
+	public Candidacy addCandidacy(Candidacy candidacy) {
+		getCandidacies().add(candidacy);
+		candidacy.setLocation(this);
+
+		return candidacy;
+	}
+
+	public Candidacy removeCandidacy(Candidacy candidacy) {
+		getCandidacies().remove(candidacy);
+		candidacy.setLocation(null);
+
+		return candidacy;
+	}
+
+	public User addUser(User user) {
+		getUsers().add(user);
+		user.setLocation(this);
+
+		return user;
+	}
+
+	public User removeUser(User user) {
+		getUsers().remove(user);
+		user.setLocation(null);
+
+		return user;
+	}
+
+	public Request addRequest(Request request) {
+		getRequests().add(request);
+		request.setLocation(this);
+
+		return request;
+	}
+
+	public Request removeRequest(Request request) {
+		getRequests().remove(request);
+		request.setLocation(null);
+
+		return request;
+	}
 }

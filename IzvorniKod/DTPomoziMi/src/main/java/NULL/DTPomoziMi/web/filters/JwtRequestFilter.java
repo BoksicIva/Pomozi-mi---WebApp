@@ -1,101 +1,133 @@
 package NULL.DTPomoziMi.web.filters;
 
-import NULL.DTPomoziMi.jwt.JwtUtil;
-import NULL.DTPomoziMi.properties.JwtConstants;
-import NULL.DTPomoziMi.util.CookieUtil;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwt;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.SignatureException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import NULL.DTPomoziMi.jwt.JwtUtil;
+import NULL.DTPomoziMi.properties.JwtConstants;
+import NULL.DTPomoziMi.security.UserPrincipal;
+import NULL.DTPomoziMi.util.CookieUtil;
+import NULL.DTPomoziMi.util.UserPrincipalGetter;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.SignatureException;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
+	Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private JwtUtil jwtUtil;
+	@Autowired
+	private JwtUtil jwtUtil;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+	@Autowired
+	private UserDetailsService userDetailsService;
 
-            String token = CookieUtil.getValue(request, JwtConstants.JWT_COOKIE_NAME);
-            String refreshToken = CookieUtil.getValue(request, JwtConstants.JWT_REFRESH_COOKIE_NAME);
+	@Override
+	protected void doFilterInternal(
+		HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
+	) throws ServletException, IOException {
+		logger.debug("JWT filtering");
 
-            String emailFromToken = null;
-            String emailFromRefreshToken = null;
+		String token = CookieUtil.getValue(request, JwtConstants.JWT_COOKIE_NAME);
+		String refreshToken = CookieUtil.getValue(request, JwtConstants.JWT_REFRESH_COOKIE_NAME);
 
-            try {
-                if (token != null && !token.isBlank())
-                    emailFromToken = jwtUtil.extractUsername(token);
+		String emailFromToken = null;
+		String emailFromRefreshToken = null;
 
-            }catch (SignatureException e){
-                deleteCookies(response);
+		try {
+			logger.debug("Extracting email from token");
 
-            }catch(JwtException e){
-                try{
-                    if (refreshToken != null && !refreshToken.isBlank())
-                        emailFromRefreshToken = jwtUtil.extractUsername(refreshToken);
+			if (token != null && !token.isBlank()) emailFromToken = jwtUtil.extractUsername(token);
 
-                }catch (JwtException ex){
-                    deleteCookies(response);
+		} catch (SignatureException e) {
+			logger.debug("Deleting cookies because of signature exception: {}", e.getMessage());
 
-                }
-            }
+			deleteCookies(response);
 
-            boolean valid = false;
-            if(emailFromToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                if (jwtUtil.validateToken(token)) {
-                    setAuth(token);
-                    valid = true;
-                }
-            }
+		} catch (JwtException e) {
+			try {
+				logger.debug("Extracting email from refresh token: {}", e.getMessage());
 
-            if(!valid && emailFromRefreshToken != null && SecurityContextHolder.getContext().getAuthentication() == null){
-                if(jwtUtil.validateRefreshToken(emailFromRefreshToken)){
-                    setAuth(refreshToken);
+				if (refreshToken != null && !refreshToken.isBlank()) emailFromRefreshToken = jwtUtil.extractUsername(refreshToken);
 
-                    Map<String, Object> claims = new HashMap<>();
-                    claims.put("role", jwtUtil.extractRole(refreshToken));
+			} catch (JwtException ex) {
+				deleteCookies(response);
+			}
+		}
 
-                    String newtoken = jwtUtil.generateToken(claims, emailFromRefreshToken);
-                    CookieUtil.create(response, JwtConstants.JWT_COOKIE_NAME, newtoken, false, -1);
+		boolean valid = false;
+		if (emailFromToken != null && UserPrincipalGetter.getPrincipal() == null) {
+			logger.debug("Validating token");
+			if (jwtUtil.validateToken(token)) {
 
-                }else{
-                    deleteCookies(response);
-                }
-            }
+				setAuthAndGenerateToken(emailFromToken, false, null);
+				valid = true;
+			}
+		}
+		else if (!valid && emailFromRefreshToken != null && UserPrincipalGetter.getPrincipal() == null) {
+			logger.debug("Validating refresh token");
 
-        filterChain.doFilter(request, response);
-    }
+			if (jwtUtil.validateRefreshToken(refreshToken)) {
+				setAuthAndGenerateToken(emailFromRefreshToken, true, response);
 
-    private void setAuth(String token){
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-                = new UsernamePasswordAuthenticationToken(
-                jwtUtil.extractUsername(token),
-                null,
-                Arrays.asList(new SimpleGrantedAuthority(jwtUtil.extractRole(token)))
-        );
+				Map<String, Object> claims = new HashMap<>();
+				claims.put(JwtUtil.CLAIM_ROLES, jwtUtil.extractRoles(refreshToken));
 
-        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-    }
+			} else {
+				logger.debug("Deleting cookies because of invalid refresh token");
 
-    private void deleteCookies(HttpServletResponse response){
-        CookieUtil.clear(response, JwtConstants.JWT_REFRESH_COOKIE_NAME);
-        CookieUtil.clear(response, JwtConstants.JWT_COOKIE_NAME);
-    }
+				deleteCookies(response);
+			}
+		}else {
+			deleteCookies(response);
+		}
+
+		filterChain.doFilter(request, response);
+	}
+
+	private void setAuthAndGenerateToken(String email, boolean generate, HttpServletResponse response) {
+		logger.debug("Setting auth");
+
+		UserDetails user = null;
+		try {
+			user = userDetailsService.loadUserByUsername(email);
+		} catch (UsernameNotFoundException e) {
+			logger.debug(e.getMessage());
+		}
+
+		if (user != null) {
+			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+				= new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+
+			SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+
+			if (generate) { generateToken(response, user); }
+		}
+	}
+
+	private void generateToken(HttpServletResponse response, UserDetails user) {
+		String newtoken = jwtUtil.generateToken((UserPrincipal) user);
+		CookieUtil.create(response, JwtConstants.JWT_COOKIE_NAME, newtoken, false, -1, false);
+	}
+
+	private void deleteCookies(HttpServletResponse response) {
+		CookieUtil.clear(response, JwtConstants.JWT_REFRESH_COOKIE_NAME);
+		CookieUtil.clear(response, JwtConstants.JWT_COOKIE_NAME);
+	}
 }

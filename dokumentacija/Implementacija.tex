@@ -970,6 +970,69 @@ public class BlockUserTest {
 
 \section{Upute za puštanje u pogon}
 
+	U poglavlju 5.4 bit će opisan postupak puštanja Spring-Boot aplikacije u pogon na Heroku poslužitelj.
+			Koraci koje je potrebno izvesti prilikom te akcije su navedeni ispod ovog teksta, a određene točke su dodatno pojašnjenje u ovom poglavlju ispod točaka.
+	
+	
+	\begin{itemize}
+		\item[1.] Registirati se s besplatnim računom na servisu Heroku\footnote{\url{https://devcenter.heroku.com/}}
+		\item[2.] Instalirati Heroku CLI \footnote{\url{https://devcenter.heroku.com/articles/heroku-cli}}
+		\item[3.] Prijaviti se na Heroku servis pomoću Heroku CLI (naredba: heroku login)
+		\item[4.] Dodati Postgresql add-on (bazu) na Heroku  
+		\item[5.] Inicijalizirati git repozitorij, dodati kod aplikacije i napraviti prvi commit
+		\item[6.] Kreirati heroku app naredbom: heroku create
+		\item[7.] Deploy-ati aplikaciju naredbom: git push heroku master
+	\end{itemize}
+
+	\noindent\textbf{4. Dodavanje Postgresql na Heroku:}
+	
+		Sve što je potrebno napraviti u ovom koraku je izvesti sljedeću naredbu:
+		
+		\begin{figure}[H]
+			\includegraphics[scale=0.8]{slike/createDatabase.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+			\centering
+			\caption { Naredba za dodavanje Postgresql-a}
+			\label{fig:5.2}
+		\end{figure}
+	
+		Nakon izvođenja te naredbe, Heroku će automatski kreirati varijable okruženja SPRING${\_}$DATASOURCE${\_}$URL, SPRING${\_}$DATASOURCE${\_}$USERNAME i \newline SPRING${\_}$DATASOURCE${\_}$PASSWORD. Te varijable će omogućiti aplikaciji da se spoji na Postgresql bazu dokle god imamo dodan \textit{postgresql} dependency u pom.xml-u.
+	
+	\bigskip
+		
+	\noindent\textbf{5. Inicijalizacija git repozitorija i prvi commit:}
+		
+		\begin{figure}[H]
+			\includegraphics[scale=0.8]{slike/herokuInit.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+			\centering
+			\caption { Naredba za dodavanje Postgresql-a}
+			\label{fig:5.2}
+		\end{figure}
+
+	\noindent\textbf{6. Kreiranje aplikacije na Heroku:}
+
+		\begin{figure}[H]
+			\includegraphics[scale=0.8]{slike/herokuCreate.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+			\centering
+			\caption { Naredba za dodavanje Postgresql-a}
+			\label{fig:5.2}
+		\end{figure}
+	
+	Ova naredba će kreirati aplikaciju na Heroku i pripremiti sve za prvi deploy. Nakon izvršavanja te naredbe, naš lokalni git repozotorij koji smo u koraku prije inicijalizirali će biti također povezan na remote heroku git repozitorij pripremljen za našu aplikaciju.
+	
+	\bigskip
+	
+	\noindent\textbf{7. Puštanje u pogon:}
+	
+	Sada smo spremni za deploy koji obavljamo izvršavanjem sljedeće naredbe: 
+	
+	\begin{figure}[H]
+		\includegraphics[scale=0.8]{slike/herokuPush.png} %veličina slike u odnosu na originalnu datoteku i pozicija slike
+		\centering
+		\caption { Naredba za dodavanje Postgresql-a}
+		\label{fig:5.2}
+	\end{figure}
+
+	Navedena naredba će poslati kod aplikacije na Heroku poslužitelj te će biti pokrenut build postupak. Kada build postupak završi, naša aplikacija se pokreće te joj je moguće pristupiti na web adresi koja će biti ispisana u komandnoj liniji nakon završetka izvođenja naredbe.
 
 \begin{comment}
 	\textit{U ovom poglavlju potrebno je dati upute za puštanje u pogon (engl. deployment) ostvarene aplikacije. Na primjer, za web aplikacije, opisati postupak kojim se od izvornog kôda dolazi do potpuno postavljene baze podataka i poslužitelja koji odgovara na upite korisnika. Za mobilnu aplikaciju, postupak kojim se aplikacija izgradi, te postavi na neku od trgovina. Za stolnu (engl. desktop) aplikaciju, postupak kojim se aplikacija instalira na računalo. Ukoliko mobilne i stolne aplikacije komuniciraju s poslužiteljem i/ili bazom podataka, opisati i postupak njihovog postavljanja. Pri izradi uputa preporučuje se \textbf{naglasiti korake instalacije uporabom natuknica} te koristiti što je više moguće \textbf{slike ekrana} (engl. screenshots) kako bi upute bile jasne i jednostavne za slijediti.}
