@@ -17,38 +17,38 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 public class DevWebConfig implements WebMvcConfigurer {
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins("http://localhost:3000").allowedHeaders("*")
-        .allowedMethods(HttpMethod.GET.toString(),
-                HttpMethod.POST.toString(), 
-                HttpMethod.OPTIONS.toString(),
-                HttpMethod.PATCH.toString(),
-                HttpMethod.PUT.toString(),
-                HttpMethod.DELETE.toString())
-        .allowCredentials(true);
-    }
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry
+			.addMapping("/**")
+			.allowedOrigins("http://localhost:3000")
+			.allowedHeaders("*")
+			.allowedMethods(
+				HttpMethod.GET.toString(), HttpMethod.POST.toString(), HttpMethod.OPTIONS.toString(), HttpMethod.PATCH.toString(),
+				HttpMethod.PUT.toString(), HttpMethod.DELETE.toString()
+			)
+			.allowCredentials(true);
+	}
 
-    @Override
-    public Validator getValidator() {
-        LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
-        bean.setValidationMessageSource(messageSource());
-        return bean;
-    }
+	@Override
+	public Validator getValidator() {
+		LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
+		bean.setValidationMessageSource(messageSource());
+		return bean;
+	}
 
-    @Bean
-    public MessageSource messageSource() {
-        ReloadableResourceBundleMessageSource messageSource
-                = new ReloadableResourceBundleMessageSource();
+	@Bean
+	public MessageSource messageSource() {
+		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
 
-        messageSource.setBasename("classpath:messages");
-        messageSource.setDefaultEncoding("UTF-8");
-        return messageSource;
-    }
+		messageSource.setBasename("classpath:messages");
+		messageSource.setDefaultEncoding("UTF-8");
+		return messageSource;
+	}
 
-    //    @Override
-//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//        registry.addResourceHandler("**/*.map", "**/*.js", "**/*.css","**/*.txt","**/*.json", "**/*.ico", "**/*.png")
-//                .addResourceLocations("classpath:/static/");
-//    }
+	//    @Override
+	//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+	//        registry.addResourceHandler("**/*.map", "**/*.js", "**/*.css","**/*.txt","**/*.json", "**/*.ico", "**/*.png")
+	//                .addResourceLocations("classpath:/static/");
+	//    }
 }
