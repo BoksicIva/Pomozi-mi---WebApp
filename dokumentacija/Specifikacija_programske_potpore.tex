@@ -2,7 +2,7 @@
 
 \section{Funkcionalni zahtjevi}
 
-\textbf{\textit{dio 1. revizije}}\\
+
 
 
 
@@ -83,7 +83,7 @@
 
 \subsection{Obrasci uporabe}
 
-\textbf{\textit{dio 1. revizije}}
+
 
 \subsubsection{Opis obrazaca uporabe}
 
@@ -129,7 +129,7 @@
 		\end{packed_enum}
 	\end{packed_item}
 \end{packed_item}
-
+\newpage
 \noindent \underbar{\textbf{UC3 -Zadavanje zahtjeva za pomoć}}
 \begin{packed_item}
 	\item \textbf{Glavni sudionik: } Registrirani korisnik
@@ -249,8 +249,19 @@
 	\item  \textbf{Preduvjet:} Korisnik je prijavljen u sustav i kreirao je zahtjeve
 	\item  \textbf{Opis osnovnog tijeka:}
 	\item[] \begin{packed_enum}
-		\item Na vlastitom profilu korisnik odabire opciju „Pregled zahtjeva“.
-		\item 	Otvara mu se pregled svih aktivnih i izvršenih zahtjeva.
+		\item Na vlastitom profilu korisnika vidljivi su mu svi zahtjevi podijeljeni u kategorije.
+	\end{packed_enum}
+\end{packed_item}
+
+\noindent \underbar{\textbf{UC6.1.3 - Kandidiranje }}
+\begin{packed_item}
+	\item \textbf{Glavni sudionik: }Registrirani korisnik
+	\item  \textbf{Cilj:} Kandidiranje za pomagača godine
+	\item  \textbf{Sudionici:} Baza podataka
+	\item  \textbf{Preduvjet:} Korisnik je prijavljen u sustav 
+	\item  \textbf{Opis osnovnog tijeka:}
+	\item[] \begin{packed_enum}
+		\item Na vlastitom profilu korisnik aktivira ili deaktivira gumb za kandidiranje.
 	\end{packed_enum}
 \end{packed_item}
 
@@ -265,15 +276,9 @@
 		\item Otvara se opcija pregleda profila autora zahtjeva
 		\item Iz baze se dohvaća profil o autoru zahtjeva
 	\end{packed_enum}
-	\item  \textbf{Opis mogućih odstupanja:}
-	\item[] \begin{packed_item}
-		\item[1.a] Korisnik čiji profil želimo pregledati je blokiran od strane administratora
-		\item[] \begin{packed_enum}
-			\item Sustav vraća korisnika na početnu stranicu
-		\end{packed_enum}
-	\end{packed_item}
+	
 \end{packed_item}
-\newpage
+
 \noindent \underbar{\textbf{UC6.2.1 - Lanac povjerennja}}
 \begin{packed_item}
 	\item \textbf{Glavni sudionik: } Registrirani korisnik
@@ -312,7 +317,7 @@
 		\end{packed_enum}
 	\end{packed_item}
 \end{packed_item}
-
+\newpage
 \noindent \underbar{\textbf{UC7.1 - Brisanje zahtjeva}}
 \begin{packed_item}
 	\item \textbf{Glavni sudionik: }Administrator
@@ -326,7 +331,7 @@
 		\item Zahtjev se uklanja iz baze podataka
 	\end{packed_enum}
 \end{packed_item}
-\newpage
+
 \noindent \underbar{\textbf{UC8 - Pregled korisnika}}
 \begin{packed_item}
 	
@@ -356,7 +361,7 @@
 		\item Pri pregledu korisnika, administratoru se omogućuje blokiranje korisničkih računa
 	\end{packed_enum}
 \end{packed_item}
-
+\newpage
 \noindent \underbar{\textbf{UC9 - Dodjela administrativnog područja}}
 \begin{packed_item}
 	\item \textbf{Glavni sudionik: }Administrator
@@ -368,7 +373,7 @@
 		\item Administratoru preko vlastite lokacije sustav dodjeljuje administrativno područje
 	\end{packed_enum}
 \end{packed_item}
-\newpage
+
 \noindent \underbar{\textbf{UC10 - Ocjenjivanje}}
 \begin{packed_item}
 	\item \textbf{Glavni sudionik: } Registrirani korisnik
@@ -423,7 +428,7 @@
 	\item[] \begin{packed_item}
 		\item[1.a] 	Sustav ne može očitati korisnikovu lokaciju
 		\item[] \begin{packed_enum}
-			\item Korisniku se šalje obavijest da unese svoju lokaciju
+			\item Korisniku se prikazuju samo zahtjevi bez lokacije
 		\end{packed_enum}
 	\end{packed_item}
 \end{packed_item}
@@ -485,10 +490,10 @@
 	\item  \textbf{Preduvjet:} Korisnik je prijavljen u sustav, zahtjev je odabran za izvršavanje od strane korisnika
 	\item  \textbf{Opis osnovnog tijeka:}
 	\item[] \begin{packed_enum}
-		\item 	Nakon što je korisnik izvršio zadatak odabire gumb „Zadatak izvršen“. 
+		\item 	Nakon što je korisnik izvršio zadatak odabire gumb „Označi izvršen“. 
 	\end{packed_enum}
 \end{packed_item}
-
+\newpage
 \noindent \underbar{\textbf{UC13 - Odabir zahtjeva za izvršavanje}}
 \begin{packed_item}
 	\item \textbf{Glavni sudionik: }Registrirani korisnik
@@ -502,13 +507,13 @@
 		\item 	Slijedi dogovor korisnika oko zahtjeva
 	\end{packed_enum}
 \end{packed_item}
-\newpage
+
 \noindent \underbar{\textbf{UC14 - Razmjena notifikacija}}
 \begin{packed_item}
 	\item \textbf{Glavni sudionik: } Registrirani korisnik
 	\item  \textbf{Cilj:} Dogovor oko izvršavanja zahtjeva
 	\item  \textbf{Sudionici:} Baza podataka
-	\item  \textbf{Preduvjet:} Korisnik je prijavljen u sustav, korisnik je odabrao zahtjev za izvršavanje
+	\item  \textbf{Preduvjet:} Korisnik je prijavljen u sustav, korisnik je odabrao zahtjev za izvršavanje, autor zahtjeva ga je potvrdio za izvršitelja
 	\item  \textbf{Opis osnovnog tijeka:}
 	\item[] \begin{packed_enum}
 		\item Nakon odabira zahtjeva kojeg korisnik želi izvršiti omogućuje se razmjena notifikacija radi dogovora oko izvršenja zahtjeva 
@@ -586,7 +591,6 @@
 
 \subsection{Sekvencijski dijagrami}
 
-\textbf{\textit{dio 1. revizije}}\\
 
 \noindent {\textbf{Obrazac uporabe UC1 - Registracija }}
 \newline\newline {Korisnik šalje zahtjev za registracijom na sustav za primanje ili pružanje pomoći.
