@@ -32,6 +32,30 @@ class LoginService {
     logout(){
       return http.post("../logout", {});
     }
+
+    getUsers(){
+      return http.get("/users" , {});
+    }
+
+    getSortedUsers(condition){
+      return http.get("/users?sort=" + condition + ",asc" , {});
+    }
+
+    getSearched(cond){
+      return http.get("/users?generalSearch=" + cond , {});
+    }
+
+    sendRequest(req){
+      return http.post("/requests", req, {});
+    }
+
+    getRequests(radius){
+      return http.get("/requests/active?radius=" + radius + "&page=0&size=400000", {});
+    }
+
+    sendExecution(id){
+      return http.patch("/requests/pickForExecution/" + id, {});
+    }
   
   }
   
